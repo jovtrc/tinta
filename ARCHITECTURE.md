@@ -188,6 +188,11 @@ Maybe one more (`/docs/{id}/restore`) if core's update can't restore to the top 
 - **JS/TS:** `@wordpress/eslint-plugin` (recommended + TypeScript), `@wordpress/stylelint-config`, Prettier with `@wordpress/prettier-config`. (camelCase is the WordPress *JavaScript* standard.)
 - **Pre-commit:** `brainmaestro/composer-git-hooks` runs `composer run phpcs:staged` on staged PHP files. The script reads the ruleset's exclude patterns and passes them as `--ignore`, because PHPCS skips them for explicit file lists. Plus lint-staged for TS.
 
+### Code style
+- Clean Code: small functions and classes with clear names; simple and concise over clever.
+- Each class and method gets a short header docblock: a one-line summary plus the tags WPCS requires.
+- No comments inside methods unless the logic is complex enough to need one.
+
 ### Tests
 - **PHP unit:** PHPUnit 11 (runs on PHP 8.2) with WordPress stubs — function stubs, fixtures, and exceptions standing in for `wp_die()` and redirects. Strict config: fail on warnings, risky tests and deprecations; coverage metadata required.
 - **PHP integration:** core's test suite (`WP_UnitTestCase`) in wp-env, with PHPUnit 9.6 + `yoast/phpunit-polyfills` in its own `tests/integration/composer.json`. Runs on single site and multisite.
@@ -208,7 +213,9 @@ Maybe one more (`/docs/{id}/restore`) if core's update can't restore to the top 
 - wp.org holds each release ~6 h for an automated security review.
 
 ### Git
+- Default branch: `trunk`.
 - Conventional Commits; small commits; small PRs (stack bigger changes).
+- No AI co-author trailers or AI attribution in commits or PRs.
 
 ## 8. Repo layout
 
