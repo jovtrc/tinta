@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Liber Workspace Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one wp-admin screen in Liber's workspace mode, framed like a browser window.
+   CSS-only switches above it (radio buttons + :has) change the screen, color scheme and viewport. No JavaScript. */
+:root {
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --st-bg: #e4e6e9;
+  --st-fg: #1d2327;
+  --st-muted: #50575e;
+  --st-panel: #ffffff;
+  --st-line: #c3c4c7;
+  --st-chip: #ffffff;
+  --st-chip-on: #1d2327;
+  --st-chip-on-fg: #ffffff;
+  --st-device: #1d2327;
+  --st-focus: #3858e9;
+  --st-shadow: rgba(16, 20, 24, 0.12);
+  --tag-core: #1d2327;
+  --tag-core-fg: #ffffff;
+  --tag-liber: #f2b705;
+  --tag-liber-fg: #1d1400;
+  --tag-ring: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --st-bg: #0f1011;
+    --st-fg: #e9eaeb;
+    --st-muted: #a7aaad;
+    --st-panel: #1b1c1e;
+    --st-line: #3c434a;
+    --st-chip: #1b1c1e;
+    --st-chip-on: #e9eaeb;
+    --st-chip-on-fg: #111214;
+    --st-device: #000000;
+    --st-focus: #8ea1ff;
+    --st-shadow: rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --st-bg: #0f1011;
+  --st-fg: #e9eaeb;
+  --st-muted: #a7aaad;
+  --st-panel: #1b1c1e;
+  --st-line: #3c434a;
+  --st-chip: #1b1c1e;
+  --st-chip-on: #e9eaeb;
+  --st-chip-on-fg: #111214;
+  --st-device: #000000;
+  --st-focus: #8ea1ff;
+  --st-shadow: rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { height: 100%; box-sizing: border-box; }
+body { height: 100%; margin: 0; background: var(--st-bg); color: var(--st-fg); font: 13px/1.45 var(--font-ui); }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; text-align: inherit; }
+:focus-visible { outline: 2px solid var(--st-focus); outline-offset: 2px; }
+.sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+svg.i { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+svg.i.sm { width: 16px; height: 16px; }
+
+/* ── Stage: controls + frame ─────────────────────────────── */
+.stage {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-block: 12px 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px; }
+.brand { display: flex; align-items: baseline; gap: 8px; margin-right: auto; }
+.brand b { font-size: 14px; font-weight: 600; }
+.brand span { color: var(--st-muted); }
+.ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.ctl-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--st-muted); }
+.seg { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip {
+  display: inline-flex; align-items: center; height: 28px; padding: 0 10px;
+  border-radius: 14px; border: 1px solid var(--st-line); background: var(--st-chip); color: var(--st-fg);
+  cursor: pointer; user-select: none; white-space: nowrap;
+}
+input:checked + .chip { background: var(--st-chip-on); border-color: var(--st-chip-on); color: var(--st-chip-on-fg); }
+input:focus-visible + .chip, input:focus-visible + .swatch { outline: 2px solid var(--st-focus); outline-offset: 2px; }
+.swatches { display: flex; flex-wrap: wrap; gap: 6px; }
+.swatch {
+  width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
+  background: linear-gradient(135deg, var(--a) 0 50%, var(--b) 50% 100%);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+input:checked + .swatch { box-shadow: 0 0 0 2px var(--st-bg), 0 0 0 4px var(--st-fg); }
+.scheme-name { min-width: 84px; font-weight: 500; }
+.scheme-name::after { content: "Liber Light"; }
+
+.viewport { flex: 1; min-height: 520px; display: flex; justify-content: center; }
+.frame {
+  flex: 1; max-width: 1600px; min-width: 0; display: flex; flex-direction: column;
+  border: 1px solid var(--st-line); border-radius: 10px; overflow: hidden;
+  background: var(--st-panel); box-shadow: 0 10px 30px var(--st-shadow);
+  container: app / inline-size;
+}
+.urlbar {
+  position: relative; display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px;
+  border-bottom: 1px solid var(--st-line); background: var(--st-panel); color: var(--st-muted); font-size: 12px; flex: none;
+}
+.url {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 12px;
+  border-radius: 13px; background: var(--st-bg); white-space: nowrap; overflow: hidden;
+}
+.url span { overflow: hidden; text-overflow: ellipsis; }
+.url b { color: var(--st-fg); font-weight: 500; }
+.stage:has(#vp-phone:checked) .frame,
+.stage:has(#vp-menu:checked) .frame {
+  flex: 0 1 392px; max-width: 392px; height: min(820px, 100%); align-self: center;
+  border: 10px solid var(--st-device); border-radius: 36px;
+}
+.stage:has(#vp-phone:checked) .urlbar,
+.stage:has(#vp-menu:checked) .urlbar { display: none; }
+
+/* ── App tokens: Liber Light by default ──────────────────── */
+.app {
+  --bg: #ffffff; --fg: #1d2327; --muted: #646970; --line: #e2e4e7; --soft: #f6f7f7; --code-bg: #f6f7f7;
+  --accent: #3858e9; --accent-ink: #3858e9; --on-accent: #ffffff; --tint: #eef1fd;
+  --sb-bg: #f6f7f7; --sb-fg: #1d2327; --sb-muted: #646970; --sb-hover: #eaecee; --sb-sel: #e1e7fc; --sb-sel-fg: #1d2327; --sb-line: #e2e4e7;
+  --hl: #fdf1c7; --hl-line: #e2bc4f; --hl-strong: #fbe08a;
+  --tb-bg: #ffffff; --tb-line: #1d2327;
+  --logo-bg: #1f6f5c; --logo-fg: #ffffff;
+  --scrim: rgba(17, 18, 20, 0.42);
+  --shadow: 0 14px 36px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  color-scheme: light;
+  flex: 1; min-height: 0; position: relative; overflow: hidden;
+  display: grid; grid-template-columns: 264px minmax(0, 1fr);
+  background: var(--bg); color: var(--fg); font-size: 13px;
+}
+.app :focus-visible { outline-color: var(--accent); }
+
+/* Core admin color schemes: sidebar takes the admin-menu colors, accent takes the scheme color.
+   Text colors are picked for 4.5:1 contrast, as the Design System does from its seeds. */
+.stage:has(#sc-fresh:checked) .app { --sb-bg: #1d2327; --sb-fg: #f0f0f1; --sb-muted: #a7aaad; --sb-hover: #2c3338; --sb-sel: #2271b1; --sb-sel-fg: #ffffff; --sb-line: #2c3338; --accent: #2271b1; --accent-ink: #2271b1; --tint: #eaf2fa; }
+.stage:has(#sc-modern:checked) .app { --sb-bg: #1e1e1e; --sb-fg: #f0f0f0; --sb-muted: #a7aaad; --sb-hover: #2f2f2f; --sb-sel: #3858e9; --sb-sel-fg: #ffffff; --sb-line: #2f2f2f; --accent: #3858e9; --accent-ink: #3858e9; --tint: #eef1fd; }
+.stage:has(#sc-light:checked) .app { --sb-bg: #e5e5e5; --sb-fg: #1d2327; --sb-muted: #50575e; --sb-hover: #d9d9d9; --sb-sel: #6d6d6d; --sb-sel-fg: #ffffff; --sb-line: #d2d2d2; --accent: #006d99; --accent-ink: #006d99; --tint: #e6f2f7; }
+.stage:has(#sc-blue:checked) .app { --sb-bg: #52accc; --sb-fg: #0b2530; --sb-muted: #0f3442; --sb-hover: #63b6d4; --sb-sel: #096484; --sb-sel-fg: #ffffff; --sb-line: #4aa0bf; --accent: #096484; --accent-ink: #096484; --tint: #e7f2f6; }
+.stage:has(#sc-coffee:checked) .app { --sb-bg: #59524c; --sb-fg: #f3f2f1; --sb-muted: #d6d3d0; --sb-hover: #4a443f; --sb-sel: #c7a589; --sb-sel-fg: #231d18; --sb-line: #4f4843; --accent: #8a6648; --accent-ink: #8a6648; --tint: #f5efe9; }
+.stage:has(#sc-ectoplasm:checked) .app { --sb-bg: #523f6d; --sb-fg: #f3f1f6; --sb-muted: #d4cde0; --sb-hover: #463560; --sb-sel: #a3b745; --sb-sel-fg: #1a1f06; --sb-line: #4a3963; --accent: #5c6b14; --accent-ink: #5c6b14; --tint: #f2f5e4; }
+.stage:has(#sc-midnight:checked) .app { --sb-bg: #363b3f; --sb-fg: #f1f2f3; --sb-muted: #c3c6c9; --sb-hover: #2b2f32; --sb-sel: #c9362c; --sb-sel-fg: #ffffff; --sb-line: #2e3236; --accent: #c9362c; --accent-ink: #c9362c; --tint: #fbecea; }
+.stage:has(#sc-ocean:checked) .app { --sb-bg: #5a737a; --sb-fg: #ffffff; --sb-muted: #f3f6f7; --sb-hover: #4e666d; --sb-sel: #9ebaa0; --sb-sel-fg: #142016; --sb-line: #526b72; --accent: #46684e; --accent-ink: #46684e; --tint: #edf3ee; }
+.stage:has(#sc-sunrise:checked) .app { --sb-bg: #c7403b; --sb-fg: #ffffff; --sb-muted: #fff4f3; --sb-hover: #b5352f; --sb-sel: #dd823b; --sb-sel-fg: #2a1406; --sb-line: #b93934; --accent: #b4531b; --accent-ink: #b4531b; --tint: #fbefe7; }
+.stage:has(#sc-dark:checked) .app {
+  color-scheme: dark;
+  --bg: #1e1e1e; --fg: #ececec; --muted: #a7aaad; --line: #303030; --soft: #262626; --code-bg: #171717;
+  --accent: #7b90ff; --accent-ink: #9aabff; --on-accent: #0b1020; --tint: #262c45;
+  --sb-bg: #161616; --sb-fg: #e6e6e6; --sb-muted: #a0a0a0; --sb-hover: #232323; --sb-sel: #2a3152; --sb-sel-fg: #ffffff; --sb-line: #262626;
+  --hl: #4a3f1c; --hl-line: #c9a43a; --hl-strong: #6b5a1f;
+  --tb-bg: #1e1e1e; --tb-line: #ececec;
+  --scrim: rgba(0, 0, 0, 0.6);
+  --shadow: 0 14px 36px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+.stage:has(#sc-dark:checked) .scheme-name::after { content: "Liber Dark"; }
+.stage:has(#sc-fresh:checked) .scheme-name::after { content: "Default"; }
+.stage:has(#sc-modern:checked) .scheme-name::after { content: "Modern"; }
+.stage:has(#sc-light:checked) .scheme-name::after { content: "Light"; }
+.stage:has(#sc-blue:checked) .scheme-name::after { content: "Blue"; }
+.stage:has(#sc-coffee:checked) .scheme-name::after { content: "Coffee"; }
+.stage:has(#sc-ectoplasm:checked) .scheme-name::after { content: "Ectoplasm"; }
+.stage:has(#sc-midnight:checked) .scheme-name::after { content: "Midnight"; }
+.stage:has(#sc-ocean:checked) .scheme-name::after { content: "Ocean"; }
+.stage:has(#sc-sunrise:checked) .scheme-name::after { content: "Sunrise"; }
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.sidebar {
+  position: relative; display: flex; flex-direction: column; min-height: 0;
+  background: var(--sb-bg); color: var(--sb-fg); border-right: 1px solid var(--sb-line);
+}
+.sb-head { position: relative; display: flex; align-items: center; gap: 4px; padding: 10px 8px 6px 8px; }
+.ws { flex: 1; min-width: 0; display: flex; align-items: center; gap: 9px; height: 36px; padding: 0 6px; border-radius: 6px; }
+.ws-icon { width: 24px; height: 24px; flex: none; display: grid; place-items: center; border-radius: 6px; background: var(--logo-bg); color: var(--logo-fg); font-weight: 700; font-size: 13px; }
+.ws-name { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ws svg { color: var(--sb-muted); }
+.ibtn { position: relative; width: 32px; height: 32px; flex: none; display: inline-grid; place-items: center; border-radius: 6px; }
+.sidebar .ibtn { color: var(--sb-muted); }
+.sb-actions { display: flex; flex-direction: column; gap: 1px; padding: 0 8px 6px; }
+.sb-item { position: relative; display: flex; align-items: center; gap: 9px; width: 100%; height: 30px; padding: 0 8px; border-radius: 6px; color: var(--sb-fg); }
+.sb-item svg { color: var(--sb-muted); }
+.grow { flex: 1; min-width: 0; }
+kbd { font: 11px/1 var(--font-ui); color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 3px 5px; }
+.sidebar kbd { color: var(--sb-muted); border-color: color-mix(in srgb, var(--sb-fg) 28%, transparent); }
+.sb-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 8px 12px; display: flex; flex-direction: column; gap: 14px; }
+.sb-sec-h {
+  position: relative; display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 24px; margin: 0 0 2px; padding: 0 2px 0 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sb-muted);
+}
+.sb-sec-h .ibtn { width: 22px; height: 22px; border-radius: 4px; }
+.tree { list-style: none; margin: 0; padding: 0; }
+.row {
+  position: relative; display: flex; align-items: center; gap: 6px; width: 100%; height: 28px;
+  padding: 0 6px 0 calc(4px + var(--d, 0) * 16px); border-radius: 6px; color: var(--sb-fg);
+}
+.tw { width: 16px; height: 16px; flex: none; display: grid; place-items: center; color: var(--sb-muted); }
+.tw svg { width: 14px; height: 14px; }
+.row.open .tw svg { transform: rotate(90deg); }
+.emo { width: 18px; flex: none; text-align: center; font-size: 15px; line-height: 1; }
+.lbl { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row.is-current { background: var(--sb-sel); color: var(--sb-sel-fg); font-weight: 500; }
+.row.is-current .tw { color: inherit; }
+.row.is-hover { background: var(--sb-hover); }
+.row-actions { display: flex; gap: 2px; color: var(--sb-muted); }
+.row-actions span { width: 22px; height: 22px; display: grid; place-items: center; border-radius: 4px; }
+.sb-foot { display: flex; flex-direction: column; gap: 1px; padding: 8px; border-top: 1px solid var(--sb-line); }
+.count { font-size: 11px; color: var(--sb-muted); font-variant-numeric: tabular-nums; }
+.me { position: relative; display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 4px; padding: 6px 8px; border-radius: 6px; }
+.av { width: 28px; height: 28px; flex: none; display: grid; place-items: center; border-radius: 50%; background: var(--av); color: #ffffff; font-size: 11px; font-weight: 600; }
+.me-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
+.me-name { font-weight: 500; }
+.me-role { font-size: 11.5px; color: var(--sb-muted); }
+.me svg { color: var(--sb-muted); }
+
+/* ── Main: header, banner, canvas ───────────────────────── */
+.main { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; container: main / inline-size; }
+.topbar { position: relative; flex: none; display: flex; align-items: center; gap: 4px; height: 52px; padding: 0 10px 0 16px; border-bottom: 1px solid var(--line); }
+.main .ibtn { color: var(--fg); }
+.menu-btn { display: none; margin-left: -6px; }
+.crumbs { flex: 1; min-width: 0; display: flex; align-items: center; gap: 2px; overflow: hidden; white-space: nowrap; color: var(--muted); }
+.crumbs .c { display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px; border-radius: 4px; }
+.crumbs .c.here { color: var(--fg); font-weight: 500; overflow: hidden; }
+.crumbs .sep { color: var(--muted); }
+.status { display: inline-flex; align-items: center; gap: 5px; padding: 0 8px; color: var(--muted); white-space: nowrap; }
+.status.st-locked { display: none; }
+.tb-btns { position: relative; display: flex; align-items: center; gap: 2px; }
+.vsep { width: 1px; height: 24px; margin: 0 6px; background: var(--line); }
+.badge {
+  position: absolute; top: 2px; right: 1px; min-width: 15px; height: 15px; padding: 0 4px; border-radius: 8px;
+  background: var(--accent); color: var(--on-accent); font-size: 10px; font-weight: 600; line-height: 15px; text-align: center;
+}
+.lockbar { display: none; flex: none; flex-wrap: wrap; align-items: center; gap: 10px 12px; padding: 10px 16px; background: var(--tint); border-bottom: 1px solid var(--line); }
+.lockbar p { flex: 1; min-width: 200px; margin: 0; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 4px; font-weight: 500; white-space: nowrap; }
+.btn-secondary { background: var(--bg); color: var(--accent-ink); box-shadow: inset 0 0 0 1px var(--accent-ink); }
+.btn-sm { height: 28px; padding: 0 10px; font-size: 12px; }
+.main-body { position: relative; flex: 1; min-height: 0; display: flex; }
+.canvas { position: relative; flex: 1; min-width: 0; overflow: auto; }
+
+/* ── The page (editor canvas) ────────────────────────────── */
+.doc { max-width: 776px; margin: 0 auto; padding: 44px 80px 160px; font-size: 16px; line-height: 1.65; }
+.doc-icon-wrap { position: relative; width: max-content; }
+.doc-icon { width: 72px; height: 72px; margin-left: -8px; display: grid; place-items: center; border-radius: 8px; font-size: 54px; line-height: 1; }
+.doc-title { position: relative; margin: 8px 0 10px; font-size: 40px; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+.doc-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
+.doc-meta .av { width: 20px; height: 20px; font-size: 9px; }
+.blocks { display: flex; flex-direction: column; gap: 14px; margin-top: 30px; }
+.blocks > * { margin: 0; }
+.blocks h2 { margin-top: 14px; font-size: 22px; line-height: 1.3; font-weight: 650; }
+.blocks ol { padding-left: 1.4em; display: flex; flex-direction: column; gap: 4px; }
+code.ic { font-family: var(--font-mono); font-size: 0.86em; padding: 1px 5px; border-radius: 4px; background: var(--soft); }
+.callout { position: relative; display: flex; gap: 12px; padding: 14px 16px; border-radius: 8px; background: var(--soft); }
+.callout .emo-lg { font-size: 20px; line-height: 1.55; }
+.callout p { margin: 0; }
+.codeblock { position: relative; }
+.codeblock pre { margin: 0; padding: 14px 16px; overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--code-bg); font: 13.5px/1.6 var(--font-mono); }
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; line-height: 1.4; }
+th, td { padding: 7px 12px; border: 1px solid var(--line); text-align: left; }
+th { background: var(--soft); font-weight: 600; }
+td.num { font-variant-numeric: tabular-nums; }
+details summary { cursor: pointer; font-weight: 500; }
+details p { margin: 6px 0 0; }
+.pagelinks { display: flex; flex-direction: column; gap: 2px; }
+.pagelink { display: flex; align-items: center; gap: 10px; width: 100%; margin-left: -8px; padding: 5px 8px; border-radius: 6px; }
+.pagelink .t { font-weight: 500; text-decoration: underline; text-decoration-color: var(--line); text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+.pagelink svg { color: var(--muted); }
+.ph { color: var(--muted); }
+.caret { display: inline-block; width: 1.5px; height: 1.1em; margin-left: 1px; background: var(--fg); vertical-align: -0.15em; }
+
+/* Selected block + core block toolbar */
+.is-selected { position: relative; }
+.btoolbar {
+  position: absolute; left: -1px; bottom: calc(100% + 10px); z-index: 5; display: flex; align-items: center; height: 44px;
+  border: 1px solid var(--tb-line); border-radius: 4px; background: var(--tb-bg); color: var(--fg); font-size: 13px; line-height: 1;
+}
+.btoolbar .grp { display: flex; align-items: center; height: 100%; padding: 0 4px; }
+.btoolbar .grp + .grp { border-left: 1px solid var(--tb-line); }
+.tbtn { min-width: 34px; height: 34px; display: grid; place-items: center; border-radius: 4px; font-size: 14px; }
+.mover { display: flex; flex-direction: column; }
+.mover .tbtn { height: 17px; min-width: 24px; }
+.mover svg { width: 16px; height: 16px; }
+
+/* Notes in the margin and inline */
+.has-note { position: relative; }
+.nmark {
+  position: absolute; top: 0; right: -60px; display: inline-flex; align-items: center; gap: 3px; height: 26px; padding: 0 8px;
+  border-radius: 13px; background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); color: var(--muted); font-size: 12px; line-height: 1;
+}
+.note-hl { background: var(--hl); box-shadow: inset 0 -2px 0 var(--hl-line); border-radius: 2px; }
+
+/* Popovers */
+.pop { position: absolute; z-index: 20; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); line-height: 1.4; }
+.slash-line { display: none; position: relative; }
+.inserter { top: calc(100% + 6px); left: -8px; width: 280px; padding: 6px; font-size: 13px; }
+.ins-item { display: flex; align-items: center; gap: 10px; width: 100%; height: 36px; padding: 0 8px; border-radius: 4px; }
+.ins-item.on { background: var(--tint); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.ins-item .k { margin-left: auto; font-size: 11px; color: var(--muted); }
+.icon-pop { display: none; top: calc(100% + 4px); left: -8px; width: 316px; padding: 10px; font-size: 13px; }
+.ep-search { display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 8px; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--line); color: var(--muted); }
+.ep-tabs { display: flex; justify-content: space-between; margin: 8px 0 2px; }
+.ep-tabs span { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 4px; font-size: 16px; }
+.ep-tabs span.on { background: var(--soft); box-shadow: inset 0 -2px 0 var(--accent); }
+.ep-h { margin: 8px 2px 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.ep-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 2px; }
+.ep-grid span { height: 34px; display: grid; place-items: center; border-radius: 4px; font-size: 20px; }
+.ep-grid span.on { background: var(--tint); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.ep-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+.ep-foot .btn { color: var(--fg); padding: 0 8px; height: 28px; }
+
+/* Notes panel */
+.notes { display: none; flex: 0 0 340px; flex-direction: column; min-height: 0; border-left: 1px solid var(--line); background: var(--bg); }
+.notes-h { display: flex; align-items: center; gap: 6px; height: 48px; padding: 0 8px 0 16px; border-bottom: 1px solid var(--line); flex: none; }
+.notes-h h2 { flex: 1; margin: 0; font-size: 13px; font-weight: 600; }
+.filter { display: inline-flex; align-items: center; gap: 2px; height: 28px; padding: 0 6px 0 10px; border-radius: 4px; color: var(--muted); }
+.notes-list { flex: 1; min-height: 0; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+.thread { display: flex; flex-direction: column; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+.thread.on { border-color: var(--accent); box-shadow: inset 0 0 0 0.5px var(--accent); }
+.quote { font-size: 12.5px; color: var(--muted); }
+.quote .note-hl { color: var(--fg); }
+.cmt { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 2px 8px; }
+.cmt > .av { grid-row: 1 / span 3; width: 24px; height: 24px; font-size: 9.5px; }
+.cmt-h { display: flex; align-items: baseline; gap: 6px; }
+.cmt-h b { font-weight: 600; }
+.cmt-h time { font-size: 12px; color: var(--muted); }
+.cmt p { margin: 0; font-size: 13px; line-height: 1.5; }
+.mention { color: var(--accent-ink); font-weight: 500; }
+.reacts { display: flex; gap: 4px; margin-top: 4px; }
+.react { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line); font-size: 12px; color: var(--muted); }
+.reply { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 6px 0 10px; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--line); color: var(--muted); }
+.reply span { flex: 1; min-width: 0; }
+.th-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); }
+.notes-done { margin: 0; padding: 4px 4px 0; font-size: 12px; color: var(--muted); }
+
+/* Command palette (core) */
+.cmdk-scrim { display: none; position: absolute; inset: 0; z-index: 30; align-items: flex-start; justify-content: center; padding: 72px 16px 16px; background: var(--scrim); }
+.cmdk { width: min(620px, 100%); overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); box-shadow: var(--shadow); }
+.cmdk-in { display: flex; align-items: center; gap: 10px; height: 54px; padding: 0 16px; border-bottom: 1px solid var(--line); font-size: 15px; }
+.cmdk-in .typed { flex: 1; min-width: 0; color: var(--muted); }
+.cmdk-list { max-height: 420px; overflow: auto; padding: 8px; }
+.cmdk-g { padding: 8px 10px 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.cmdk-item { display: flex; align-items: center; gap: 10px; width: 100%; height: 38px; padding: 0 10px; border-radius: 6px; font-size: 14px; }
+.cmdk-item.on { background: var(--tint); }
+.cmdk-item .emo { width: 20px; font-size: 16px; }
+.cmdk-item .t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cmdk-item .path { flex: 1; min-width: 0; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 12px; }
+.cmdk-item svg { color: var(--muted); }
+.cmdk-foot { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 9px 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+
+.drawer-scrim { display: none; position: absolute; inset: 0; z-index: 39; background: var(--scrim); }
+
+/* ── Screen states ───────────────────────────────────────── */
+.stage:has(#st-palette:checked) .cmdk-scrim { display: flex; }
+.stage:has(#st-slash:checked) .slash-line { display: block; }
+.stage:has(#st-icon:checked) .icon-pop { display: block; }
+.stage:has(#st-icon:checked) .doc-icon { background: var(--soft); }
+.stage:has(#st-notes:checked) .notes { display: flex; }
+.stage:has(#st-notes:checked) .btn-notes { background: var(--fg); color: var(--bg); }
+.stage:has(#st-notes:checked) .btn-notes .badge { box-shadow: 0 0 0 1.5px var(--bg); }
+.stage:has(#st-notes:checked) .blocks .note-hl { background: var(--hl-strong); }
+.stage:has(#st-locked:checked) .lockbar { display: flex; }
+.stage:has(#st-locked:checked) .status.st-saved { display: none; }
+.stage:has(#st-locked:checked) .status.st-locked { display: inline-flex; }
+.stage:has(#st-locked:checked) .hist-btn { opacity: 0.4; }
+.stage:has(#st-locked:checked) .btoolbar,
+.stage:has(#st-locked:checked) .is-selected .caret,
+.stage:has(#st-slash:checked) .btoolbar,
+.stage:has(#st-slash:checked) .is-selected .caret,
+.stage:has(#st-icon:checked) .btoolbar,
+.stage:has(#st-icon:checked) .is-selected .caret { display: none; }
+.stage:has(#vp-menu:checked) .sidebar { transform: none; }
+.stage:has(#vp-menu:checked) .drawer-scrim { display: block; }
+
+/* ── Phone width (the frame, not the window) ────────────── */
+@container app (max-width: 760px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .sidebar { position: absolute; inset: 0 auto 0 0; z-index: 40; width: min(300px, 86%); transform: translateX(-102%); box-shadow: var(--shadow); }
+  .menu-btn { display: inline-grid; }
+  .topbar { padding-left: 10px; }
+  .crumbs .c:not(.here), .crumbs .sep { display: none; }
+  .hide-sm { display: none; }
+  .notes { position: absolute; inset: 0; z-index: 25; border-left: 0; }
+  .icon-pop { width: min(316px, calc(100cqw - 32px)); }
+}
+@container main (max-width: 640px) {
+  .doc { padding: 26px 20px 120px; font-size: 15.5px; }
+  .doc-title { font-size: 30px; }
+  .doc-icon { width: 56px; height: 56px; font-size: 42px; }
+  .nmark { display: none; }
+  .btoolbar { display: none; }
+  .status-text { display: none; }
+}
+
+/* ── Labels: core vs Liber ───────────────────────────────── */
+.tag {
+  display: none; position: absolute; z-index: 60; width: 20px; height: 20px; place-items: center; border-radius: 50%;
+  font: 700 11px/1 var(--font-ui); pointer-events: none;
+  box-shadow: 0 0 0 2px var(--tag-ring), 0 1px 5px rgba(0, 0, 0, 0.35);
+}
+.tag.core { background: var(--tag-core); color: var(--tag-core-fg); }
+.tag.liber { background: var(--tag-liber); color: var(--tag-liber-fg); }
+.stage:has(#labels:checked) .tag { display: grid; }
+.legend {
+  display: none; position: fixed; z-index: 70;
+  right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  width: min(360px, calc(100% - 32px)); max-height: 64%; overflow: auto; padding: 14px 16px 16px;
+  border: 1px solid var(--st-line); border-radius: 10px; background: var(--st-panel); color: var(--st-fg);
+  box-shadow: 0 14px 36px var(--st-shadow);
+}
+.stage:has(#labels:checked) .legend { display: block; }
+.legend h2 { margin: 0 0 6px; font-size: 13px; font-weight: 600; }
+.legend .key { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 12px; font-size: 12px; color: var(--st-muted); }
+.legend .key span { display: inline-flex; align-items: center; gap: 6px; }
+.legend .tag { position: static; display: grid; flex: none; }
+.legend ol { display: flex; flex-direction: column; gap: 9px; margin: 0; padding: 0; list-style: none; }
+.legend li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; align-items: start; font-size: 12.5px; line-height: 1.45; }
+.legend code { font-family: var(--font-mono); font-size: 11.5px; }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m15.5 15.5 4 4"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="m10 7 5 5-5 5"/></symbol>
+    <symbol id="i-chev-down" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+    <symbol id="i-chev-up" viewBox="0 0 24 24"><path d="m7 14 5-5 5 5"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="18" cy="12" r="1.4" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-more-v" viewBox="0 0 24 24"><circle cx="12" cy="6" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="18" r="1.4" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M9 4h6l-1 6 3 3H7l3-3-1-6Z"/><path d="M12 13v7"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 8h9M17 8h3M4 16h3M11 16h9"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/></symbol>
+    <symbol id="i-comment" viewBox="0 0 24 24"><path d="M5 5h14v10h-8l-4 4v-4H5z"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 6 4 11l5 5"/><path d="M4 11h10a5 5 0 0 1 0 10h-3"/></symbol>
+    <symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 6 5 5-5 5"/><path d="M20 11H10a5 5 0 0 0 0 10h3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="M9 11V8a3 3 0 0 1 6 0v3"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-panel" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M10 5v14"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/></symbol>
+    <symbol id="i-drag" viewBox="0 0 24 24"><circle cx="9" cy="7" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="7" r="1.3" fill="currentColor" stroke="none"/><circle cx="9" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="9" cy="17" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="17" r="1.3" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-page" viewBox="0 0 24 24"><path d="M7 4h7l4 4v12H7z"/><path d="M14 4v4h4"/></symbol>
+    <symbol id="i-paragraph" viewBox="0 0 24 24"><path d="M13 5v14M17 5v14M18 5h-8a4 4 0 0 0 0 8h3"/></symbol>
+    <symbol id="i-heading" viewBox="0 0 24 24"><path d="M6 5v14M18 5v14M6 12h12"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M10 7h10M10 12h10M10 17h10"/><circle cx="5.5" cy="7" r="1.2" fill="currentColor" stroke="none"/><circle cx="5.5" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="5.5" cy="17" r="1.2" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="m9 8-4 4 4 4M15 8l4 4-4 4"/></symbol>
+    <symbol id="i-table" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1.5"/><path d="M4 10h16M4 15h16M10 5v14"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1.5"/><circle cx="9" cy="10" r="1.5"/><path d="m4 17 5-4 4 3 3-2 4 3"/></symbol>
+    <symbol id="i-callout" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="3"/><path d="M8 10h8M8 14h5"/></symbol>
+    <symbol id="i-details" viewBox="0 0 24 24"><path d="m6 8 3 3-3 3"/><path d="M12 9h8M12 14h8M6 19h14"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9 14a4 4 0 0 0 6 0"/><circle cx="9.5" cy="10" r="0.9" fill="currentColor" stroke="none"/><circle cx="14.5" cy="10" r="0.9" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M5 12 19 5l-4 14-3-6-7-1Z"/></symbol>
+  </defs>
+</svg>
+
+<div class="stage">
+  <header class="controls">
+    <div class="brand"><b>Liber</b><span>Workspace prototype · static layout</span></div>
+
+    <div class="ctl" role="radiogroup" aria-labelledby="lbl-screen">
+      <span class="ctl-label" id="lbl-screen">Screen</span>
+      <div class="seg">
+        <input class="sr" type="radio" name="screen" id="st-edit" checked><label class="chip" for="st-edit">Editing</label>
+        <input class="sr" type="radio" name="screen" id="st-palette"><label class="chip" for="st-palette">⌘K search</label>
+        <input class="sr" type="radio" name="screen" id="st-slash"><label class="chip" for="st-slash">/ menu</label>
+        <input class="sr" type="radio" name="screen" id="st-icon"><label class="chip" for="st-icon">Page icon</label>
+        <input class="sr" type="radio" name="screen" id="st-notes"><label class="chip" for="st-notes">Notes</label>
+        <input class="sr" type="radio" name="screen" id="st-locked"><label class="chip" for="st-locked">Someone else editing</label>
+      </div>
+    </div>
+
+    <div class="ctl" role="radiogroup" aria-labelledby="lbl-scheme">
+      <span class="ctl-label" id="lbl-scheme">Color scheme</span>
+      <div class="swatches">
+        <input class="sr" type="radio" name="scheme" id="sc-liber" checked><label class="swatch" for="sc-liber" style="--a:#f6f7f7;--b:#3858e9" title="Liber Light"><span class="sr">Liber Light</span></label>
+        <input class="sr" type="radio" name="scheme" id="sc-dark"><label class="swatch" for="sc-dark" style="--a:#161616;--b:#7b90ff" title="Liber Dark"><span class="sr">Liber Dark</span></label>
+        <input class="sr" type="radio" name="scheme" id="sc-fresh"><label class="swatch" for="sc-fresh" style="--a:#1d2327;--b:#2271b1" title="Default"><span class="sr">Default</span></label>
+        <input class="sr" type="radio" name="scheme" id="sc-modern"><label class="swatch" for="sc-modern" style="--a:#1e1e1e;--b:#3858e9" title="Modern"><span class="sr">Modern</span></label>
+        <input class="sr" type="radio" name="scheme" id="sc-light"><label class="swatch" for="sc-light" style="--a:#e5e5e5;--b:#6d6d6d" title="Light"><span class="sr">Light</span></label>
+        <input class="sr" type="radio" name="scheme" id="sc-blue"><label class="swatch" for="sc-blue" style="--a:#52accc;--b:#096484" title="Blue"><span class="sr">Blue</span></label>
+        <input class="sr" type="radio" name="scheme" id="sc-coffee"><label class="swatch" for="sc-coffee" style="--a:#59524c;--b:#c7a589" title="Coffee"><span class="sr">Coffee</span></label>
+        <input class="sr" type="radio" name="scheme" id="sc-ectoplasm"><label class="swatch" for="sc-ectoplasm" style="--a:#523f6d;--b:#a3b745" title="Ectoplasm"><span class="sr">Ectoplasm</span></label>
+        <input class="sr" type="radio" name="scheme" id="sc-midnight"><label class="swatch" for="sc-midnight" style="--a:#363b3f;--b:#c9362c" title="Midnight"><span class="sr">Midnight</span></label>
+        <input class="sr" type="radio" name="scheme" id="sc-ocean"><label class="swatch" for="sc-ocean" style="--a:#5a737a;--b:#9ebaa0" title="Ocean"><span class="sr">Ocean</span></label>
+        <input class="sr" type="radio" name="scheme" id="sc-sunrise"><label class="swatch" for="sc-sunrise" style="--a:#c7403b;--b:#dd823b" title="Sunrise"><span class="sr">Sunrise</span></label>
+      </div>
+      <span class="scheme-name" aria-hidden="true"></span>
+    </div>
+
+    <div class="ctl" role="radiogroup" aria-labelledby="lbl-vp">
+      <span class="ctl-label" id="lbl-vp">Viewport</span>
+      <div class="seg">
+        <input class="sr" type="radio" name="viewport" id="vp-desktop" checked><label class="chip" for="vp-desktop">Desktop</label>
+        <input class="sr" type="radio" name="viewport" id="vp-phone"><label class="chip" for="vp-phone">Phone</label>
+        <input class="sr" type="radio" name="viewport" id="vp-menu"><label class="chip" for="vp-menu">Phone, menu open</label>
+      </div>
+    </div>
+
+    <div class="ctl">
+      <input class="sr" type="checkbox" id="labels"><label class="chip" for="labels">Show core vs Liber</label>
+    </div>
+  </header>
+
+  <div class="viewport">
+    <div class="frame">
+      <div class="urlbar">
+        <svg class="i sm" aria-hidden="true"><use href="#i-lock"/></svg>
+        <div class="url"><span>docs.acme.example<b>/wp-admin/admin.php?page=liber&amp;doc=42</b></span></div>
+        <span class="tag liber" style="top:9px;right:16px">1</span>
+      </div>
+
+      <div class="app">
+        <!-- ── Sidebar ── -->
+        <aside class="sidebar" aria-label="Workspace">
+          <div class="sb-head">
+            <button class="ws" type="button"><span class="ws-icon" aria-hidden="true">A</span><span class="ws-name">Acme Team</span><svg class="i sm" aria-hidden="true"><use href="#i-chev-down"/></svg></button>
+            <button class="ibtn" type="button" aria-label="Collapse sidebar"><svg class="i" aria-hidden="true"><use href="#i-panel"/></svg></button>
+            <span class="tag core" style="top:4px;left:2px">2</span>
+          </div>
+          <div class="sb-actions">
+            <button class="sb-item" type="button"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><span class="grow">Search</span><kbd>⌘K</kbd><span class="tag core" style="top:5px;right:44px">3</span></button>
+            <button class="sb-item" type="button"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg><span class="grow">New page</span></button>
+          </div>
+
+          <div class="sb-scroll">
+            <section aria-labelledby="sec-pinned">
+              <h2 class="sb-sec-h" id="sec-pinned">Pinned<span class="tag liber" style="top:2px;right:4px">4</span></h2>
+              <ul class="tree">
+                <li><button class="row" type="button"><span class="tw"></span><span class="emo">🚀</span><span class="lbl">Onboarding</span></button></li>
+                <li><button class="row" type="button"><span class="tw"></span><span class="emo">📅</span><span class="lbl">Weekly sync</span></button></li>
+              </ul>
+            </section>
+
+            <section aria-labelledby="sec-recent">
+              <h2 class="sb-sec-h" id="sec-recent">Recent</h2>
+              <ul class="tree">
+                <li><button class="row" type="button"><span class="tw"></span><span class="emo">💻</span><span class="lbl">Local setup</span></button></li>
+                <li><button class="row" type="button"><span class="tw"></span><span class="emo">🗺️</span><span class="lbl">Roadmap 2027</span></button></li>
+                <li><button class="row" type="button"><span class="tw"></span><span class="emo">📋</span><span class="lbl">Deploy checklist</span></button></li>
+              </ul>
+            </section>
+
+            <section aria-labelledby="sec-pages">
+              <h2 class="sb-sec-h" id="sec-pages"><span>Pages</span><button class="ibtn" type="button" aria-label="New page"><svg class="i sm" aria-hidden="true"><use href="#i-plus"/></svg></button><span class="tag liber" style="top:2px;right:30px">5</span></h2>
+              <ul class="tree">
+                <li><button class="row" type="button" style="--d:0"><span class="tw"></span><span class="emo">👋</span><span class="lbl">Welcome</span></button></li>
+                <li><button class="row open" type="button" style="--d:0" aria-expanded="true"><span class="tw"><svg class="i" aria-hidden="true"><use href="#i-chev-right"/></svg></span><span class="emo">📘</span><span class="lbl">Engineering</span></button></li>
+                <li><button class="row open" type="button" style="--d:1" aria-expanded="true"><span class="tw"><svg class="i" aria-hidden="true"><use href="#i-chev-right"/></svg></span><span class="emo">🚀</span><span class="lbl">Onboarding</span></button></li>
+                <li><button class="row is-current" type="button" style="--d:2" aria-current="page"><span class="tw"></span><span class="emo">💻</span><span class="lbl">Local setup</span><span class="tag core" style="top:4px;right:6px">13</span></button></li>
+                <li><button class="row is-hover" type="button" style="--d:2"><span class="tw"></span><span class="emo">🔐</span><span class="lbl">Access &amp; credentials</span><span class="row-actions" aria-hidden="true"><span><svg class="i sm"><use href="#i-more"/></svg></span><span><svg class="i sm"><use href="#i-plus"/></svg></span></span></button></li>
+                <li><button class="row" type="button" style="--d:2"><span class="tw"></span><span class="emo">📋</span><span class="lbl">Deploy checklist</span></button></li>
+                <li><button class="row" type="button" style="--d:1" aria-expanded="false"><span class="tw"><svg class="i" aria-hidden="true"><use href="#i-chev-right"/></svg></span><span class="emo">🏗️</span><span class="lbl">Architecture</span></button></li>
+                <li><button class="row" type="button" style="--d:1"><span class="tw"></span><span class="emo">🧪</span><span class="lbl">Testing guide</span></button></li>
+                <li><button class="row" type="button" style="--d:0" aria-expanded="false"><span class="tw"><svg class="i" aria-hidden="true"><use href="#i-chev-right"/></svg></span><span class="emo">🎨</span><span class="lbl">Design</span></button></li>
+                <li><button class="row open" type="button" style="--d:0" aria-expanded="true"><span class="tw"><svg class="i" aria-hidden="true"><use href="#i-chev-right"/></svg></span><span class="emo">🧭</span><span class="lbl">Product</span></button></li>
+                <li><button class="row" type="button" style="--d:1"><span class="tw"></span><span class="emo">🗺️</span><span class="lbl">Roadmap 2027</span></button></li>
+                <li><button class="row" type="button" style="--d:1"><span class="tw"></span><span class="emo">💡</span><span class="lbl">Ideas backlog</span></button></li>
+                <li><button class="row" type="button" style="--d:0" aria-expanded="false"><span class="tw"><svg class="i" aria-hidden="true"><use href="#i-chev-right"/></svg></span><span class="emo">📅</span><span class="lbl">Meetings</span></button></li>
+                <li><button class="row" type="button" style="--d:0"><span class="tw"></span><span class="emo">🏖️</span><span class="lbl">Time off policy</span></button></li>
+              </ul>
+            </section>
+          </div>
+
+          <div class="sb-foot">
+            <button class="sb-item" type="button"><svg class="i" aria-hidden="true"><use href="#i-trash"/></svg><span class="grow">Trash</span><span class="count">3</span><span class="tag core" style="top:5px;right:28px">6</span></button>
+            <button class="sb-item" type="button"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg><span class="grow">Settings</span></button>
+            <button class="me" type="button">
+              <span class="av" style="--av:#2e6f5e" aria-hidden="true">JC</span>
+              <span class="me-txt"><span class="me-name">João Carvalho</span><span class="me-role">Administrator</span></span>
+              <svg class="i sm" aria-hidden="true"><use href="#i-more"/></svg>
+              <span class="tag liber" style="top:2px;right:30px">7</span>
+            </button>
+          </div>
+        </aside>
+
+        <!-- ── Main ── -->
+        <div class="main">
+          <header class="topbar">
+            <button class="ibtn menu-btn" type="button" aria-label="Open sidebar"><svg class="i" aria-hidden="true"><use href="#i-menu"/></svg></button>
+            <nav class="crumbs" aria-label="Breadcrumb">
+              <span class="c"><span aria-hidden="true">📘</span>Engineering</span><span class="sep" aria-hidden="true">/</span>
+              <span class="c"><span aria-hidden="true">🚀</span>Onboarding</span><span class="sep" aria-hidden="true">/</span>
+              <span class="c here" aria-current="page"><span aria-hidden="true">💻</span>Local setup</span>
+            </nav>
+            <span class="tag liber" style="top:4px;left:6px">8</span>
+            <span class="status st-saved"><svg class="i sm" aria-hidden="true"><use href="#i-check"/></svg><span class="status-text">Saved</span></span>
+            <span class="status st-locked"><svg class="i sm" aria-hidden="true"><use href="#i-lock"/></svg><span class="status-text">Read only</span></span>
+            <div class="tb-btns">
+              <button class="ibtn hide-sm hist-btn" type="button" aria-label="Undo"><svg class="i" aria-hidden="true"><use href="#i-undo"/></svg></button>
+              <button class="ibtn hide-sm hist-btn" type="button" aria-label="Redo"><svg class="i" aria-hidden="true"><use href="#i-redo"/></svg></button>
+              <span class="vsep hide-sm" aria-hidden="true"></span>
+              <button class="ibtn btn-notes" type="button" aria-label="Notes, 2 open"><svg class="i" aria-hidden="true"><use href="#i-comment"/></svg><span class="badge" aria-hidden="true">2</span><span class="tag core" style="top:-4px;left:-6px">9</span></button>
+              <button class="ibtn hide-sm" type="button" aria-label="History"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg></button>
+              <button class="ibtn" type="button" aria-label="Page actions"><svg class="i" aria-hidden="true"><use href="#i-more"/></svg></button>
+            </div>
+          </header>
+
+          <div class="lockbar" role="status">
+            <span class="av" style="--av:#b0413e" aria-hidden="true">MS</span>
+            <p><b>Maria Souza is editing this page.</b> You can read it now. Editing unlocks when she's done.</p>
+            <button class="btn btn-secondary" type="button">Take over</button>
+          </div>
+
+          <div class="main-body">
+            <div class="canvas">
+              <article class="doc">
+                <div class="doc-head">
+                  <div class="doc-icon-wrap">
+                    <button class="doc-icon" type="button" aria-label="Change page icon">💻</button>
+                    <span class="tag liber" style="top:0;left:58px">10</span>
+                    <div class="pop icon-pop" role="dialog" aria-label="Page icon">
+                      <div class="ep-search"><svg class="i sm" aria-hidden="true"><use href="#i-search"/></svg><span>Filter emojis</span></div>
+                      <div class="ep-tabs" aria-hidden="true"><span class="on">🕘</span><span>😀</span><span>🐻</span><span>🍎</span><span>⚽</span><span>✈️</span><span>💡</span><span>🔣</span><span>🏁</span></div>
+                      <div class="ep-h">Recent</div>
+                      <div class="ep-grid" aria-hidden="true"><span class="on">💻</span><span>🚀</span><span>📘</span><span>📋</span><span>🔐</span><span>🧭</span><span>🗺️</span><span>💡</span></div>
+                      <div class="ep-h">Objects</div>
+                      <div class="ep-grid" aria-hidden="true">
+                        <span>🖥️</span><span>⌨️</span><span>🖱️</span><span>💾</span><span>📱</span><span>☎️</span><span>📷</span><span>🔋</span>
+                        <span>🔌</span><span>🔦</span><span>📚</span><span>📗</span><span>📕</span><span>📒</span><span>📝</span><span>✏️</span>
+                        <span>📌</span><span>📎</span><span>🔑</span><span>🧰</span><span>🧪</span><span>🔧</span><span>🗂️</span><span>📁</span>
+                        <span>📊</span><span>📈</span><span>🗓️</span><span>📦</span><span>🏷️</span><span>✉️</span><span>🧾</span><span>🛠️</span>
+                      </div>
+                      <div class="ep-foot"><button class="btn" type="button">Remove icon</button><span>System picker: <kbd>⌃⌘Space</kbd></span></div>
+                    </div>
+                  </div>
+                  <h1 class="doc-title">Local setup</h1>
+                  <div class="doc-meta"><span class="av" style="--av:#b0413e" aria-hidden="true">MS</span><span>Edited by Maria Souza · 2 hours ago</span></div>
+                </div>
+
+                <div class="blocks">
+                  <p>Everything you need to run the Acme app on your machine. The first time takes about 20 minutes.</p>
+
+                  <div class="callout">
+                    <span class="emo-lg" aria-hidden="true">💡</span>
+                    <p>You need Docker Desktop and Node 24 before you start. If a step here is out of date, add a note so the next person doesn't get stuck.</p>
+                    <span class="tag liber" style="top:-9px;right:-9px">12</span>
+                  </div>
+
+                  <div class="slash-line">/<span class="caret"></span>
+                    <div class="pop inserter" role="listbox" aria-label="Blocks">
+                      <div class="ins-item on" role="option" aria-selected="true"><svg class="i" aria-hidden="true"><use href="#i-paragraph"/></svg>Paragraph</div>
+                      <div class="ins-item" role="option" aria-selected="false"><svg class="i" aria-hidden="true"><use href="#i-heading"/></svg>Heading</div>
+                      <div class="ins-item" role="option" aria-selected="false"><svg class="i" aria-hidden="true"><use href="#i-list"/></svg>List</div>
+                      <div class="ins-item" role="option" aria-selected="false"><svg class="i" aria-hidden="true"><use href="#i-callout"/></svg>Callout</div>
+                      <div class="ins-item" role="option" aria-selected="false"><svg class="i" aria-hidden="true"><use href="#i-page"/></svg>Page link</div>
+                      <div class="ins-item" role="option" aria-selected="false"><svg class="i" aria-hidden="true"><use href="#i-code"/></svg>Code</div>
+                      <div class="ins-item" role="option" aria-selected="false"><svg class="i" aria-hidden="true"><use href="#i-table"/></svg>Table</div>
+                      <div class="ins-item" role="option" aria-selected="false"><svg class="i" aria-hidden="true"><use href="#i-image"/></svg>Image</div>
+                      <div class="ins-item" role="option" aria-selected="false"><svg class="i" aria-hidden="true"><use href="#i-details"/></svg>Details</div>
+                    </div>
+                  </div>
+
+                  <h2>1. Get the code</h2>
+                  <p class="has-note is-selected">Clone the repository and install the dependencies. <span class="note-hl">The first install downloads about 2&nbsp;GB</span>, so use a good connection.<span class="caret"></span>
+                    <span class="btoolbar" aria-label="Block tools">
+                      <span class="grp">
+                        <button class="tbtn" type="button" aria-label="Paragraph"><svg class="i" aria-hidden="true"><use href="#i-paragraph"/></svg></button>
+                        <button class="tbtn" type="button" aria-label="Drag"><svg class="i" aria-hidden="true"><use href="#i-drag"/></svg></button>
+                        <span class="mover"><button class="tbtn" type="button" aria-label="Move up"><svg class="i" aria-hidden="true"><use href="#i-chev-up"/></svg></button><button class="tbtn" type="button" aria-label="Move down"><svg class="i" aria-hidden="true"><use href="#i-chev-down"/></svg></button></span>
+                      </span>
+                      <span class="grp">
+                        <button class="tbtn" type="button" aria-label="Bold"><b>B</b></button>
+                        <button class="tbtn" type="button" aria-label="Italic"><i>I</i></button>
+                        <button class="tbtn" type="button" aria-label="Link"><svg class="i" aria-hidden="true"><use href="#i-link"/></svg></button>
+                        <button class="tbtn" type="button" aria-label="More formatting"><svg class="i sm" aria-hidden="true"><use href="#i-chev-down"/></svg></button>
+                      </span>
+                      <span class="grp"><button class="tbtn" type="button" aria-label="Add note"><svg class="i" aria-hidden="true"><use href="#i-comment"/></svg></button></span>
+                      <span class="grp"><button class="tbtn" type="button" aria-label="Options"><svg class="i" aria-hidden="true"><use href="#i-more-v"/></svg></button></span>
+                      <span class="tag core" style="top:-11px;right:-11px">11</span>
+                    </span>
+                    <span class="nmark" aria-label="2 notes"><svg class="i sm" aria-hidden="true"><use href="#i-comment"/></svg>2</span>
+                  </p>
+
+                  <div class="codeblock has-note">
+                    <pre><code>git clone git@github.com:acme/app.git
+cd app &amp;&amp; pnpm install</code></pre>
+                    <span class="nmark" aria-label="1 note"><svg class="i sm" aria-hidden="true"><use href="#i-comment"/></svg>1</span>
+                  </div>
+
+                  <h2>2. Start the stack</h2>
+                  <ol>
+                    <li>Copy <code class="ic">.env.example</code> to <code class="ic">.env</code>.</li>
+                    <li>Run <code class="ic">pnpm dev</code>. The app opens at <code class="ic">localhost:3000</code>.</li>
+                    <li>Sign in with your work account.</li>
+                  </ol>
+
+                  <div class="tablewrap">
+                    <table>
+                      <thead><tr><th scope="col">Service</th><th scope="col">Port</th><th scope="col">Owner</th></tr></thead>
+                      <tbody>
+                        <tr><td>Web app</td><td class="num">3000</td><td>Ana Lima</td></tr>
+                        <tr><td>API</td><td class="num">8080</td><td>João Carvalho</td></tr>
+                        <tr><td>Database</td><td class="num">5432</td><td>Maria Souza</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <details>
+                    <summary>Troubleshooting</summary>
+                    <p>If port 5432 is busy, another Postgres is running. Stop it, or set <code class="ic">DB_PORT</code> in <code class="ic">.env</code>.</p>
+                  </details>
+
+                  <h2>Next</h2>
+                  <div class="pagelinks">
+                    <button class="pagelink" type="button"><span class="emo">🔐</span><span class="t">Access &amp; credentials</span><svg class="i sm" aria-hidden="true"><use href="#i-arrow-right"/></svg></button>
+                    <button class="pagelink" type="button"><span class="emo">📋</span><span class="t">Deploy checklist</span><svg class="i sm" aria-hidden="true"><use href="#i-arrow-right"/></svg></button>
+                  </div>
+
+                  <p class="ph">Type / for commands</p>
+                </div>
+              </article>
+            </div>
+
+            <aside class="notes" aria-label="Notes">
+              <div class="notes-h">
+                <h2>Notes</h2>
+                <button class="filter" type="button">Open<svg class="i sm" aria-hidden="true"><use href="#i-chev-down"/></svg></button>
+                <button class="ibtn" type="button" aria-label="Close notes"><svg class="i" aria-hidden="true"><use href="#i-close"/></svg></button>
+              </div>
+              <div class="notes-list">
+                <article class="thread on">
+                  <div class="quote"><span class="note-hl">The first install downloads about 2&nbsp;GB</span></div>
+                  <div class="cmt">
+                    <span class="av" style="--av:#3b5bb5" aria-hidden="true">AL</span>
+                    <div class="cmt-h"><b>Ana Lima</b><time>1 h</time></div>
+                    <p>Is it still 2 GB? The new images are smaller. <span class="mention">@Maria Souza</span> can you check?</p>
+                  </div>
+                  <div class="cmt">
+                    <span class="av" style="--av:#b0413e" aria-hidden="true">MS</span>
+                    <div class="cmt-h"><b>Maria Souza</b><time>40 min</time></div>
+                    <p>It's 1.4 GB now. I'll update the page.</p>
+                    <div class="reacts"><span class="react">👍 2</span><span class="react" aria-label="Add reaction"><svg class="i sm" aria-hidden="true"><use href="#i-smile"/></svg></span></div>
+                  </div>
+                  <div class="reply"><span>Reply, or @mention someone</span><svg class="i sm" aria-hidden="true"><use href="#i-send"/></svg></div>
+                  <div class="th-foot"><span>Note on selected text</span><button class="btn btn-secondary btn-sm" type="button"><svg class="i sm" aria-hidden="true"><use href="#i-check"/></svg>Resolve</button></div>
+                </article>
+                <article class="thread">
+                  <div class="quote">Note on the code block</div>
+                  <div class="cmt">
+                    <span class="av" style="--av:#2e6f5e" aria-hidden="true">JC</span>
+                    <div class="cmt-h"><b>João Carvalho</b><time>Yesterday</time></div>
+                    <p>Use the HTTPS URL here. New people don't have SSH keys set up yet.</p>
+                  </div>
+                  <div class="reply"><span>Reply, or @mention someone</span><svg class="i sm" aria-hidden="true"><use href="#i-send"/></svg></div>
+                </article>
+                <p class="notes-done">1 resolved note</p>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <!-- ── Overlays ── -->
+        <div class="cmdk-scrim">
+          <div class="cmdk" role="dialog" aria-label="Command palette">
+            <div class="cmdk-in"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><span class="typed"><span class="caret"></span> Search pages and commands</span><kbd>esc</kbd></div>
+            <div class="cmdk-list">
+              <div class="cmdk-g">Recent pages</div>
+              <button class="cmdk-item on" type="button"><span class="emo">📋</span><span class="t">Deploy checklist</span><span class="path">Engineering › Onboarding</span></button>
+              <button class="cmdk-item" type="button"><span class="emo">🗺️</span><span class="t">Roadmap 2027</span><span class="path">Product</span></button>
+              <button class="cmdk-item" type="button"><span class="emo">📅</span><span class="t">Weekly sync</span><span class="path">Meetings</span></button>
+              <div class="cmdk-g">Commands</div>
+              <button class="cmdk-item" type="button"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg><span class="t">New page</span></button>
+              <button class="cmdk-item" type="button"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg><span class="t">New subpage in “Local setup”</span></button>
+              <button class="cmdk-item" type="button"><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg><span class="t">Pin “Local setup”</span></button>
+              <button class="cmdk-item" type="button"><svg class="i" aria-hidden="true"><use href="#i-trash"/></svg><span class="t">Open trash</span></button>
+              <button class="cmdk-item" type="button"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg><span class="t">Workspace settings</span></button>
+            </div>
+            <div class="cmdk-foot"><span>↑ ↓ to move</span><span>↵ to open</span><span>esc to close</span></div>
+          </div>
+        </div>
+        <div class="drawer-scrim"></div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="legend" aria-label="What is core and what is Liber">
+    <h2>What you're looking at</h2>
+    <div class="key"><span><span class="tag core">#</span>WordPress core</span><span><span class="tag liber">#</span>Liber</span></div>
+    <ol>
+      <li><span class="tag liber">1</span><span><b>Workspace mode.</b> A normal wp-admin page with the WordPress menu and toolbar hidden. With option C the address is <code>post.php?post=42&amp;action=edit</code>.</span></li>
+      <li><span class="tag core">2</span><span><b>Workspace name and icon</b> are the site's Title and Site Icon.</span></li>
+      <li><span class="tag core">3</span><span><b>Search</b> opens WordPress's command palette. Liber adds page search and its own commands.</span></li>
+      <li><span class="tag liber">4</span><span><b>Pinned and Recent,</b> saved per person.</span></li>
+      <li><span class="tag liber">5</span><span><b>Page tree.</b> Drag to reorder or move a page. Hover shows ⋯ and + for a subpage.</span></li>
+      <li><span class="tag core">6</span><span><b>Trash</b> is WordPress's trash. Subpages go with their parent; trash empties after 30 days.</span></li>
+      <li><span class="tag liber">7</span><span><b>Account menu:</b> profile and color scheme, Admin tools (admins), log out.</span></li>
+      <li><span class="tag liber">8</span><span><b>Breadcrumb and save status.</b> With option C, core's editor header is restyled to look like this.</span></li>
+      <li><span class="tag core">9</span><span><b>Notes and History:</b> WordPress Notes (on blocks and selected text, with @mentions) and visual revisions.</span></li>
+      <li><span class="tag liber">10</span><span><b>Page icon:</b> Liber's small emoji picker.</span></li>
+      <li><span class="tag core">11</span><span><b>The block editor:</b> title, blocks, block toolbar and the / menu, limited to the allowed blocks.</span></li>
+      <li><span class="tag liber">12</span><span><b>Callout and Page link</b> are Liber's only two blocks.</span></li>
+      <li><span class="tag core">13</span><span><b>Colors</b> come from each person's admin color scheme (Users → Profile).</span></li>
+    </ol>
+  </aside>
+</div>
+
+</html>
