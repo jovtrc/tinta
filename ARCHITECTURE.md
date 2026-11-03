@@ -1,6 +1,6 @@
 # Liber — Technical Architecture
 
-> Working name. Last reviewed 2026-11-02.
+> Working name. Last reviewed 2026-11-03.
 
 ## 1. Topology
 
@@ -13,29 +13,22 @@
 - Site admins don't have `unfiltered_html` on multisite. Everything Liber's blocks save must survive kses, and block comments must stay small (kses strips block comments over ~1 MB for these users).
 - Object-cache groups are per site (core prefixes non-global groups with the blog ID).
 
-## 2. Editor host — decided by a spike
+## 2. Editor host — Liber's own screen (decided 2026-11-03)
 
-Both candidates use the real block editor.
+The workspace is one admin screen, `admin.php?page=liber&doc=ID`. Liber's React shell mounts the block editor with public `@wordpress/editor` and `@wordpress/block-editor` components and swaps pages in place. The target look is [`prototype/workspace.html`](prototype/workspace.html).
 
-| | B — own screen | C — core editor, reshaped |
-|---|---|---|
-| URL | `admin.php?page=liber&doc=ID` | `post.php?post=ID&action=edit` |
-| How | Liber's React shell mounts `@wordpress/editor` (or `@wordpress/lazy-editor`) | Core screen; Liber injects the sidebar and restyles the header |
-| Switching pages | In-app, no reload | Full page load |
-| Main risk | Editor package internals | Post-editor DOM/CSS and slots |
+**Why.** The editor spike (branch `spike/editor-host`, `spike/SPIKE.md`) compared this with core's post editor reshaped. Switching pages took 16–46 ms here and 650–850 ms there (a full reload of ~12.5 MB of JS), which slow servers or computers would push to 2–3 s. The workspace has to feel like an app, so speed wins. The price: core's Notes and visual-revisions UI live only inside core's private `Editor` component, so Liber builds those UIs itself on core's data.
 
-**Spike (2–3 days, throwaway code).** Build both far enough to check:
-- Notes (block + inline), @mentions.
-- Post locks and take-over; read-only view for the second user.
-- Visual revisions, autosave, save status, ⌘S, no Publish button; no status/visibility controls, and saving keeps the page `private`.
-- Image upload, including 7.1 client-side processing (core enables it only on the post, post-new, site-editor and widgets screens).
-- Page-switch speed.
-- Command palette commands.
-- Admin color scheme → `ThemeProvider`; dark editor canvas (iframe styles via `enqueue_block_assets`).
-- Mobile drawer.
-- Number of private/experimental APIs needed.
+**Screen setup (PHP).** On `load-{$hook}`: `get_current_screen()->is_block_editor( true )`, `wp_set_up_cross_origin_isolation()` (turns on 7.1's in-browser image processing). On enqueue: `block_editor_rest_api_preload()`, `get_block_editor_settings()`, `do_action( 'enqueue_block_editor_assets' )`, Heartbeat and media. The root element needs the `block-editor` class: core CSS hides other divs on block-editor screens.
 
-Pick the option with fewer private APIs and more core features working out of the box; page-switch speed breaks a tie. The target look for both is [`prototype/workspace.html`](prototype/workspace.html).
+**Editor (JS).** One `EditorProvider` per page, remounted on switch (`key` = page ID), with `BlockCanvas` + `PostTitle` + `BlockList`, `BlockInspector`, the public `Inserter`, undo/redo, `PostSavedState`, `AutosaveMonitor`, `UnsavedChangesWarning`, editor keyboard shortcuts, notices and snackbars. `EditorProvider` uses its own data registry, so editor state isn't in the global `wp.data` stores. No private or `__experimental*` APIs.
+
+**What Liber builds because core's UI is private:**
+- **Notes.** Liber's panel on core's data: comments with `comment_type = note`, linked to blocks through the block attribute `metadata.noteId`. Same storage as core, so core's UI can read Liber's notes and the reverse. Notes on selected text (core marks them with a format carrying `data-id`) come after the MVP.
+- **Locks per page.** Core's `PostLockedModal` reads the lock from editor settings, which PHP computes for the first page only. A small route takes and reports the lock for each page Liber opens, and Liber releases the lock of the page it leaves. A read-only view for the second user comes after the MVP.
+- **Page layout in the canvas.** Content width and spacing through editor styles (core's layout wrappers are private).
+
+**Postponed:** History (core still saves revisions), Liber Dark (core's editor UI doesn't follow a dark scheme), List View (only `__experimentalListView`).
 
 ## 3. Backend (PHP)
 
@@ -56,12 +49,13 @@ Pick the option with fewer private APIs and more core features working out of th
 | `Liber\Docs\Private_Status` | `includes/docs/class-private-status.php` | Every page `private`; no "Private:" title prefix; trash restores to `private` |
 | `Liber\Docs\Subtree_Trash` | `includes/docs/class-subtree-trash.php` | Cascade trash; restore to top level |
 | `Liber\Roles\Roles` | `includes/roles/class-roles.php` | Member and Viewer roles, caps |
-| `Liber\Workspace\Screen` | `includes/workspace/class-screen.php` | Workspace screen (B) or editor reshape (C) |
+| `Liber\Workspace\Screen` | `includes/workspace/class-screen.php` | Workspace screen: block-editor setup, preloads, assets (§2) |
 | `Liber\Workspace\Mode` | `includes/workspace/class-mode.php` | Login landing, admin chrome, wp-admin gate |
 | `Liber\Workspace\Private_Site` | `includes/workspace/class-private-site.php` | Login redirect, REST login requirement, feeds/sitemaps/oEmbed/author archives off |
-| `Liber\Workspace\Color_Schemes` | `includes/workspace/class-color-schemes.php` | Liber Light / Liber Dark |
+| `Liber\Workspace\Color_Schemes` | `includes/workspace/class-color-schemes.php` | Liber Light (Liber Dark postponed) |
 | `Liber\Rest\Tree_Controller` | `includes/rest/class-tree-controller.php` | `GET liber/v1/tree` |
 | `Liber\Rest\Move_Controller` | `includes/rest/class-move-controller.php` | `POST liber/v1/docs/{id}/move` |
+| `Liber\Rest\Lock_Controller` | `includes/rest/class-lock-controller.php` | `POST`/`DELETE liber/v1/docs/{id}/lock` |
 | `Liber\Rest\User_Prefs_Field` | `includes/rest/class-user-prefs-field.php` | `liber_prefs` field on `wp/v2/users/me` |
 | `Liber\Blocks\Allowlist` | `includes/blocks/class-allowlist.php` | `allowed_block_types_all` for `liber_doc` |
 | `Liber\Blocks\Registry` | `includes/blocks/class-registry.php` | Registers blocks from the build manifest |
@@ -81,7 +75,8 @@ No custom tables.
 | `postmeta` | `_liber_icon` | Page emoji |
 | `postmeta` | `_liber_share_root`, `_liber_indexable` (v1.1) | The page sharing was turned on from; search-engine opt-in |
 | `postmeta` | `_edit_lock`, `_edit_last`, `_wp_trash_meta_*` | Core: locks, last editor, trash |
-| `comments` | `comment_type = note` | Core Notes |
+| `comments` | `comment_type = note` | Notes (core's data, Liber's UI) |
+| block attributes | `metadata.noteId` | Links a note thread to a block (core's format) |
 | user option | `liber_prefs` | `pinned[]`, `recent[5]`, `expanded[]`, `emojis[]` — per user, per site |
 | option | `liber_settings` (autoload) | Workspace mode, revisions cap, default role, setup state |
 | option | `liber_tree_generation` (autoload) | Bumped on every tree change |
@@ -137,7 +132,7 @@ Core only lets users with `read_private_liber_docs` read a private post — in R
 | Endpoint | Used for |
 |---|---|
 | `wp/v2/liber-docs` (+ `/autosaves`, `/revisions`) | Page CRUD, autosave, revisions, full-text search (`?search=&status=private`, Members and Admins) |
-| `wp/v2/comments?type=note` | Notes |
+| `wp/v2/comments?type=note` | Notes and replies |
 | `wp/v2/users` | People list, @mentions |
 | `wp/v2/users/me` + field `liber_prefs` | Pinned, recent, expanded, emojis |
 | `wp/v2/settings` | `liber_settings`, Site Title, Site Icon |
@@ -149,11 +144,12 @@ Core only lets users with `read_private_liber_docs` read a private post — in R
 |---|---|---|---|
 | GET | `/tree` | Whole skeleton + generation; cached | `liber_access` |
 | POST | `/docs/(?P<id>\d+)/move` | New parent + position; depth ≤ 5, no cycles; renumbers siblings in one go | `edit_post` on the page and the new parent |
+| POST, DELETE | `/docs/(?P<id>\d+)/lock` | Take the page's lock (or report who holds it) with the nonces `PostLockedModal` needs; release it on leaving | `edit_post` on the page |
 | POST | `/docs/(?P<id>\d+)/share` (v1.1) | Share or unshare a page and its subtree | `publish_post` on the page, "Allow public pages" on |
 
 Maybe one more (`/docs/{id}/restore`) if core's update can't restore to the top level cleanly.
 
-- Plain `WP_REST_Controller` subclasses with full schemas, `args` validation and a `permission_callback`. No route-builder framework — two or three routes don't need one.
+- Plain `WP_REST_Controller` subclasses with full schemas, `args` validation and a `permission_callback`. No route-builder framework — three or four routes don't need one.
 - Subtree trash is a hook (`wp_trash_post`), so core's DELETE does it.
 
 ## 6. Frontend (TypeScript)
@@ -162,12 +158,12 @@ Maybe one more (`/docs/{id}/restore`) if core's update can't restore to the top 
 - TypeScript everywhere. `@wordpress/scripts` 37 builds it (Babel strips types), so `tsc --noEmit` runs as its own step. `@wordpress/block-editor` ships no types → local shims.
 - React 18 via `@wordpress/element` (React 19 isn't in core yet).
 - Data: `@wordpress/data` + `@wordpress/core-data` (entities, undo, saving), plus a small `liber/workspace` store for UI state.
-- UI: `@wordpress/components`, `@wordpress/ui` (Design System), `@wordpress/icons`. DataViews (bundled) only if the Trash list needs it.
-- Theme: `ThemeProvider` (`@wordpress/theme`) seeded from the user's admin color scheme (`getAdminThemeColors` from `@wordpress/admin-ui`; fallback: the `--wp-admin-theme-color` CSS variable). One root provider per document.
+- UI: `@wordpress/components`, `@wordpress/icons` (not a script handle in 7.1; wp-scripts bundles it). `@wordpress/ui` isn't registered in 7.1 either; use it only if wp-scripts bundles it cleanly. DataViews (bundled) only if the Trash list needs it.
+- Theme: `ThemeProvider` (`wp.theme`, public) seeded from the user's admin color scheme, read in PHP from the registered schemes (`@wordpress/admin-ui` isn't registered in 7.1). Fallback: the `--wp-admin-theme-color` CSS variable. One root provider per document.
 - Commands: `@wordpress/commands` (`registerCommand`, `useCommandLoader`).
 - Drag and drop: dnd-kit (unless core ships tree drag-and-drop by then).
 - Blocks: `apiVersion: 3`; canvas styles through block.json `editorStyle` / `enqueue_block_assets` (the canvas is an iframe; admin body classes don't reach it).
-- Routing: query params (B) or core URLs (C).
+- Routing: `?page=liber&doc=ID` with `history.pushState`; `popstate` reopens the page for back/forward.
 
 ### Modules
 - `src/app/` — workspace shell: sidebar, tree, header, routes.
@@ -175,7 +171,8 @@ Maybe one more (`/docs/{id}/restore`) if core's update can't restore to the top 
 - `src/app/commands/` — ⌘K commands.
 - `src/app/emoji-picker/`
 - `src/app/theme/` — color scheme → `ThemeProvider`.
-- `src/editor/` — editor host (B) or editor plugin (C).
+- `src/editor/` — editor host: `EditorProvider` per page, header, canvas, inspector.
+- `src/notes/` — Notes panel, threads, @mentions.
 - `src/blocks/page-link/`, `src/blocks/callout/`.
 
 ## 7. Build & tooling
@@ -236,7 +233,7 @@ liber/
 │   ├── class-plugin.php
 │   └── blocks/ cache/ docs/ rest/ roles/ setup/ sharing/ workspace/
 ├── src/                         TypeScript
-│   └── app/ editor/ blocks/
+│   └── app/ editor/ notes/ blocks/
 ├── data/conflicting-plugins.json
 ├── tests/
 │   ├── unit/                    WordPress stubs, PHPUnit 11
@@ -255,8 +252,10 @@ liber/
 | Pages leak to logged-out users or non-members | Low | High | Every page `private` (§3) + REST login requirement; tests for every role and logged-out |
 | Sharing exposes a page someone meant to keep private (v1.1) | Med | High | Warn before moving a page into a shared section; globe markers; admin switch; private page links render without titles |
 | Uploaded files have public URLs | High | Med | Said plainly in the readme |
-| Editor host breaks on a WP update | Med | High | Spike counts private APIs; CI on trunk; pinned `@wordpress/*` versions |
+| Editor host breaks on a WP update | Med | High | Public editor components only; CI against WP trunk |
+| Core keeps editor features private (Notes UI, visual revisions, List View) | High | Med | Liber's UI on core's data; switch to core's UI if `Editor` becomes public (`@wordpress/lazy-editor` hints at it) |
 | Notes stop working (another plugin disables comments or removes the route) | Med | Med | Never disable comments; such plugins go on the conflict list |
+| Liber's notes drift from core's note format | Low | Med | Same storage as core (`note` comments, `metadata.noteId`); integration test that core reads them |
 | Core real-time collaboration arrives with different assumptions | Low | Med | Stay on core locks and Notes so it can be switched on later (`wp_is_post_type_collaboration_disabled`) |
 | Design System packages (`@wordpress/theme`, `ui`, `admin-ui`) change | Med | Low | Fallback to `--wp-admin-theme-color` |
 | Multisite admins lack `unfiltered_html` | High | Med | kses-safe blocks; tests as a non-super-admin |

@@ -4,7 +4,7 @@
 >
 > A free, GPL WordPress plugin that turns a WordPress site into a **private team wiki**: hierarchical documents, written in the block editor, organized in a Notion-like page tree. One site = one workspace.
 >
-> **Status:** planning, no code yet. Last reviewed **2026-11-02** — the May 2026 plan was updated against WordPress 7.1 (decision log in §7). Target layout: [`prototype/workspace.html`](prototype/workspace.html).
+> **Status:** planning done; v0.x starting. Last reviewed **2026-11-03** — the May 2026 plan was updated against WordPress 7.1, and the editor spike chose Liber's own screen (decision log in §7). Target layout: [`prototype/workspace.html`](prototype/workspace.html).
 
 ## 1. Positioning
 
@@ -16,8 +16,8 @@
 
 ## 2. Principles
 
-1. **Core first.** Use what WordPress ships before writing our own: block editor, Notes, post locks, visual revisions, the command palette, admin color schemes, the Design System, Heartbeat, core REST endpoints, Site Title and Site Icon. Liber's own code covers only what core lacks: the workspace shell, the page tree, page icons, two blocks and the privacy layer.
-2. **Stable over shiny.** No private or experimental APIs (`__experimental*`, private-API unlocks, `@wordpress/boot` / `@wordpress/route`) unless the editor spike proves one unavoidable; each one goes in the risk register.
+1. **Core first.** Use what WordPress ships before writing our own: block editor, post locks, Notes and revisions data, the command palette, admin color schemes, the Design System, Heartbeat, core REST endpoints, Site Title and Site Icon. Liber's own code covers only what core lacks: the workspace shell, the page tree, page icons, two blocks and the privacy layer. When core's UI for a feature is private (Notes), Liber builds the UI on core's data, so nothing needs migrating if core opens it up.
+2. **Stable over shiny.** No private or experimental APIs (`__experimental*`, private-API unlocks, `@wordpress/boot` / `@wordpress/route`). An exception needs a strong reason and a row in the risk register.
 3. **Opt-in and reversible.** Activating the plugin changes nothing about how the site behaves. "Workspace mode" is a switch the admin turns on; turning it off (or deactivating) gives back a normal WordPress site.
 4. **Focus.** Liber is a workspace. Security hardening, 2FA, login-screen branding, SMTP and backups stay with dedicated plugins.
 5. **Fresh data for signed-in users.** Cache only what's expensive and shared; every write clears it at once.
@@ -74,17 +74,17 @@ Tree behaviour:
 - Each page has a bookmarkable URL; back/forward works.
 
 ### 4.4 Editor
-- The block editor. Whether it runs on Liber's own screen (option B) or as core's post editor reshaped (option C) is decided by the editor spike (ARCHITECTURE §2). The target look is the same either way.
+- The block editor on Liber's own screen (ARCHITECTURE §2). Opening another page swaps it in place, with no reload — the workspace should feel like an app.
 - **Allowed blocks:** Paragraph, Heading (H1–H3), List, Quote, Code, Preformatted, Image, Gallery, File, Video, Embed (YouTube, Vimeo, Loom, Figma, X), Separator, Table, Details. Plus Liber's two blocks:
   - **Page link** — links to another page, showing its current icon and title.
   - **Callout** — tinted box with an emoji and rich text.
 - Page header: emoji icon (click to change) above a large title (`post_title`), then "Edited by Maria · 2 h ago".
 - `/` opens the core inserter, filtered to allowed blocks. Empty pages show "Type / for commands".
-- Header actions: undo/redo, save status ("Saved"), Notes, History, "⋯" page actions. No Publish button; autosave plus ⌘S.
-- **Notes (core):** notes on blocks and on selected text, threads, @mentions. Reactions and margin display arrive with WP 7.2. Anyone who can edit can add notes; Viewers don't see them (core requires edit rights).
-- **Locking (core post locks):** one editor at a time. Others see "Maria is editing this page" and a read-only page, with "Take over". No Liber lock code.
-- **History (core):** visual revisions (WP 7.0). Revisions kept: 10 by default, configurable.
-- **Images:** core uploads and media library. WP 7.1 processes images in the browser on editor screens (HEIC included); the spike checks that it works on Liber's screen.
+- Header actions: undo/redo, save status ("Saved"), Notes, "⋯" page actions. No Publish button; autosave plus ⌘S.
+- **Notes:** Liber's UI on core's note data. Notes on blocks, threads, replies, @mentions, resolve. Notes on selected text come in v1.1. Anyone who can edit can add notes; Viewers don't see them (core requires edit rights).
+- **Locking (core post locks):** one editor at a time. Others get core's dialog, "Maria is editing this page", with "Take over". Liber only feeds it the lock of each page it opens. A read-only view instead of the dialog comes in v1.1.
+- **History:** postponed to v1.1. Core keeps saving revisions (10 by default, configurable).
+- **Images:** core uploads and media library. WP 7.1 processes images in the browser (HEIC included); Liber's screen turns this on the same way core's editor does.
 
 ### 4.5 Command palette (⌘K)
 Core's command palette, extended with Liber commands: search pages by title (with breadcrumb), New page, New subpage here, Pin/Unpin, Open trash, Workspace settings, Toggle sidebar.
@@ -125,8 +125,8 @@ Per user and per site (multisite-safe): pinned (ordered), recent (last 5), tree 
 
 ### 4.11 Themes (admin color schemes)
 - Liber's colors come from the user's own admin color scheme (Users → Profile), fed into the WordPress Design System (`ThemeProvider` seeds). Pick "Ocean" in your profile and your workspace turns Ocean.
-- Liber adds two schemes with `wp_admin_css_color()`: **Liber Light** (neutral; suggested default when workspace mode is on) and **Liber Dark**. Both style the rest of wp-admin too.
-- Dark covers the editor canvas as well (editor styles loaded through `enqueue_block_assets`).
+- Liber adds one scheme with `wp_admin_css_color()`: **Liber Light** (neutral; suggested default when workspace mode is on). It styles the rest of wp-admin too.
+- **Liber Dark** is postponed: core's editor UI (block toolbar, inspector, inserter) doesn't follow a dark scheme.
 
 ### 4.12 Setup wizard
 Opt-in; can be re-run from settings.
@@ -163,6 +163,7 @@ Push back if these creep in:
 - Per-page permissions, guests. Public sharing ships in v1.1 (§4.15).
 - Cover images, page templates, duplication, bulk actions, workspace-wide pins.
 - Import/export beyond WordPress's exporter (v1.1).
+- History, notes on selected text, and a read-only view for locked pages (v1.1). Liber Dark (later).
 - AI features (Abilities/MCP in v1.1).
 - Security hardening, 2FA, login branding (other plugins).
 - Browser extension, native apps, webhooks, Zapier.
@@ -170,7 +171,6 @@ Push back if these creep in:
 
 ## 6. Open questions
 
-- **Editor host (B or C).** Decided by the spike (ARCHITECTURE §2).
 - **GitHub repo.** Local git for now; a GitHub repo is needed before the first public release (PRs, CI, and the source link wp.org asks for).
 
 ## 7. Decision log
@@ -198,3 +198,13 @@ Push back if these creep in:
 | Page status | Published | Always `private` | WordPress then enforces privacy everywhere; sharing becomes a status change |
 | Public sharing | Out of scope | v1.1: page + subpages, `noindex` by default | Requested; MVP data already fits |
 | Coding standards | WPCS security rules only | Full WPCS + VIP | Must pass every WordPress standard |
+
+### 2026-11-03 — editor spike
+
+| Topic | Before | Now | Why |
+|---|---|---|---|
+| Editor host | B or C, by spike | B: Liber's own screen | Page switch 16–46 ms vs 650–850 ms in C; the app must feel instant |
+| Notes | Core Notes UI | Liber's UI on core's data: block notes in the MVP, selected text in v1.1 | Core's Notes UI is private outside its post editor |
+| History | Core visual revisions | v1.1 (revisions still saved) | Private outside core's post editor; keeps the MVP small |
+| Locking | Core locks with a read-only view | Core lock dialog in the MVP; read-only view in v1.1 | The dialog is public; the read-only view needs Liber UI |
+| Liber Dark | MVP | Postponed | Core's editor UI doesn't follow a dark scheme |

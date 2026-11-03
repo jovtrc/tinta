@@ -1,11 +1,11 @@
 # Liber — Roadmap
 
-> Working name. Last reviewed 2026-11-02.
+> Working name. Last reviewed 2026-11-03.
 
 ## Now — planning (Nov 2026)
 - [x] Review the May plan against WordPress 7.1 (PLAN §7).
 - [x] Static layout prototype — [`prototype/workspace.html`](prototype/workspace.html).
-- [ ] Editor spike: option B vs C (2–3 days, throwaway) — ARCHITECTURE §2.
+- [x] Editor spike: Liber's own screen won on speed — ARCHITECTURE §2, branch `spike/editor-host`.
 - [ ] GitHub repo (local git for now; needed before v1.0).
 
 ## v0.x — Internal
@@ -15,13 +15,14 @@
 ## v1.0 — MVP (wordpress.org)
 Full scope in PLAN §4:
 - `liber_doc` pages; tree up to 5 levels; drag to reorder and move.
-- Block editor with allowed blocks + Page link and Callout blocks.
+- Block editor on Liber's own screen (no reload between pages), allowed blocks + Page link and Callout blocks.
 - Sidebar: search, new page, pinned, recent, tree, trash, settings.
-- Core features switched on for pages: Notes (with inline notes and @mentions), post locks, visual revisions, command palette commands.
+- Notes on blocks: threads, replies, @mentions (Liber's UI on core's data).
+- Core post locks (core's lock dialog) and command palette commands.
 - Emoji page icons.
 - Workspace mode (opt-in): login landing, hidden admin chrome, private site.
 - Roles: Administrator, Member, Viewer.
-- Themes from admin color schemes + Liber Light / Liber Dark.
+- Themes from admin color schemes + Liber Light.
 - Setup wizard (warns about plugins; never deactivates them).
 - Caching with transient fallback; Heartbeat freshness.
 - English + pt_BR (translate.wordpress.org); mobile drawer; multisite-safe.
@@ -30,11 +31,14 @@ Full scope in PLAN §4:
 - Share to web: a page and its subpages become public, with a read-only view and `noindex` by default (PLAN §4.15).
 - Import/export: Markdown, and Notion exports rebuilt as a tree.
 - Abilities API + MCP: search, read and create pages from AI clients.
-- WP 7.2 Notes extras (reactions, margin display) once 7.2 is the minimum.
+- History: saved versions, preview, restore.
+- Notes on selected text.
+- Read-only view when someone else is editing, instead of the lock dialog.
 - Duplicate page (with subtree), bulk actions, cover images, workspace-wide pins.
 
 ## v1.2 — Collaboration
 - Notification inbox for mentions and replies (core Feature Notifications if it lands), plus email.
+- Note reactions.
 - Mermaid / diagram block.
 - Presence ("who's here") through core's Presence API, if merged.
 - Real-time co-editing when core ships it (not before 2027).
@@ -51,5 +55,7 @@ Full scope in PLAN §4:
 
 ## Deliberately delayed
 - Real-time co-editing until core ships it.
+- Liber Dark, until the editor's own UI can follow a dark scheme.
+- Core's private editor UI (visual revisions, Notes, List View): switch to it only if core makes it public.
 - Building on the new admin framework (`@wordpress/boot`, `@wordpress/route`) until it's stable.
 - Native mobile apps (PWA first); full offline editing.
