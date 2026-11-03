@@ -18,7 +18,8 @@
   - [x] Continuous saving with revision snapshots; locks per page; read-only view for Viewers.
   - [x] Heartbeat tree refresh.
   - [x] Page actions: add a subpage, move to trash (with subpages); Trash dialog with restore and, for admins, delete; 5-level limit.
-  - [ ] Drag to move, page icons, pinned and recent, mobile drawer.
+  - [x] Drag to move pages (above, below, inside).
+  - [ ] "Move to…" menu item (keyboard path for moving), page icons, pinned and recent, mobile drawer.
   - [ ] CI, once the GitHub repo exists.
 
 ## v1.0 — MVP (wordpress.org)

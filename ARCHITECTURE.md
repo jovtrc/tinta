@@ -58,6 +58,7 @@ The workspace is one admin screen, `admin.php?page=liber&doc=ID`. Liber's React 
 | `Liber\Workspace\Color_Schemes` | `includes/workspace/class-color-schemes.php` | Liber Light (Liber Dark postponed) |
 | `Liber\Rest\Tree_Controller` | `includes/rest/class-tree-controller.php` | `GET liber/v1/tree` |
 | `Liber\Rest\Move_Controller` | `includes/rest/class-move-controller.php` | `POST liber/v1/docs/{id}/move` |
+| `Liber\Docs\Mover` | `includes/docs/class-mover.php` | Move checks (cycles, depth) and sibling renumbering; only `post_parent`/`menu_order` change |
 | `Liber\Rest\Lock_Controller` | `includes/rest/class-lock-controller.php` | `POST`/`DELETE liber/v1/docs/{id}/lock` |
 | `Liber\Rest\User_Prefs_Field` | `includes/rest/class-user-prefs-field.php` | `liber_prefs` field on `wp/v2/users/me` |
 | `Liber\Blocks\Allowlist` | `includes/blocks/class-allowlist.php` | `allowed_block_types_all` for `liber_doc` |
@@ -167,7 +168,7 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 - UI: `@wordpress/components`, `@wordpress/icons` (not a script handle in 7.1; wp-scripts bundles it). `@wordpress/ui` isn't registered in 7.1 either; use it only if wp-scripts bundles it cleanly. DataViews (bundled) only if the Trash list needs it.
 - Theme: `ThemeProvider` (`wp.theme`, public) seeded from the user's admin color scheme, read in PHP from the registered schemes (`@wordpress/admin-ui` isn't registered in 7.1). Fallback: the `--wp-admin-theme-color` CSS variable. One root provider per document.
 - Commands: `@wordpress/commands` (`registerCommand`, `useCommandLoader`).
-- Drag and drop: dnd-kit (unless core ships tree drag-and-drop by then).
+- Drag and drop: `@dnd-kit/core` (pointer sensor, 6 px to start, so clicks still open pages). Like Notion, the top or bottom quarter of a row drops above or below it, the middle drops inside; targets inside the page's own subtree or past level 5 aren't offered. The tree updates at once, then syncs with `liber/v1/docs/{id}/move`. No keyboard dragging yet: a "Move to…" menu item is the planned keyboard path.
 - Blocks: `apiVersion: 3`; canvas styles through block.json `editorStyle` / `enqueue_block_assets` (the canvas is an iframe; admin body classes don't reach it).
 - Routing: `?page=liber&doc=ID` with `history.pushState`; `popstate` reopens the page for back/forward.
 
