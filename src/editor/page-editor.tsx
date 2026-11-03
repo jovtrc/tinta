@@ -23,6 +23,7 @@ import { config } from '../app/config';
 import { NoteMarkers } from '../notes/note-markers';
 import { NotesPanel } from '../notes/notes-panel';
 import { store as notesStore } from '../notes/store';
+import { BlockHandle } from './block-handle';
 import { BlocksPanel } from './blocks-panel';
 import { ClickBelowToWrite } from './click-below-to-write';
 import { ContinuousSave } from './continuous-save';
@@ -60,7 +61,11 @@ const CANVAS_STYLES = [
 		.liber-note-markers { position: absolute; inset: 0; pointer-events: none; }
 		.liber-note-marker { position: absolute; display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 8px; font: 500 12px/1 inherit; color: #1e1e1e; background: #fff; border: 1px solid #e0e0e0; border-radius: 13px; cursor: pointer; pointer-events: auto; }
 		.liber-note-marker:hover { border-color: #949494; }
-		.liber-note-marker svg { fill: currentColor; }`,
+		.liber-note-marker svg { fill: currentColor; }
+		.liber-block-handles { position: absolute; inset: 0; pointer-events: none; }
+		.liber-block-handle { position: absolute; display: flex; align-items: center; justify-content: center; width: 24px; height: 28px; padding: 0; color: #949494; background: none; border: 0; border-radius: 4px; cursor: grab; pointer-events: auto; }
+		.liber-block-handle:hover { color: #1e1e1e; background: rgba(0, 0, 0, 0.05); }
+		.liber-block-handle svg { fill: currentColor; }`,
 	},
 ];
 
@@ -151,6 +156,7 @@ function EditorLayout() {
 						<PageHeader />
 						<BlockList />
 						<ClickBelowToWrite />
+						<BlockHandle />
 						<NoteMarkers />
 					</BlockCanvas>
 				</div>

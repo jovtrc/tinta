@@ -635,6 +635,45 @@ test.describe( 'Blocks', () => {
 		await expect( page ).toHaveURL( new RegExp( `doc=${ handbook }` ) );
 	} );
 
+	test( 'moves blocks with the drag handle', async ( {
+		admin,
+		editor,
+		requestUtils,
+	} ) => {
+		const pageId = await createPage( requestUtils, 'Order' );
+		await requestUtils.rest( {
+			method: 'POST',
+			path: `/wp/v2/liber-docs/${ pageId }`,
+			data: {
+				content: [ 'One', 'Two', 'Three' ]
+					.map(
+						( text ) =>
+							`<!-- wp:paragraph --><p>${ text }</p><!-- /wp:paragraph -->`
+					)
+					.join( '' ),
+			},
+		} );
+		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ pageId }` );
+
+		const three = editor.canvas.getByText( 'Three' );
+		await three.hover( { position: { x: 4, y: 4 } } );
+		await three.hover( { position: { x: 20, y: 8 } } );
+		await editor.canvas
+			.getByRole( 'button', { name: 'Drag to move' } )
+			.dragTo( editor.canvas.getByText( 'One' ), {
+				targetPosition: { x: 10, y: 2 },
+			} );
+
+		await expect
+			.poll( async () =>
+				( await getPage( requestUtils, pageId ) ).content.raw.replace(
+					/<[^>]+>|\s/g,
+					''
+				)
+			)
+			.toBe( 'ThreeOneTwo' );
+	} );
+
 	test( 'offers only the allowed blocks', async ( {
 		admin,
 		editor,
