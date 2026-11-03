@@ -23,6 +23,7 @@
 5. **Fresh data for signed-in users.** Cache only what's expensive and shared; every write clears it at once.
 6. **All WordPress coding standards.** WPCS (Core, Docs, Extra) plus WordPress VIP, unmodified (ARCHITECTURE §7).
 7. **Multisite-safe.** Works per site on a multisite network.
+8. **Familiar tools.** Liber is open source, so it uses the tools and conventions WordPress contributors already know — Composer, `@wordpress/scripts`, wp-env, Playground, core's test suite — over custom solutions.
 
 ## 3. Requirements
 
@@ -208,3 +209,4 @@ Push back if these creep in:
 | History | Core visual revisions | v1.1 (revisions still saved) | Private outside core's post editor; keeps the MVP small |
 | Locking | Core locks with a read-only view | Core lock dialog in the MVP; read-only view in v1.1 | The dialog is public; the read-only view needs Liber UI |
 | Liber Dark | MVP | Postponed | Core's editor UI doesn't follow a dark scheme |
+| PHP tests | PHPUnit 11 with WordPress stubs + PHPUnit 9.6 on core's suite | One suite: PHPUnit 9.6 on core's suite (wp-env); e2e on Playground | Standard tools contributors know (principle 8) |

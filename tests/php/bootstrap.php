@@ -1,6 +1,6 @@
 <?php
 /**
- * Integration test bootstrap: WordPress's own test suite, inside wp-env (pnpm test:integration).
+ * Test bootstrap: WordPress's own test suite, inside wp-env (pnpm test:php).
  *
  * @package Liber
  */
@@ -10,7 +10,6 @@
 $liber_tests_dir = getenv( 'WP_TESTS_DIR' );
 $liber_tests_dir = $liber_tests_dir ? $liber_tests_dir : '/wordpress-phpunit';
 
-require __DIR__ . '/vendor/autoload.php';
 require_once $liber_tests_dir . '/includes/functions.php';
 
 tests_add_filter(

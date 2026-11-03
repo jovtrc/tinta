@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-		bootstrap="tests/unit/bootstrap.php"
-		cacheDirectory=".phpunit.cache"
+		bootstrap="tests/php/bootstrap.php"
 		colors="true"
 		failOnWarning="true"
 		failOnRisky="true"
-		failOnNotice="true"
-		failOnDeprecation="true"
-		requireCoverageMetadata="true"
-		beStrictAboutOutputDuringTests="true"
-		displayDetailsOnTestsThatTriggerWarnings="true"
-		displayDetailsOnTestsThatTriggerErrors="true"
-		displayDetailsOnTestsThatTriggerDeprecations="true">
+		convertDeprecationsToExceptions="true"
+		beStrictAboutOutputDuringTests="true">
 	<testsuites>
-		<testsuite name="unit">
-			<directory suffix="_Test.php">tests/unit</directory>
+		<testsuite name="liber">
+			<directory suffix="-test.php">tests/php</directory>
 		</testsuite>
 	</testsuites>
-	<source>
+	<coverage>
 		<include>
-			<directory>includes</directory>
+			<directory suffix=".php">includes</directory>
 		</include>
-	</source>
+	</coverage>
 </phpunit>

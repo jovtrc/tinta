@@ -31,11 +31,6 @@
 		</properties>
 	</rule>
 
-	<!-- PHPUnit 11 finds a test class by its file name, so test files are named like their class. -->
-	<rule ref="WordPress.Files.FileName">
-		<exclude-pattern>*/tests/unit/*_Test.php</exclude-pattern>
-	</rule>
-
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">

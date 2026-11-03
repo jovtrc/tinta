@@ -12,16 +12,14 @@
 		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
 		"phpcompatibility/phpcompatibility-wp": "^2.1",
 		"phpstan/phpstan": "^2.1",
-		"phpunit/phpunit": "^11.5",
+		"phpunit/phpunit": "^9.6",
 		"szepeviktor/phpstan-wordpress": "^2.0",
-		"wp-coding-standards/wpcs": "^3.1"
+		"wp-coding-standards/wpcs": "^3.1",
+		"yoast/phpunit-polyfills": "^4.0"
 	},
-	"autoload-dev": {
+	"autoload": {
 		"classmap": [
-			"tests/unit/"
-		],
-		"exclude-from-classmap": [
-			"tests/unit/stubs/"
+			"includes/"
 		]
 	},
 	"config": {
@@ -39,7 +37,6 @@
 		"phpcs:staged": "bash bin/phpcs-staged.sh",
 		"phpcbf": "phpcbf",
 		"phpstan": "phpstan analyse --memory-limit=1G",
-		"test:unit": "phpunit",
 		"install-git-hooks": "@php bin/install-git-hooks.php",
 		"post-install-cmd": [
 			"@install-git-hooks"

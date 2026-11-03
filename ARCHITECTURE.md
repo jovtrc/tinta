@@ -34,7 +34,7 @@ The workspace is one admin screen, `admin.php?page=liber&doc=ID`. Liber's React 
 
 ### Stack
 - PHP 8.2+, WordPress 7.1+.
-- No runtime Composer dependencies. `includes/autoload.php` maps classes to WPCS file names (`Liber\Docs\Post_Type` → `includes/docs/class-post-type.php`), which PSR-4 can't. Composer is dev-only (standards, tests), with `config.platform.php` pinned to 8.2; no `vendor/` in the zip.
+- Composer with **`classmap`** autoload (WPCS file names, `class-*.php`, don't fit PSR-4). No runtime dependencies yet; the zip ships the `vendor/` autoloader from `composer install --no-dev --optimize-autoloader`. `config.platform.php` pinned to 8.2.
 - Modern PHP where WPCS allows it: typed properties, enums, readonly, `match`, first-class callables. Braces always; no alternative syntax.
 - Naming per the WordPress handbook: namespace `Liber\…` (parts in Capitalized_Words), classes like `Tree_Controller`, files like `class-tree-controller.php`, functions/methods/variables in `snake_case`, hooks `liber_*`.
 
@@ -191,10 +191,9 @@ Maybe one more (`/docs/{id}/restore`) if core's update can't restore to the top 
 - No comments inside methods unless the logic is complex enough to need one.
 
 ### Tests
-- **PHP unit:** PHPUnit 11 (runs on PHP 8.2) with WordPress stubs — function stubs, fixtures, and exceptions standing in for `wp_die()` and redirects. Strict config: fail on warnings, risky tests and deprecations; coverage metadata required. PHPUnit 11 finds a test class by its file name, so unit test files are named like their class (`Private_Status_Test.php`), the one exception to WPCS file names.
-- **PHP integration:** core's test suite (`WP_UnitTestCase`) with PHPUnit 9.6 + `yoast/phpunit-polyfills` in its own `tests/integration/composer.json`. Runs in a separate wp-env (`.wp-env.test.json`, port 8889), because the suite wipes its database; on single site and multisite.
+- **PHP:** WordPress's own test suite (`WP_UnitTestCase`) with PHPUnit 9.6 + `yoast/phpunit-polyfills` — the setup core and most plugins use (core's suite doesn't run on newer PHPUnit). Runs in a separate wp-env (`.wp-env.test.json`, port 8889), because the suite wipes its database; single site and multisite (`WP_MULTISITE=1`). Strict config: fail on warnings, risky tests and deprecations.
 - **JS unit:** Vitest (wp-scripts default since v36).
-- **E2E:** Playwright via `wp-scripts test-playwright` against wp-env.
+- **E2E:** Playwright via `wp-scripts test-playwright` against WordPress Playground (`@wp-playground/cli`), started from a blueprint: no Docker, a fresh site per run.
 
 ### Build
 - pnpm (one package, no turbo). `pnpm-workspace.yaml` holds pnpm 11's build-script approvals.
@@ -205,7 +204,7 @@ Maybe one more (`/docs/{id}/restore`) if core's update can't restore to the top 
 - Jobs: phpcs, phpstan, PHP unit + integration, tsc, eslint, vitest, e2e (latest WP only), build, Plugin Check (`wordpress/plugin-check-action`), `.pot` generation.
 
 ### Release
-- Tag → `pnpm build` → zip using `.distignore` (drops `vendor/`, `bin/`, `CLAUDE.md`, `.claude/`, `.github/`, `tests/`, `node_modules/`, `prototype/`, planning docs, configs) → Plugin Check → SVN deploy with `10up/action-wordpress-plugin-deploy`.
+- Tag → `composer install --no-dev --optimize-autoloader` → `pnpm build` → zip using `.distignore` (drops `bin/`, `CLAUDE.md`, `.claude/`, `.github/`, `tests/`, `node_modules/`, `prototype/`, planning docs, configs) → Plugin Check → SVN deploy with `10up/action-wordpress-plugin-deploy`.
 - `readme.txt` links the public repo for the TypeScript sources (guideline 4).
 - wp.org holds each release ~6 h for an automated security review.
 
@@ -215,9 +214,8 @@ composer install                  # dev tools + pre-commit hook
 pnpm install
 pnpm env start                    # dev site, http://localhost:8888
 pnpm env:test start               # test site, http://localhost:8889
-composer install -d tests/integration
-composer run phpcs                # also: phpcbf, phpstan, test:unit
-pnpm test:integration             # and test:integration:multisite
+composer run phpcs                # also: phpcbf, phpstan
+pnpm test:php                     # and test:php:multisite
 ```
 
 ### Git
@@ -230,11 +228,11 @@ pnpm test:integration             # and test:integration:multisite
 ```
 liber/
 ├── .github/workflows/
-├── liber.php                    Plugin header, autoloader, bootstrap
+├── liber.php                    Plugin header, Composer autoload, bootstrap
 ├── uninstall.php
 ├── bin/                         Dev scripts (pre-commit PHPCS)
 ├── readme.txt
-├── composer.json                Dev tools only, platform php 8.2
+├── composer.json                classmap autoload, dev tools, platform php 8.2
 ├── package.json, pnpm-lock.yaml, pnpm-workspace.yaml
 ├── tsconfig.json
 ├── phpcs.xml.dist, phpstan.neon.dist, phpunit.xml.dist
@@ -242,15 +240,14 @@ liber/
 ├── .wp-env.json, .wp-env.test.json
 ├── .distignore
 ├── includes/                    PHP, class-*.php
-│   ├── autoload.php, class-plugin.php
+│   ├── class-plugin.php
 │   └── blocks/ cache/ docs/ rest/ roles/ setup/ sharing/ workspace/
 ├── src/                         TypeScript
 │   └── app/ editor/ notes/ blocks/
 ├── data/conflicting-plugins.json
 ├── tests/
-│   ├── unit/                    WordPress stubs, PHPUnit 11
-│   ├── integration/             WP test suite, PHPUnit 9.6, own composer.json
-│   ├── e2e/                     Playwright
+│   ├── php/                     WP test suite, PHPUnit 9.6
+│   ├── e2e/                     Playwright on Playground
 │   └── js/                      Vitest
 ├── prototype/workspace.html     Static layout prototype
 ├── build/                       Generated, gitignored

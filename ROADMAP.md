@@ -12,7 +12,7 @@
 - Build the MVP on a personal site (single site and a multisite subsite). Dogfood before going public.
 - First week:
   - [x] Plugin skeleton, Composer tooling (PHPCS, PHPStan, PHPUnit), pre-commit hook.
-  - [x] `liber_doc` post type; Member and Viewer roles; every page private — unit and integration tests, single site and multisite.
+  - [x] `liber_doc` post type; Member and Viewer roles; every page private — tested on core's test suite, single site and multisite.
   - [ ] TypeScript tooling (`@wordpress/scripts`), with the workspace screen.
   - [ ] CI, once the GitHub repo exists.
 

@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
 
 define( 'LIBER_VERSION', '0.1.0' );
 
-require_once __DIR__ . '/includes/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 register_activation_hook( __FILE__, array( Liber\Setup\Installer::class, 'install' ) );
 

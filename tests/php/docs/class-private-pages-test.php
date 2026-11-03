@@ -1,11 +1,11 @@
 <?php
 /**
- * Integration tests: pages stay private, and only workspace roles read them.
+ * Tests: pages stay private, and only workspace roles read them.
  *
  * @package Liber
  */
 
-namespace Liber\Tests\Integration\Docs;
+namespace Liber\Tests\Docs;
 
 use Liber\Roles\Roles;
 use WP_REST_Request;
