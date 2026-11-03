@@ -77,7 +77,7 @@ Tree behaviour:
 
 ### 4.4 Editor
 - The block editor on Liber's own screen (ARCHITECTURE §2). Opening another page swaps it in place, with no reload — the workspace should feel like an app.
-- **Allowed blocks:** Paragraph, Heading (H1–H3), List, Quote, Code, Preformatted, Image, Gallery, File, Video, Embed (YouTube, Vimeo, X; Loom and Figma need oEmbed providers core doesn't ship, so they come later), Separator, Table, Details. Plus Liber's two blocks:
+- **Allowed blocks:** Paragraph, Heading (H1–H3), List, Quote, Code, Preformatted, Image, Gallery, File, Video, Embed (YouTube, Vimeo, X; Loom and Figma need oEmbed providers core doesn't ship, so they come later), Separator, Table, Details, Columns (for layouts like text with a sidebar). Plus Liber's two blocks:
   - **Page link** — links to another page, showing its current icon and title.
   - **Callout** — tinted box with an emoji and rich text. Enter on an empty last line leaves it, like core's Quote.
 - Page header: emoji icon (click to change) above a large title (`post_title`), then "Edited by Maria · 2 h ago".

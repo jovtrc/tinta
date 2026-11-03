@@ -30,7 +30,8 @@ final class Blocks_Test extends WP_UnitTestCase {
 		$post_blocks = get_allowed_block_types( new WP_Block_Editor_Context( array( 'post' => $post ) ) );
 
 		$this->assertContains( 'liber/callout', $page_blocks );
-		$this->assertNotContains( 'core/columns', $page_blocks );
+		$this->assertContains( 'core/columns', $page_blocks );
+		$this->assertNotContains( 'core/buttons', $page_blocks );
 		$this->assertTrue( $post_blocks );
 	}
 

@@ -33,6 +33,8 @@ final class Allowlist {
 		'core/separator',
 		'core/table',
 		'core/details',
+		'core/columns',
+		'core/column',
 		'liber/page-link',
 		'liber/callout',
 	);

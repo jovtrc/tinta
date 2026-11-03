@@ -645,16 +645,18 @@ test.describe( 'Blocks', () => {
 		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ pageId }` );
 
 		await startTyping( editor );
-		await page.keyboard.type( '/table' );
-		await expect(
-			page.getByRole( 'option', { name: 'Table' } )
-		).toBeVisible();
-
-		await page.keyboard.press( 'Escape' );
-		await page.keyboard.press( 'ControlOrMeta+a' );
 		await page.keyboard.type( '/columns' );
 		await expect(
 			page.getByRole( 'option', { name: 'Columns' } )
+		).toBeVisible();
+
+		await page.keyboard.press( 'Shift+Home' );
+		await page.keyboard.type( '/buttons' );
+		await expect(
+			page.getByRole( 'option', { name: 'Columns' } )
+		).toHaveCount( 0 );
+		await expect(
+			page.getByRole( 'option', { name: 'Buttons' } )
 		).toHaveCount( 0 );
 	} );
 } );
