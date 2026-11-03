@@ -36,6 +36,9 @@ final class Plugin {
 		( new Rest\User_Prefs_Field() )->register();
 		( new Rest\People_Controller() )->register();
 		( new Workspace\Screen( $tree ) )->register();
+		( new Workspace\Settings() )->register();
+		( new Workspace\Mode() )->register();
+		( new Workspace\Private_Site() )->register();
 		( new Blocks\Registry() )->register();
 		( new Blocks\Allowlist() )->register();
 	}

@@ -7,19 +7,18 @@
 
 namespace Liber\Docs;
 
+use Liber\Workspace\Settings;
 use WP_Post;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Pages save continuously, so revisions are snapshots: one per author every few
- * minutes, and the last 10 are kept.
+ * minutes; the workspace settings say how many are kept.
  */
 final class Revisions {
 
 	public const INTERVAL = 10 * MINUTE_IN_SECONDS;
-
-	public const TO_KEEP = 10;
 
 	/**
 	 * Hooks the filters.
@@ -48,9 +47,9 @@ final class Revisions {
 	}
 
 	/**
-	 * Number of revisions kept per page.
+	 * Number of revisions kept per page, from the workspace settings (10 by default).
 	 */
 	public function to_keep(): int {
-		return self::TO_KEEP;
+		return Settings::get()['revisions'];
 	}
 }
