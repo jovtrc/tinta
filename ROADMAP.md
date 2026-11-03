@@ -21,6 +21,7 @@
   - [x] Drag to move pages (above, below, inside).
   - [x] ⌘K: find pages by title (with their path), New page, Open trash.
   - [x] Page header: emoji icon picker (curated list, any typed emoji), "Edited by … · 2 hours ago".
+  - [x] Block allowlist; Page link and Callout blocks.
   - [ ] "Move to…" menu item (keyboard path for moving), pinned and recent (with recently used emoji), mobile drawer.
   - [ ] CI, once the GitHub repo exists.
 

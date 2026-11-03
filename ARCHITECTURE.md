@@ -171,7 +171,8 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 - Theme: `ThemeProvider` (`wp.theme`, public) seeded from the user's admin color scheme, read in PHP from the registered schemes (`@wordpress/admin-ui` isn't registered in 7.1). Fallback: the `--wp-admin-theme-color` CSS variable. One root provider per document.
 - Commands: `@wordpress/commands` (`useCommand`, `useCommandLoader`) in core's palette. The palette renders in its own React root, so page commands open pages by URL (`navigateTo()` pushes `?doc=ID` and fires `popstate`, which the workspace follows like back/forward).
 - Drag and drop: `@dnd-kit/core` (pointer sensor, 6 px to start, so clicks still open pages). Like Notion, the top or bottom quarter of a row drops above or below it, the middle drops inside; targets inside the page's own subtree or past level 5 aren't offered. The tree updates at once, then syncs with `liber/v1/docs/{id}/move`. No keyboard dragging yet: a "Move to…" menu item is the planned keyboard path.
-- Blocks: `apiVersion: 3`; canvas styles through block.json `editorStyle` / `enqueue_block_assets` (the canvas is an iframe; admin body classes don't reach it).
+- Blocks: `apiVersion: 3`; canvas styles through block.json `style` (the canvas is an iframe; admin body classes don't reach it), also enqueued on the workspace screen for the read-only view. Page link is dynamic (`render.php`), so titles and icons never go stale. Elements inside the canvas use plain buttons and our own CSS: wp-components styles don't reach the iframe, but popovers render in the main document.
+- Allowlist: PHP `allowed_block_types_all` for pages; JS keeps headings at H1–H3 (`levelOptions`) and unregisters embed variations other than YouTube, Vimeo and X.
 - Routing: `?page=liber&doc=ID` with `history.pushState`; `popstate` reopens the page for back/forward.
 
 ### Modules
@@ -206,7 +207,7 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 
 ### Build
 - pnpm (one package, no turbo). `pnpm-workspace.yaml` holds pnpm 11's build-script approvals.
-- `wp-scripts build` with `webpack.config.js` adding the workspace entry → `build/workspace.{js,css,asset.php}`; asset versions and script dependencies come from the `.asset.php` file. Blocks will add `--blocks-manifest`, registered with `wp_register_block_types_from_metadata_collection()`.
+- `wp-scripts build` with `webpack.config.js` adding the workspace entry → `build/workspace.{js,css,asset.php}`; asset versions and script dependencies come from the `.asset.php` file. Blocks (`src/blocks/*/block.json`) build to `build/blocks/` with `--blocks-manifest`; PHP registers them all with `wp_register_block_types_from_metadata_collection()`. PHP tests need a build first (block registration reads it).
 - `prettier` is aliased to `wp-prettier` (WordPress formatting); plain Prettier would undo it.
 
 ### CI (GitHub Actions)
