@@ -264,7 +264,9 @@ tinta/
 ├── tinta.php                    Plugin header, Composer autoload, bootstrap
 ├── uninstall.php
 ├── bin/                         Release build and notes, pre-commit PHPCS
-├── readme.txt
+├── readme.txt                   wordpress.org readme (ships in the zip)
+├── README.md, LICENSE           GitHub readme and GPL-2.0 text (repo only)
+├── blueprint.json               README's "Try it in Playground": installs the latest GitHub release
 ├── composer.json                classmap autoload, dev tools, platform php 8.2
 ├── package.json, pnpm-lock.yaml, pnpm-workspace.yaml
 ├── tsconfig.json, webpack.config.js, playwright.config.js
@@ -277,7 +279,7 @@ tinta/
 │   └── admin-colors/ app/ editor/ notes/ blocks/ types/
 ├── tests/
 │   ├── php/                     WP test suite, PHPUnit 9.6
-│   └── e2e/                     Playwright on Playground
+│   └── e2e/                     Playwright on Playground (the repo mounted as plugins/tinta; blueprint.json activates it)
 ├── prototype/workspace.html     Static layout prototype
 ├── build/                       Generated, gitignored
 └── PLAN.md, ARCHITECTURE.md, ROADMAP.md
