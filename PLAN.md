@@ -135,13 +135,13 @@ Per user and per site (multisite-safe): pinned (ordered), recent (last 5), tree 
 - **Liber Dark** is postponed: core's editor UI (block toolbar, inspector, inserter) doesn't follow a dark scheme.
 
 ### 4.12 Setup wizard
-Opt-in; can be re-run from settings.
-1. Welcome — what Liber does and what workspace mode changes.
-2. Name & icon (core Site Title / Site Icon).
-3. Plugin check — lists active plugins known to conflict (bundled list, updated each release) with a link to the Plugins screen. Liber never deactivates plugins (wp.org rule).
-4. People — default role for new users; link to invite users.
-5. Sample content — a "Welcome" page with a "Getting started" child.
-6. Turn on workspace mode (or not) → done.
+Opens on an administrator's first visit; "Skip for now" (or closing it) marks setup as done. Workspace settings → "Run setup again" reopens it. Choices save at the end through core's settings, and the screen reloads.
+1. Welcome — what Liber does.
+2. Name & icon (core Site Title / Site Icon, picked from the media library). The sidebar header shows the icon, or the name's first letter.
+3. Plugin check (only when one is active) — active plugins known to conflict, with why, and a link to the Plugins screen. The list lives in `Workspace\Conflicts` (translatable reasons), updated each release. Liber never deactivates plugins (wp.org rule).
+4. People — the role new people get (suggests Member); link to invite people.
+5. Sample content — a "Welcome" page with a "Getting started" page inside it (on by default when the workspace has no pages).
+6. Workspace mode on or off → Finish opens the Welcome page.
 
 ### 4.13 Internationalization
 - English source strings, text domain `liber`. Translations come only from translate.wordpress.org (GlotPress); pt_BR from day one (we request PTE rights). No bundled `.mo` files, no `load_plugin_textdomain()`.

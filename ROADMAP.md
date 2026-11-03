@@ -33,7 +33,8 @@
   - [x] Columns block; Blocks panel ("Browse all"); click below the last block to keep writing; markers beside blocks with open notes.
   - [x] Drag handle on hover to move blocks.
   - [x] Drag to reorder pins.
-  - [ ] Setup wizard, Liber Light, pt_BR.
+  - [x] Setup wizard: name and icon, conflicting plugins, new people's role, sample pages, workspace mode.
+  - [ ] Liber Light, pt_BR.
 
 ## v1.0 — MVP (wordpress.org)
 Full scope in PLAN §4:
