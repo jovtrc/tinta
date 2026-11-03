@@ -34,7 +34,9 @@
   - [x] Drag handle on hover to move blocks.
   - [x] Drag to reorder pins.
   - [x] Setup wizard: name and icon, conflicting plugins, new people's role, sample pages, workspace mode.
-  - [x] `readme.txt`, `.distignore`, and Plugin Check in CI on the release contents (clean, experimental checks included).
+  - [x] `readme.txt`, a minimal release zip (only what WordPress runs), and Plugin Check in CI on it (clean, experimental checks included).
+  - [x] Release pipeline: a `v*` tag runs CI and publishes a GitHub release with the zip and its changelog.
+  - [x] RTL: the workspace's right-to-left stylesheet, mirrored layout offsets, drag handle and note markers.
   - [x] Translation-ready: 196 strings extract cleanly from the release files (pt_BR is translated on translate.wordpress.org after release).
   - [x] Prototype polish: breadcrumbs, bold titles, the editor's avatar in "Edited by", an arrow on page links, "+" beside Pages, your role under your name, the workspace icon in the sidebar, the Notes button as the comment icon with its count.
   - [x] Liber Light admin color scheme (built on core's scheme partials), given to people who join in workspace mode.

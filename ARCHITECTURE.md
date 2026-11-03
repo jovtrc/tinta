@@ -217,7 +217,7 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 
 ### Tests
 - **PHP:** WordPress's own test suite (`WP_UnitTestCase`) with PHPUnit 9.6 + `yoast/phpunit-polyfills` — the setup core and most plugins use (core's suite doesn't run on newer PHPUnit). Runs in a separate wp-env (`.wp-env.test.json`, port 8889), because the suite wipes its database; single site and multisite (`WP_MULTISITE=1`). Strict config: fail on warnings, risky tests and deprecations.
-- **JS unit:** Vitest (wp-scripts default since v36).
+- **JS unit:** none yet; Vitest (wp-scripts' default) when some logic needs it.
 - **E2E:** Playwright via `wp-scripts test-playwright` against WordPress Playground (`@wp-playground/cli`), started from a blueprint: no Docker, a fresh site per run. Three projects: Chromium, Firefox and WebKit (Safari's engine); CI runs each as its own job.
 
 ### Build
@@ -227,11 +227,13 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 
 ### CI (GitHub Actions)
 - PHP 8.2 and 8.5 × WP 7.1, latest and trunk (trunk may fail) × single site and multisite.
-- Jobs: phpcs, phpstan, PHP unit + integration, tsc, eslint, vitest, e2e in Chromium, Firefox and WebKit (latest WP only), build, Plugin Check (`wordpress/plugin-check-action`), `.pot` generation.
+- Jobs: standards and types (phpcs, phpstan, tsc, eslint, stylelint), PHP tests (single site and multisite), e2e in Chromium, Firefox and WebKit (latest WP only), and Plugin Check (`wordpress/plugin-check-action`) on the release build. `release.yml` reuses the whole workflow before publishing.
 
 ### Release
-- Tag → `composer install --no-dev --optimize-autoloader` → `pnpm build` → zip using `.distignore` (drops `src/`, `bin/`, `.github/`, `tests/`, `node_modules/`, `prototype/`, planning docs and tool configs; keeps `composer.json` beside `vendor/`, as Plugin Check asks) → Plugin Check → SVN deploy with `10up/action-wordpress-plugin-deploy`.
+- The zip holds only what WordPress runs: `bin/build-zip.sh` copies an explicit list (`liber.php`, `uninstall.php`, `readme.txt`, `composer.json`, `includes/`, `build/`) and installs Composer's production autoloader beside it. Anything not on the list (tests, sources, docs, tool configs) stays out, so new repo files never leak into a release. `composer.json` stays because Plugin Check asks for it beside `vendor/`.
 - CI's Plugin Check job builds those release contents on every push and runs `wordpress/plugin-check-action` on them.
+- To release: set the version in `liber.php` (header and `LIBER_VERSION`) and the readme's Stable tag, add its changelog entry, then push a `vX.Y.Z` tag. `.github/workflows/release.yml` runs the whole CI, checks that the versions match (`bin/release-notes.sh`), and publishes a GitHub release with `liber.zip` and the changelog entry as notes. Run by hand on a branch, it builds the zip as a workflow artifact without publishing.
+- wordpress.org later: SVN deploy with `10up/action-wordpress-plugin-deploy` from the same build.
 - `readme.txt` links the public repo for the TypeScript sources (guideline 4).
 - wp.org holds each release ~6 h for an automated security review.
 
@@ -261,25 +263,21 @@ liber/
 ├── .github/workflows/
 ├── liber.php                    Plugin header, Composer autoload, bootstrap
 ├── uninstall.php
-├── bin/                         Dev scripts (pre-commit PHPCS)
+├── bin/                         Release build and notes, pre-commit PHPCS
 ├── readme.txt
 ├── composer.json                classmap autoload, dev tools, platform php 8.2
 ├── package.json, pnpm-lock.yaml, pnpm-workspace.yaml
 ├── tsconfig.json, webpack.config.js, playwright.config.js
 ├── phpcs.xml.dist, phpstan.neon.dist, phpunit.xml.dist
-├── vitest.config.ts
 ├── .wp-env.json, .wp-env.test.json
-├── .distignore
 ├── includes/                    PHP, class-*.php
 │   ├── class-plugin.php
-│   └── blocks/ cache/ docs/ rest/ roles/ setup/ sharing/ workspace/
+│   └── blocks/ cache/ docs/ rest/ roles/ setup/ workspace/
 ├── src/                         TypeScript
-│   └── app/ editor/ notes/ blocks/ types/
-├── data/conflicting-plugins.json
+│   └── admin-colors/ app/ editor/ notes/ blocks/ types/
 ├── tests/
 │   ├── php/                     WP test suite, PHPUnit 9.6
-│   ├── e2e/                     Playwright on Playground
-│   └── js/                      Vitest
+│   └── e2e/                     Playwright on Playground
 ├── prototype/workspace.html     Static layout prototype
 ├── build/                       Generated, gitignored
 └── PLAN.md, ARCHITECTURE.md, ROADMAP.md

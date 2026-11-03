@@ -6,9 +6,10 @@ on:
   push:
     branches: [ trunk ]
   pull_request:
+  workflow_call:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -67,8 +68,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress
-      - run: rsync -a --exclude-from=.distignore ./ "$RUNNER_TEMP/liber/"
+      - run: bin/build-zip.sh "$RUNNER_TEMP"
       - uses: wordpress/plugin-check-action@v1
         with:
           build-dir: ${{ runner.temp }}/liber

@@ -1,0 +1,49 @@
+# Releases. Pushing a version tag (v0.1.0) runs CI, then publishes a GitHub
+# release with the plugin zip and that version's changelog entry from
+# readme.txt. Run by hand on a branch, it builds the zip as a workflow
+# artifact instead, to try a release without publishing it.
+name: Release
+
+on:
+  push:
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    name: Release
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: Check the version and write the release notes
+        run: |
+          version=""
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            version="${GITHUB_REF_NAME#v}"
+          fi
+          bin/release-notes.sh $version > "$RUNNER_TEMP/notes.md"
+      - run: bin/build-zip.sh "$RUNNER_TEMP"
+      - name: Publish the release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create "$GITHUB_REF_NAME" "$RUNNER_TEMP/liber.zip"
+          --title "$GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/notes.md" --verify-tag
+      - name: Keep the zip
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v4
+        with:
+          name: liber
+          path: ${{ runner.temp }}/liber.zip
