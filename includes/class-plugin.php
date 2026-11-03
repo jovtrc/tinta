@@ -26,6 +26,7 @@ final class Plugin {
 		( new Docs\Revisions() )->register();
 		$tree->register();
 		( new Rest\Tree_Controller( $tree ) )->register();
+		( new Rest\Lock_Controller() )->register();
 		( new Workspace\Screen( $tree ) )->register();
 	}
 }
