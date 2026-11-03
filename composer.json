@@ -16,11 +16,6 @@
 		"szepeviktor/phpstan-wordpress": "^2.0",
 		"wp-coding-standards/wpcs": "^3.1"
 	},
-	"autoload": {
-		"classmap": [
-			"includes/"
-		]
-	},
 	"autoload-dev": {
 		"classmap": [
 			"tests/unit/"
