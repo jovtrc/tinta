@@ -1,6 +1,6 @@
 /**
- * A tree row's actions, shown on hover or focus: a menu with Pin (everyone)
- * and Move to trash (editors), and + to add a subpage (editors).
+ * A tree row's actions, shown on hover or focus: a menu with Pin (everyone),
+ * Move to… and Move to trash (editors), and + to add a subpage (editors).
  */
 import {
 	Button,
@@ -11,6 +11,7 @@ import {
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	moreHorizontal,
+	moveTo,
 	plus,
 	starEmpty,
 	starFilled,
@@ -25,6 +26,7 @@ interface PageActionsProps {
 	isPinned: boolean;
 	onTogglePin: () => void;
 	onAddSubpage: () => void;
+	onMove: () => void;
 	onTrash: () => void;
 }
 
@@ -37,6 +39,7 @@ interface PageActionsProps {
  * @param props.isPinned     Whether the page is pinned.
  * @param props.onTogglePin  Pins or unpins the page.
  * @param props.onAddSubpage Adds a page inside this one.
+ * @param props.onMove       Opens "Move to…".
  * @param props.onTrash      Asks to move the page to the trash.
  */
 export function PageActions( {
@@ -45,6 +48,7 @@ export function PageActions( {
 	isPinned,
 	onTogglePin,
 	onAddSubpage,
+	onMove,
 	onTrash,
 }: PageActionsProps ) {
 	return (
@@ -71,6 +75,17 @@ export function PageActions( {
 								? __( 'Unpin', 'liber' )
 								: __( 'Pin', 'liber' ) }
 						</MenuItem>
+						{ config.canCreate && (
+							<MenuItem
+								icon={ moveTo }
+								onClick={ () => {
+									onClose();
+									onMove();
+								} }
+							>
+								{ __( 'Move to…', 'liber' ) }
+							</MenuItem>
+						) }
 						{ config.canCreate && (
 							<MenuItem
 								icon={ trash }

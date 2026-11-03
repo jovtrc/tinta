@@ -35,6 +35,7 @@ import { store as prefsStore } from '../store/prefs';
 import { ancestorsOf, groupByParent } from '../tree-utils';
 import { useCreatePage } from '../use-create-page';
 import { PageActions } from './page-actions';
+import { MoveDialog } from './move-dialog';
 import { TrashConfirm } from './trash-confirm';
 import { useTreeDrag, type DropTarget } from './use-tree-drag';
 
@@ -48,6 +49,7 @@ interface TreeState {
 	onOpen: ( pageId: number ) => void;
 	onAddSubpage: ( parent: TreePage ) => void;
 	onTrash: ( page: TreePage ) => void;
+	onMove: ( page: TreePage ) => void;
 	draggedId: number;
 	target: DropTarget | null;
 	justDropped: MutableRefObject< boolean >;
@@ -80,6 +82,7 @@ export function PageTree( { currentId, onOpen }: PageTreeProps ) {
 	const { setExpanded, togglePin } = useDispatch( prefsStore );
 	const expanded = useMemo( () => new Set( prefs.expanded ), [ prefs ] );
 	const [ trashing, setTrashing ] = useState< TreePage | null >( null );
+	const [ moving, setMoving ] = useState< TreePage | null >( null );
 	const createPage = useCreatePage( onOpen );
 	const expand = ( pageId: number ) => setExpanded( [ pageId ], true );
 	const drag = useTreeDrag( pages ?? [], expand );
@@ -116,6 +119,7 @@ export function PageTree( { currentId, onOpen }: PageTreeProps ) {
 				onOpen,
 				onAddSubpage,
 				onTrash: setTrashing,
+				onMove: setMoving,
 				draggedId: drag.draggedId,
 				target: drag.target,
 				justDropped: drag.justDropped,
@@ -136,6 +140,12 @@ export function PageTree( { currentId, onOpen }: PageTreeProps ) {
 					) }
 				</DragOverlay>
 			</DndContext>
+			{ moving && (
+				<MoveDialog
+					page={ moving }
+					onClose={ () => setMoving( null ) }
+				/>
+			) }
 			{ trashing && (
 				<TrashConfirm
 					page={ trashing }
@@ -189,6 +199,7 @@ function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
 		onOpen,
 		onAddSubpage,
 		onTrash,
+		onMove,
 		draggedId,
 		target,
 		justDropped,
@@ -263,6 +274,7 @@ function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
 					isPinned={ pinned.includes( page.id ) }
 					onTogglePin={ () => onTogglePin( page.id ) }
 					onAddSubpage={ () => onAddSubpage( page ) }
+					onMove={ () => onMove( page ) }
 					onTrash={ () => onTrash( page ) }
 				/>
 			</div>

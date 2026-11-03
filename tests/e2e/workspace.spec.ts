@@ -352,6 +352,28 @@ async function dragOnto(
 	await page.mouse.up();
 }
 
+test( 'moves a page with "Move to…"', async ( {
+	admin,
+	page,
+	requestUtils,
+} ) => {
+	await deleteAllPages( requestUtils );
+	const handbook = await createPage( requestUtils, 'Handbook' );
+	const roadmap = await createPage( requestUtils, 'Roadmap' );
+	await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ roadmap }` );
+
+	await sidebarLink( page, 'Roadmap' ).hover();
+	await page.getByRole( 'button', { name: 'Actions for “Roadmap”' } ).click();
+	await page.getByRole( 'menuitem', { name: 'Move to…' } ).click();
+	await page.getByRole( 'combobox', { name: 'Move inside' } ).fill( 'Hand' );
+	await page.getByRole( 'option', { name: 'Handbook' } ).click();
+	await page.getByRole( 'button', { name: 'Move', exact: true } ).click();
+
+	await expect
+		.poll( async () => ( await getPage( requestUtils, roadmap ) ).parent )
+		.toBe( handbook );
+} );
+
 test.describe( 'Pinned, recent and expanded', () => {
 	test.beforeEach( async ( { requestUtils } ) => {
 		await deleteAllPages( requestUtils );
