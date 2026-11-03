@@ -224,7 +224,8 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 - Jobs: phpcs, phpstan, PHP unit + integration, tsc, eslint, vitest, e2e (latest WP only), build, Plugin Check (`wordpress/plugin-check-action`), `.pot` generation.
 
 ### Release
-- Tag → `composer install --no-dev --optimize-autoloader` → `pnpm build` → zip using `.distignore` (drops `bin/`, `CLAUDE.md`, `.claude/`, `.github/`, `tests/`, `node_modules/`, `prototype/`, planning docs, configs) → Plugin Check → SVN deploy with `10up/action-wordpress-plugin-deploy`.
+- Tag → `composer install --no-dev --optimize-autoloader` → `pnpm build` → zip using `.distignore` (drops `src/`, `bin/`, `.github/`, `tests/`, `node_modules/`, `prototype/`, planning docs and tool configs; keeps `composer.json` beside `vendor/`, as Plugin Check asks) → Plugin Check → SVN deploy with `10up/action-wordpress-plugin-deploy`.
+- CI's Plugin Check job builds those release contents on every push and runs `wordpress/plugin-check-action` on them.
 - `readme.txt` links the public repo for the TypeScript sources (guideline 4).
 - wp.org holds each release ~6 h for an automated security review.
 

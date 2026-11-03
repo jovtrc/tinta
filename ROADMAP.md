@@ -34,6 +34,7 @@
   - [x] Drag handle on hover to move blocks.
   - [x] Drag to reorder pins.
   - [x] Setup wizard: name and icon, conflicting plugins, new people's role, sample pages, workspace mode.
+  - [x] `readme.txt`, `.distignore`, and Plugin Check in CI on the release contents (clean, experimental checks included).
   - [ ] Liber Light, pt_BR.
 
 ## v1.0 — MVP (wordpress.org)

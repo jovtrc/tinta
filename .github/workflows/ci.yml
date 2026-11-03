@@ -1,4 +1,5 @@
-# Standards, types, build, PHP tests (single site and multisite) and e2e tests.
+# Standards, types, build, PHP tests (single site and multisite), e2e tests,
+# and Plugin Check on the release contents.
 name: CI
 
 on:
@@ -55,3 +56,15 @@ jobs:
           name: e2e-artifacts
           path: artifacts/
           retention-days: 7
+
+  plugin-check:
+    name: Plugin Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+      - run: rsync -a --exclude-from=.distignore ./ "$RUNNER_TEMP/liber/"
+      - uses: wordpress/plugin-check-action@v1
+        with:
+          build-dir: ${{ runner.temp }}/liber
