@@ -30,6 +30,7 @@ final class Plugin {
 		( new Rest\Tree_Controller( $tree ) )->register();
 		( new Rest\Lock_Controller() )->register();
 		( new Rest\Restore_Controller() )->register();
+		( new Rest\Move_Controller( new Docs\Mover( $tree ) ) )->register();
 		( new Workspace\Screen( $tree ) )->register();
 	}
 }
