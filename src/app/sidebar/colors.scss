@@ -1,0 +1,58 @@
+// Sidebar colors. The sidebar wears the admin color scheme: the shade core
+// gives an open menu's items, so it reads apart from the admin menu beside it,
+// and the menu's text and current-item colors. Liber Light and schemes added
+// by plugins keep the light sidebar, with the scheme's accent on the open page.
+// Values come from core's compiled schemes (wp-admin/css) in WordPress 7.1.
+
+@use "sass:color";
+@use "sass:list";
+
+// Background, text, current item background, current item text.
+$schemes: (
+	"fresh": (#2c3338, #f0f0f1, #2271b1, #fff),
+	"modern": (#0c0c0c, #fff, #3858e9, #fff),
+	"light": (#fff, #333, #6e6e6e, #fff),
+	"blue": (#1c3f5d, #fff, #437aa8, #fff),
+	"coffee": (#473b31, #fff, #916745, #fff),
+	"ectoplasm": (#392751, #fff, #646c3e, #fff),
+	"midnight": (#232a2e, #fff, #cf4339, #fff),
+	"ocean": (#2b3f44, #fff, #567958, #fff),
+	"sunrise": (#6f2724, #fff, #ad631e, #fff),
+);
+
+body {
+	--liber-sidebar-bg: #f6f7f7;
+	--liber-sidebar-text: #1e1e1e;
+	--liber-sidebar-current-bg: color-mix(in srgb, var(--wp-admin-theme-color, #3858e9) 14%, #fff);
+	--liber-sidebar-current-text: #1e1e1e;
+	--liber-sidebar-color-scheme: light;
+}
+
+@each $name, $colors in $schemes {
+	$bg: list.nth($colors, 1);
+	$color-scheme: light;
+
+	@if color.channel($bg, "lightness", $space: hsl) < 50% {
+		$color-scheme: dark;
+	}
+
+	body.admin-color-#{$name} {
+		--liber-sidebar-bg: #{$bg};
+		--liber-sidebar-text: #{list.nth($colors, 2)};
+		--liber-sidebar-current-bg: #{list.nth($colors, 3)};
+		--liber-sidebar-current-text: #{list.nth($colors, 4)};
+		--liber-sidebar-color-scheme: #{$color-scheme};
+	}
+}
+
+.liber-sidebar {
+	--liber-sidebar-muted: color-mix(in srgb, var(--liber-sidebar-text) 60%, var(--liber-sidebar-bg));
+	--liber-sidebar-hover: color-mix(in srgb, var(--liber-sidebar-text) 7%, transparent);
+	--liber-sidebar-border: color-mix(in srgb, var(--liber-sidebar-text) 12%, var(--liber-sidebar-bg));
+	color-scheme: var(--liber-sidebar-color-scheme);
+}
+
+// The admin menu's arrow on the current item points into the sidebar.
+body:has(.liber-sidebar) ul#adminmenu > li.current > a.current::after {
+	border-inline-end-color: var(--liber-sidebar-bg);
+}

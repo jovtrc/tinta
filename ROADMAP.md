@@ -38,6 +38,7 @@
   - [x] Translation-ready: 196 strings extract cleanly from the release files (pt_BR is translated on translate.wordpress.org after release).
   - [x] Prototype polish: breadcrumbs, bold titles, the editor's avatar in "Edited by", an arrow on page links, "+" beside Pages, your role under your name, the workspace icon in the sidebar.
   - [x] Liber Light admin color scheme (built on core's scheme partials), given to people who join in workspace mode.
+  - [x] The sidebar wears the admin color scheme (Midnight, Ocean, Modern…), so the workspace matches the rest of wp-admin.
   - [x] Security review of permissions and REST, with fixes: reading takes a Liber role (authors too), pages' files and notes stay out of other roles' listings, open-registration warning, parent rules on every write, loop guards.
   - [x] Scale check on Playground with 630 pages, all expanded: the tree endpoint costs no more than any WordPress request (~40 KB), the sidebar renders ~0.25 s after the page loads, typing in a title stays smooth (one 85 ms task over 25 keys and a save).
 

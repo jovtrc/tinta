@@ -130,9 +130,9 @@ Per user and per site (multisite-safe): pinned (ordered), recent (last 5), tree 
 - Guests (who see only shared pages) come later (ROADMAP v1.3).
 
 ### 4.11 Themes (admin color schemes)
-- Liber's colors come from the user's own admin color scheme (Users → Profile), fed into the WordPress Design System (`ThemeProvider` seeds). Pick "Ocean" in your profile and your workspace turns Ocean.
+- Liber's colors come from the user's own admin color scheme (Users → Profile). Pick "Ocean" in your profile and your workspace turns Ocean: the sidebar wears the scheme (the shade core gives an open menu's items, so it reads apart from the admin menu beside it, and the menu's current-item colors), and the accent comes from `--wp-admin-theme-color`.
 - Liber adds one scheme with `wp_admin_css_color()`: **Liber Light** — a light menu with dark text, WordPress blue for actions, and a blue tint on the current item (the prototype's palette). It styles the rest of wp-admin too. People who join while workspace mode is on get it; anyone can pick another in their profile.
-- The workspace takes its accent, and the tint of the open page in the tree, from the scheme in use.
+- Under Liber Light and schemes added by plugins, the sidebar stays light, with the scheme's accent tinting the open page.
 - **Liber Dark** is postponed: core's editor UI (block toolbar, inspector, inserter) doesn't follow a dark scheme.
 
 ### 4.12 Setup wizard
