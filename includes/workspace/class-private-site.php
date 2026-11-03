@@ -22,13 +22,14 @@ final class Private_Site {
 	 * Hooks the front end, REST and sitemaps.
 	 */
 	public function register(): void {
-		add_action( 'template_redirect', array( $this, 'require_login' ) );
+		add_action( 'template_redirect', array( $this, 'require_login' ), 0 );
 		add_filter( 'rest_authentication_errors', array( $this, 'require_rest_login' ) );
 		add_filter( 'wp_sitemaps_enabled', array( $this, 'sitemaps_enabled' ) );
 	}
 
 	/**
-	 * Sends logged-out visitors to the login screen.
+	 * Sends logged-out visitors to the login screen, before core's canonical
+	 * redirects, which would reveal usernames (`?author=1`).
 	 */
 	public function require_login(): void {
 		if ( Settings::is_workspace_mode() && ! is_user_logged_in() ) {

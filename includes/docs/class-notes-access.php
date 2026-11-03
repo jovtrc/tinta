@@ -36,7 +36,7 @@ final class Notes_Access {
 	 */
 	public function open( $response, array $handler, WP_REST_Request $request ) {
 		if ( $this->lists_page_notes( $request ) ) {
-			add_filter( 'user_has_cap', array( $this, 'grant' ) );
+			add_filter( 'user_has_cap', array( $this, 'grant' ), 10, 4 );
 		}
 
 		return $response;
@@ -55,13 +55,18 @@ final class Notes_Access {
 	}
 
 	/**
-	 * Adds `edit_posts`.
+	 * Adds `edit_posts` for the person making the request, nobody else.
 	 *
 	 * @param array<string, bool> $caps The user's capabilities.
+	 * @param string[]            $cap  Capabilities checked.
+	 * @param mixed[]             $args Capability, user ID, and more.
+	 * @param \WP_User            $user User checked.
 	 * @return array<string, bool>
 	 */
-	public function grant( array $caps ): array {
-		$caps['edit_posts'] = true;
+	public function grant( array $caps, array $cap, array $args, \WP_User $user ): array {
+		if ( get_current_user_id() === $user->ID ) {
+			$caps['edit_posts'] = true;
+		}
 
 		return $caps;
 	}

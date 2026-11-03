@@ -74,15 +74,22 @@ final class People_Controller extends WP_REST_Controller {
 	}
 
 	/**
-	 * People whose role can edit pages, by name.
+	 * People whose role can edit pages, by name; nobody when no role can (an
+	 * empty role list would match everyone).
 	 *
 	 * @param \WP_REST_Request $request Request.
 	 * @return \WP_REST_Response
 	 */
 	public function get_items( $request ) {
+		$roles = $this->editing_roles();
+
+		if ( ! $roles ) {
+			return rest_ensure_response( array() );
+		}
+
 		$users = get_users(
 			array(
-				'role__in' => $this->editing_roles(),
+				'role__in' => $roles,
 				'orderby'  => 'display_name',
 				'number'   => self::MAX,
 				'fields'   => array( 'ID', 'display_name' ),
