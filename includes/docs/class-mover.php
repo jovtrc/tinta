@@ -42,11 +42,11 @@ final class Mover {
 
 		$subtree = $this->subtree( $page_id, $pages );
 
-		if ( in_array( $parent_id, $subtree, true ) ) {
+		if ( in_array( $parent_id, $subtree, true ) || $this->is_inside( $parent_id, $page_id ) ) {
 			return new WP_Error( 'liber_move_cycle', __( 'A page can’t go inside itself.', 'liber' ), array( 'status' => 400 ) );
 		}
 
-		if ( $this->level( $parent_id, $pages ) + $this->height( $page_id, $pages ) > Post_Type::MAX_DEPTH ) {
+		if ( $this->level( $parent_id, $pages ) + $this->tree->height( $page_id ) > Post_Type::MAX_DEPTH ) {
 			return new WP_Error(
 				'liber_too_deep',
 				/* translators: %d: maximum number of levels. */
@@ -93,6 +93,23 @@ final class Mover {
 	}
 
 	/**
+	 * Whether a page sits inside another, read fresh rather than from the cached
+	 * tree, so two moves at once can't put two pages inside each other.
+	 *
+	 * @param int $page_id     Page that may be inside.
+	 * @param int $ancestor_id Page it may be inside.
+	 */
+	private function is_inside( int $page_id, int $ancestor_id ): bool {
+		if ( ! $page_id ) {
+			return false;
+		}
+
+		clean_post_cache( $page_id );
+
+		return in_array( $ancestor_id, get_post_ancestors( $page_id ), true );
+	}
+
+	/**
 	 * A page and all its descendants.
 	 *
 	 * @param int                            $page_id Page ID.
@@ -104,7 +121,12 @@ final class Mover {
 		$queue = array( $page_id );
 
 		while ( $queue ) {
-			$id    = array_shift( $queue );
+			$id = array_shift( $queue );
+
+			if ( in_array( $id, $ids, true ) ) {
+				continue;
+			}
+
 			$ids[] = $id;
 
 			foreach ( $pages as $child_id => $page ) {
@@ -124,30 +146,12 @@ final class Mover {
 	 * @param array<int, array{parent: int}> $pages   Tree pages by ID.
 	 */
 	private function level( int $page_id, array $pages ): int {
-		$level = 0;
+		$seen = array();
 
-		for ( $id = $page_id; $id && isset( $pages[ $id ] ); $id = $pages[ $id ]['parent'] ) {
-			++$level;
+		for ( $id = $page_id; $id && isset( $pages[ $id ] ) && ! isset( $seen[ $id ] ); $id = $pages[ $id ]['parent'] ) {
+			$seen[ $id ] = true;
 		}
 
-		return $level;
-	}
-
-	/**
-	 * Number of levels a page's subtree spans, 1 for a page without subpages.
-	 *
-	 * @param int                            $page_id Page ID.
-	 * @param array<int, array{parent: int}> $pages   Tree pages by ID.
-	 */
-	private function height( int $page_id, array $pages ): int {
-		$height = 1;
-
-		foreach ( $pages as $id => $page ) {
-			if ( $page['parent'] === $page_id ) {
-				$height = max( $height, 1 + $this->height( $id, $pages ) );
-			}
-		}
-
-		return $height;
+		return count( $seen );
 	}
 }

@@ -118,6 +118,21 @@ final class Subtree_Trash_Test extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A plugin that stops one subpage from going to the trash doesn't keep
+	 * trashing going forever; that subpage just stays.
+	 */
+	public function test_a_vetoed_subpage_stays_without_looping(): void {
+		$veto = fn( $trash, \WP_Post $post ) => $post->ID === $this->pages['onboarding'] ? false : $trash;
+		add_filter( 'pre_trash_post', $veto, 10, 2 );
+
+		wp_trash_post( $this->pages['handbook'] );
+
+		remove_filter( 'pre_trash_post', $veto );
+		$this->assertSame( 'trash', get_post_status( $this->pages['handbook'] ) );
+		$this->assertSame( 'private', get_post_status( $this->pages['onboarding'] ) );
+	}
+
+	/**
 	 * Creates a private page.
 	 *
 	 * @param int $parent_id Parent page ID.

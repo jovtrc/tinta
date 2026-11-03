@@ -21,7 +21,7 @@ final class Plugin {
 		$tree = new Docs\Tree( new Cache\Cache() );
 
 		( new Setup\Installer() )->register();
-		( new Docs\Post_Type() )->register();
+		( new Docs\Post_Type( $tree ) )->register();
 		( new Docs\Private_Status() )->register();
 		( new Docs\Revisions() )->register();
 		( new Docs\Subtree_Trash() )->register();

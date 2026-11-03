@@ -70,6 +70,35 @@ final class Tree {
 	}
 
 	/**
+	 * Number of levels a page's subtree spans, 1 for a page without subpages.
+	 *
+	 * @param int $page_id Page ID; 0 counts as a page without subpages.
+	 */
+	public function height( int $page_id ): int {
+		return $page_id ? self::height_in( $page_id, array_column( $this->pages(), 'parent', 'id' ), array() ) : 1;
+	}
+
+	/**
+	 * Height of a subtree, stopping at pages already counted.
+	 *
+	 * @param int              $page_id Page ID.
+	 * @param array<int, int>  $parents Each page's parent, by ID.
+	 * @param array<int, true> $seen    Pages already counted.
+	 */
+	private static function height_in( int $page_id, array $parents, array $seen ): int {
+		$height           = 1;
+		$seen[ $page_id ] = true;
+
+		foreach ( $parents as $id => $parent ) {
+			if ( $parent === $page_id && ! isset( $seen[ $id ] ) ) {
+				$height = max( $height, 1 + self::height_in( $id, $parents, $seen ) );
+			}
+		}
+
+		return $height;
+	}
+
+	/**
 	 * The first top-level page, if any.
 	 */
 	public function first_page_id(): int {

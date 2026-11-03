@@ -12,7 +12,9 @@ use WP_Error;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Registers `liber_doc`, the workspace page, and its icon meta; pages nest up to 5 levels.
+ * Registers `liber_doc`, the workspace page, and its icon meta. Pages nest up
+ * to 5 levels, under other pages in the tree only, never inside themselves:
+ * REST says why it refuses a parent, and other writes keep the current one.
  */
 final class Post_Type {
 
@@ -23,11 +25,19 @@ final class Post_Type {
 	public const MAX_DEPTH = 5;
 
 	/**
-	 * Hooks the registration and the parent check.
+	 * Sets the tree that subtree heights come from.
+	 *
+	 * @param Tree $tree Page tree.
+	 */
+	public function __construct( private Tree $tree ) {}
+
+	/**
+	 * Hooks the registration and the parent checks.
 	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_filter( 'rest_pre_insert_' . self::NAME, array( $this, 'check_parent' ) );
+		add_filter( 'wp_insert_post_parent', array( $this, 'keep_valid_parent' ), 10, 3 );
 	}
 
 	/**
@@ -40,7 +50,7 @@ final class Post_Type {
 	}
 
 	/**
-	 * Refuses a parent that isn't a page, or one at the deepest level.
+	 * Refuses a parent the page can't go under, with the reason.
 	 *
 	 * @param \stdClass|WP_Error $prepared_post Page about to be saved through REST.
 	 * @return \stdClass|WP_Error
@@ -52,11 +62,41 @@ final class Post_Type {
 			return $prepared_post;
 		}
 
-		if ( self::NAME !== get_post_type( $parent_id ) ) {
+		return $this->parent_error( (int) ( $prepared_post->ID ?? 0 ), $parent_id ) ?? $prepared_post;
+	}
+
+	/**
+	 * Keeps the current parent when any other write asks for one the page can't go under.
+	 *
+	 * @param int                  $parent_id   Parent asked for.
+	 * @param int                  $post_id     Post ID; 0 for a new post.
+	 * @param array<string, mixed> $new_postarr Post being saved.
+	 */
+	public function keep_valid_parent( int $parent_id, int $post_id, array $new_postarr ): int {
+		if ( ! $parent_id || self::NAME !== ( $new_postarr['post_type'] ?? '' ) || ! $this->parent_error( $post_id, $parent_id ) ) {
+			return $parent_id;
+		}
+
+		return $post_id ? (int) wp_get_post_parent_id( $post_id ) : 0;
+	}
+
+	/**
+	 * Why a page can't go under a parent: the parent isn't a page in the tree,
+	 * the page would be inside itself, or it would sit past the deepest level.
+	 *
+	 * @param int $page_id   Page ID; 0 for a new page.
+	 * @param int $parent_id Parent ID.
+	 */
+	private function parent_error( int $page_id, int $parent_id ): ?WP_Error {
+		if ( self::NAME !== get_post_type( $parent_id ) || 'private' !== get_post_status( $parent_id ) ) {
 			return new WP_Error( 'liber_invalid_parent', __( 'A page can only go under another page.', 'liber' ), array( 'status' => 400 ) );
 		}
 
-		if ( self::level( $parent_id ) >= self::MAX_DEPTH ) {
+		if ( $page_id && ( $page_id === $parent_id || in_array( $page_id, get_post_ancestors( $parent_id ), true ) ) ) {
+			return new WP_Error( 'liber_move_cycle', __( 'A page can’t go inside itself.', 'liber' ), array( 'status' => 400 ) );
+		}
+
+		if ( self::level( $parent_id ) + $this->tree->height( $page_id ) > self::MAX_DEPTH ) {
 			return new WP_Error(
 				'liber_too_deep',
 				/* translators: %d: maximum number of levels. */
@@ -65,7 +105,7 @@ final class Post_Type {
 			);
 		}
 
-		return $prepared_post;
+		return null;
 	}
 
 	/**

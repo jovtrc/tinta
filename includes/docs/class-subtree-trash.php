@@ -45,17 +45,23 @@ final class Subtree_Trash {
 		$root_id = (int) get_post_meta( $post_id, self::TRASHED_WITH_META, true );
 		$root_id = $root_id ? $root_id : $post_id;
 
+		$done = array();
+
 		do {
-			$children = $this->query_ids(
-				array(
-					'post_parent' => $post_id,
-					'post_status' => 'private',
-				)
+			$children = array_diff(
+				$this->query_ids(
+					array(
+						'post_parent' => $post_id,
+						'post_status' => 'private',
+					)
+				),
+				$done
 			);
 
 			foreach ( $children as $child_id ) {
 				update_post_meta( $child_id, self::TRASHED_WITH_META, $root_id );
 				wp_trash_post( $child_id );
+				$done[] = $child_id;
 			}
 		} while ( $children );
 	}
@@ -75,11 +81,14 @@ final class Subtree_Trash {
 		delete_post_meta( $post_id, self::TRASHED_WITH_META );
 		$this->move_to_top_if_orphaned( $post_id );
 
+		$done = array();
+
 		do {
-			$subpages = $this->trashed_subpages( $post_id );
+			$subpages = array_diff( $this->trashed_subpages( $post_id ), $done );
 
 			foreach ( $subpages as $subpage_id ) {
 				wp_untrash_post( $subpage_id );
+				$done[] = $subpage_id;
 			}
 		} while ( $subpages );
 	}
@@ -96,11 +105,14 @@ final class Subtree_Trash {
 			return;
 		}
 
+		$done = array();
+
 		do {
-			$subpages = $this->trashed_subpages( $post_id );
+			$subpages = array_diff( $this->trashed_subpages( $post_id ), $done );
 
 			foreach ( $subpages as $subpage_id ) {
 				wp_delete_post( $subpage_id, true );
+				$done[] = $subpage_id;
 			}
 		} while ( $subpages );
 	}

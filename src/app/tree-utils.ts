@@ -35,7 +35,7 @@ export function ancestorsOf( pageId: number, pages: TreePage[] ): number[] {
 
 	for (
 		let id = parentOf.get( pageId ) ?? 0;
-		id;
+		id && id !== pageId && ! ancestors.includes( id );
 		id = parentOf.get( id ) ?? 0
 	) {
 		ancestors.push( id );
@@ -52,15 +52,15 @@ export function ancestorsOf( pageId: number, pages: TreePage[] ): number[] {
  */
 export function subtreeOf( pageId: number, pages: TreePage[] ): number[] {
 	const childrenOf = groupByParent( pages );
-	const ids = [ pageId ];
+	const ids = new Set( [ pageId ] );
 
-	for ( let i = 0; i < ids.length; i++ ) {
-		ids.push(
-			...( childrenOf.get( ids[ i ] ) ?? [] ).map( ( { id } ) => id )
-		);
+	for ( const id of ids ) {
+		for ( const child of childrenOf.get( id ) ?? [] ) {
+			ids.add( child.id );
+		}
 	}
 
-	return ids;
+	return [ ...ids ];
 }
 
 /**
@@ -78,13 +78,24 @@ export function levelOf( pageId: number, pages: TreePage[] ): number {
  *
  * @param pageId Page ID.
  * @param pages  Flat page list.
+ * @param seen
  */
-export function heightOf( pageId: number, pages: TreePage[] ): number {
-	const children = pages.filter( ( page ) => page.parent === pageId );
+export function heightOf(
+	pageId: number,
+	pages: TreePage[],
+	seen = new Set< number >()
+): number {
+	seen.add( pageId );
+	const children = pages.filter(
+		( page ) => page.parent === pageId && ! seen.has( page.id )
+	);
 
 	return (
 		1 +
-		Math.max( 0, ...children.map( ( { id } ) => heightOf( id, pages ) ) )
+		Math.max(
+			0,
+			...children.map( ( { id } ) => heightOf( id, pages, seen ) )
+		)
 	);
 }
 

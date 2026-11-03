@@ -54,6 +54,63 @@ final class Post_Type_Test extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Moving a page through REST keeps its whole subtree within five levels.
+	 */
+	public function test_moves_keep_subtrees_within_five_levels(): void {
+		$level_four = $this->create_page( $this->create_page( $this->create_page( $this->create_page( 0 ) ) ) );
+		$handbook   = $this->create_page( 0 );
+		$this->create_page( $handbook );
+
+		$response = $this->update_parent( $handbook, $level_four );
+
+		$this->assertSame( 'liber_too_deep', $response->get_data()['code'] );
+		$this->assertSame( 0, wp_get_post_parent_id( $handbook ) );
+	}
+
+	/**
+	 * A page can't go inside its own subtree, or under a page in the trash.
+	 */
+	public function test_refuses_its_own_subtree_and_trashed_parents(): void {
+		$handbook = $this->create_page( 0 );
+		$child    = $this->create_page( $handbook );
+		$trashed  = $this->create_page( 0 );
+		wp_trash_post( $trashed );
+
+		$this->assertSame( 'liber_move_cycle', $this->update_parent( $handbook, $child )->get_data()['code'] );
+		$this->assertSame( 'liber_invalid_parent', $this->update_parent( $handbook, $trashed )->get_data()['code'] );
+	}
+
+	/**
+	 * Writes outside REST keep the current parent when asked for one that isn't allowed.
+	 */
+	public function test_other_writes_keep_the_current_parent(): void {
+		$handbook = $this->create_page( 0 );
+		$child    = $this->create_page( $handbook );
+
+		wp_update_post(
+			array(
+				'ID'          => $handbook,
+				'post_parent' => $child,
+			)
+		);
+
+		$this->assertSame( 0, wp_get_post_parent_id( $handbook ) );
+	}
+
+	/**
+	 * Changes a page's parent through the REST API.
+	 *
+	 * @param int $page_id   Page ID.
+	 * @param int $parent_id New parent ID.
+	 */
+	private function update_parent( int $page_id, int $parent_id ): WP_REST_Response {
+		$request = new WP_REST_Request( 'POST', '/wp/v2/liber-docs/' . $page_id );
+		$request->set_body_params( array( 'parent' => $parent_id ) );
+
+		return rest_get_server()->dispatch( $request );
+	}
+
+	/**
 	 * Creates a private page.
 	 *
 	 * @param int $parent_id Parent page ID.
