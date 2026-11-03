@@ -115,7 +115,7 @@ Core only lets users with `read_private_liber_docs` read a private post — in R
 - Tree changes = create, trash, restore, delete, move, and updates that change title, parent, order, status or icon (compared through `post_updated`'s before/after). Content-only saves and autosaves don't touch the tree.
 
 ### Freshness across users
-- Heartbeat (`heartbeat_received`) returns `liber_tree_generation`; the client refetches the tree only when the number changed. Cost per tick: reading one autoloaded option.
+- Heartbeat (`heartbeat_received`) returns `liber_tree_generation` when the workspace sends `liber_tree`; the client listens through `wp.hooks` (`heartbeat.send` / `heartbeat.tick`) and refetches the tree only when the number changed. The workspace screen ticks every 15 s (WordPress slows background tabs down). Cost per tick: reading one autoloaded option.
 - No ETags. Core already sends no-cache headers on REST responses for signed-in users (`rest_send_nocache_headers`).
 
 ### Storage conventions
