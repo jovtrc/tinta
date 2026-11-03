@@ -30,13 +30,15 @@ export function Sidebar( { currentId, onOpen }: SidebarProps ) {
 			aria-label={ __( 'Workspace', 'liber' ) }
 		>
 			<div className="liber-sidebar__header">{ config.siteName }</div>
-			<Button
-				className="liber-sidebar__action"
-				icon={ plus }
-				onClick={ () => createPage() }
-			>
-				{ __( 'New page', 'liber' ) }
-			</Button>
+			{ config.canCreate && (
+				<Button
+					className="liber-sidebar__action"
+					icon={ plus }
+					onClick={ () => createPage() }
+				>
+					{ __( 'New page', 'liber' ) }
+				</Button>
+			) }
 			<h2 className="liber-sidebar__heading">
 				{ __( 'Pages', 'liber' ) }
 			</h2>

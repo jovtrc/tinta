@@ -35,6 +35,7 @@
 		<properties>
 			<property name="custom_capabilities" type="array">
 				<element value="liber_access"/>
+				<element value="edit_liber_docs"/>
 				<element value="liber_manage"/>
 			</property>
 		</properties>

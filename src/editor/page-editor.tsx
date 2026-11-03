@@ -1,15 +1,11 @@
 /**
  * The editor for one page, built from public editor components.
- * The app remounts it per page (`key`), so every page starts with a fresh editor state.
  */
 import {
 	BlockCanvas,
 	BlockInspector,
 	BlockList,
 } from '@wordpress/block-editor';
-import { Spinner } from '@wordpress/components';
-import { store as coreStore } from '@wordpress/core-data';
-import { useSelect } from '@wordpress/data';
 import {
 	EditorKeyboardShortcuts,
 	EditorKeyboardShortcutsRegister,
@@ -17,16 +13,18 @@ import {
 	PostTitle,
 	UnsavedChangesWarning,
 } from '@wordpress/editor';
-import { useState } from '@wordpress/element';
-import { InlineNotices } from '@wordpress/notices';
+import { useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-
+import { InlineNotices } from '@wordpress/notices';
 import type { ComponentType } from 'react';
 
-import { config, POST_TYPE } from '../app/config';
+import { config } from '../app/config';
 import { ContinuousSave } from './continuous-save';
 import { EditorHeader } from './editor-header';
+import { LockModal } from './lock-modal';
 import { TitleSync } from './title-sync';
+import type { PageLock } from './use-page-access';
+import type { PageRecord } from './use-page-record';
 
 /**
  * Registers the editor's shortcuts (⌘S, undo…). Its published types wrongly return a DOM `Element`.
@@ -46,62 +44,41 @@ const CANVAS_STYLES = [
 	},
 ];
 
-/**
- * Loads the page, then renders the editor.
- *
- * @param props        Props.
- * @param props.pageId Page ID.
- */
-export function PageEditor( { pageId }: { pageId: number } ) {
-	const [ isInspectorOpen, setInspectorOpen ] = useState( false );
-	const { page, isMissing } = useSelect(
-		( select ) => {
-			const args: [ string, string, number ] = [
-				'postType',
-				POST_TYPE,
-				pageId,
-			];
-			const record = select( coreStore ).getEntityRecord( ...args );
+interface PageEditorProps {
+	page: PageRecord;
+	lock: PageLock;
+}
 
-			return {
-				page: record,
-				isMissing:
-					! record &&
-					select( coreStore ).hasFinishedResolution(
-						'getEntityRecord',
-						args
-					),
-			};
-		},
-		[ pageId ]
+/**
+ * Renders the editor, with the page's lock in its settings.
+ *
+ * @param props      Props.
+ * @param props.page Page record (edit context).
+ * @param props.lock The page's lock.
+ */
+export function PageEditor( { page, lock }: PageEditorProps ) {
+	const [ isInspectorOpen, setInspectorOpen ] = useState( false );
+	const settings = useMemo(
+		() => ( {
+			...config.settings,
+			postLock: {
+				isLocked: lock.isLocked,
+				user: lock.user ?? undefined,
+				activePostLock: lock.activePostLock ?? undefined,
+			},
+			postLockUtils: lock.postLockUtils,
+		} ),
+		[ lock ]
 	);
 
-	if ( isMissing ) {
-		return (
-			<p className="liber-editor__message">
-				{ __(
-					'This page doesn’t exist, or you can’t open it.',
-					'liber'
-				) }
-			</p>
-		);
-	}
-
-	if ( ! page ) {
-		return (
-			<div className="liber-editor__message">
-				<Spinner />
-			</div>
-		);
-	}
-
 	return (
-		<EditorProvider post={ page } settings={ config.settings }>
+		<EditorProvider post={ page } settings={ settings }>
 			<ShortcutsRegister />
 			<EditorKeyboardShortcuts />
-			<ContinuousSave pageId={ pageId } />
+			<ContinuousSave pageId={ page.id } />
 			<UnsavedChangesWarning />
-			<TitleSync pageId={ pageId } />
+			<TitleSync pageId={ page.id } />
+			<LockModal />
 			<div className="liber-editor">
 				<EditorHeader
 					isInspectorOpen={ isInspectorOpen }

@@ -1,8 +1,16 @@
 /**
  * The workspace screen: creating, saving and switching pages.
  */
-import { expect, test } from '@wordpress/e2e-test-utils-playwright';
-import type { RequestUtils } from '@wordpress/e2e-test-utils-playwright';
+import {
+	expect,
+	RequestUtils,
+	test,
+} from '@wordpress/e2e-test-utils-playwright';
+
+/**
+ * Password for the users these tests create on the disposable Playground site.
+ */
+const TEST_PASSWORD = 'liber-e2e-password';
 
 interface PageRecord {
 	id: number;
@@ -13,6 +21,7 @@ interface PageRecord {
 test.describe( 'Workspace', () => {
 	test.beforeEach( async ( { requestUtils } ) => {
 		await deleteAllPages( requestUtils );
+		await requestUtils.deleteAllUsers();
 	} );
 
 	test( 'creates a private page and saves it while typing', async ( {
@@ -107,6 +116,85 @@ test.describe( 'Workspace', () => {
 					( await getPage( requestUtils, handbook ) ).title.raw
 			)
 			.toBe( 'Team handbook' );
+	} );
+} );
+
+test.describe( 'Locks and roles', () => {
+	test.beforeEach( async ( { requestUtils } ) => {
+		await deleteAllPages( requestUtils );
+		await requestUtils.deleteAllUsers();
+	} );
+
+	test( 'tells you who is editing a page', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		await requestUtils.createUser( {
+			username: 'maria',
+			email: 'maria@example.com',
+			firstName: 'Maria',
+			lastName: 'Souza',
+			password: TEST_PASSWORD,
+			roles: [ 'liber_member' ],
+		} );
+		const asMaria = await RequestUtils.setup( {
+			user: { username: 'maria', password: TEST_PASSWORD },
+			baseURL: requestUtils.baseURL,
+		} );
+		await asMaria.rest( {
+			method: 'POST',
+			path: `/liber/v1/docs/${ handbook }/lock`,
+		} );
+
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=liber&doc=${ handbook }`
+		);
+
+		const dialog = page.getByRole( 'dialog', {
+			name: 'This post is already being edited',
+		} );
+		await expect( dialog ).toBeVisible();
+		await expect(
+			dialog.getByRole( 'link', { name: 'Take over' } )
+		).toBeVisible();
+	} );
+
+	test( 'shows pages read-only to viewers', async ( {
+		browser,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		await requestUtils.createUser( {
+			username: 'vera',
+			email: 'vera@example.com',
+			password: TEST_PASSWORD,
+			roles: [ 'liber_viewer' ],
+		} );
+		const context = await browser.newContext( {
+			baseURL: requestUtils.baseURL,
+		} );
+		const page = await context.newPage();
+
+		await page.goto(
+			`/wp-login.php?redirect_to=${ encodeURIComponent(
+				`/wp-admin/admin.php?page=liber&doc=${ handbook }`
+			) }`
+		);
+		await page.getByLabel( 'Username or Email Address' ).fill( 'vera' );
+		await page
+			.getByLabel( 'Password', { exact: true } )
+			.fill( TEST_PASSWORD );
+		await page.getByRole( 'button', { name: 'Log In' } ).click();
+
+		await expect( page.getByText( 'View only' ) ).toBeVisible();
+		await expect(
+			page.getByRole( 'button', { name: 'New page' } )
+		).toHaveCount( 0 );
+
+		await context.close();
 	} );
 } );
 

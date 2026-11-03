@@ -1,10 +1,12 @@
 /**
  * Saves the page while you write: a moment after the last edit, and when you
- * leave the page. Failed saves retry, waiting longer each time.
+ * leave the page. Failed saves retry, waiting longer each time. Nothing is saved
+ * while someone else holds the page's lock.
  */
 import { store as coreStore } from '@wordpress/core-data';
 import { useRegistry, useSelect } from '@wordpress/data';
 import type { DataRegistry } from '@wordpress/data';
+import { store as editorStore } from '@wordpress/editor';
 import { useEffect, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
@@ -24,8 +26,9 @@ const MAX_RETRY_DELAY = 30_000;
 export function ContinuousSave( { pageId }: { pageId: number } ) {
 	const registry = useRegistry();
 	const failures = useRef( 0 );
-	const { edits, isSaving } = useSelect(
+	const { edits, isSaving, isLocked } = useSelect(
 		( select ) => ( {
+			isLocked: select( editorStore ).isPostLocked(),
 			edits: select( coreStore ).getEntityRecordNonTransientEdits(
 				'postType',
 				POST_TYPE,
@@ -41,7 +44,7 @@ export function ContinuousSave( { pageId }: { pageId: number } ) {
 	);
 
 	useEffect( () => {
-		if ( isSaving || ! Object.keys( edits ).length ) {
+		if ( isSaving || isLocked || ! Object.keys( edits ).length ) {
 			return;
 		}
 
@@ -56,7 +59,7 @@ export function ContinuousSave( { pageId }: { pageId: number } ) {
 		}, delay );
 
 		return () => clearTimeout( timer );
-	}, [ edits, isSaving, pageId, registry ] );
+	}, [ edits, isSaving, isLocked, pageId, registry ] );
 
 	useEffect(
 		() => () => {

@@ -5,6 +5,7 @@ export interface WorkspaceConfig {
 	pageId: number;
 	url: string;
 	siteName: string;
+	canCreate: boolean;
 	settings: Record< string, unknown > & { styles?: object[] };
 }
 

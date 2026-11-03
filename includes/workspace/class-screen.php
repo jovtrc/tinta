@@ -32,11 +32,16 @@ final class Screen {
 	public function __construct( private Tree $tree ) {}
 
 	/**
-	 * Hooks the menu item and edit links.
+	 * Hooks the menu item, edit and preview links, and redirects from core's page screens.
 	 */
 	public function register(): void {
 		add_action( 'admin_menu', array( $this, 'add_menu_page' ) );
 		add_filter( 'get_edit_post_link', array( $this, 'edit_link' ), 10, 3 );
+		add_filter( 'preview_post_link', array( $this, 'preview_link' ), 10, 2 );
+
+		foreach ( array( 'edit.php', 'post.php', 'post-new.php' ) as $core_screen ) {
+			add_action( "load-{$core_screen}", array( $this, 'leave_core_screen' ) );
+		}
 	}
 
 	/**
@@ -105,7 +110,7 @@ final class Screen {
 		$asset = require plugin_dir_path( LIBER_FILE ) . 'build/workspace.asset.php';
 
 		wp_enqueue_script( self::HANDLE, plugins_url( 'build/workspace.js', LIBER_FILE ), $asset['dependencies'], $asset['version'], true );
-		wp_enqueue_style( self::HANDLE, plugins_url( 'build/workspace.css', LIBER_FILE ), array( 'wp-components', 'wp-block-editor', 'wp-editor', 'wp-format-library', 'wp-commands' ), $asset['version'] );
+		wp_enqueue_style( self::HANDLE, plugins_url( 'build/workspace.css', LIBER_FILE ), array( 'wp-components', 'wp-block-editor', 'wp-editor', 'wp-format-library', 'wp-commands', 'wp-block-library' ), $asset['version'] );
 		wp_set_script_translations( self::HANDLE, 'liber' );
 		wp_add_inline_script(
 			self::HANDLE,
@@ -148,6 +153,48 @@ final class Screen {
 	}
 
 	/**
+	 * Points page previews (like the lock dialog's) at the workspace: pages have no public URL.
+	 *
+	 * @param string  $link Preview link.
+	 * @param WP_Post $post Previewed post.
+	 */
+	public function preview_link( string $link, WP_Post $post ): string {
+		return Post_Type::NAME === $post->post_type ? self::url( $post->ID ) : $link;
+	}
+
+	/**
+	 * Sends core's page list and page editor to the workspace.
+	 */
+	public function leave_core_screen(): void {
+		global $pagenow;
+
+		$url = self::core_screen_redirect( (string) $pagenow, wp_unslash( $_GET ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only navigation.
+
+		if ( $url ) {
+			wp_safe_redirect( $url );
+			exit;
+		}
+	}
+
+	/**
+	 * Where a core screen for pages should go instead, if anywhere.
+	 * Core's lock take-over (`post.php?get-post-lock=1`) stays: core redirects back here after it.
+	 *
+	 * @param string               $core_screen Core admin file, like "post.php".
+	 * @param array<string, mixed> $query       Query arguments.
+	 */
+	public static function core_screen_redirect( string $core_screen, array $query ): ?string {
+		if ( 'post.php' === $core_screen ) {
+			$page_id = absint( $query['post'] ?? 0 );
+			$is_edit = 'edit' === ( $query['action'] ?? '' ) && empty( $query['get-post-lock'] );
+
+			return $is_edit && Post_Type::NAME === get_post_type( $page_id ) ? self::url( $page_id ) : null;
+		}
+
+		return Post_Type::NAME === ( $query['post_type'] ?? '' ) ? self::url() : null;
+	}
+
+	/**
 	 * The page in `?doc=`, if the user may read it; otherwise the first page.
 	 */
 	private function opened_page(): ?WP_Post {
@@ -165,7 +212,7 @@ final class Screen {
 	 * REST responses the app needs first, printed into the page.
 	 *
 	 * @param WP_Post|null $page Opened page.
-	 * @return string[]
+	 * @return array<int, string|string[]>
 	 */
 	private function preload_paths( ?WP_Post $page ): array {
 		$paths = array(
@@ -177,6 +224,7 @@ final class Screen {
 
 		if ( $page ) {
 			$paths[] = '/wp/v2/liber-docs/' . $page->ID . '?context=edit';
+			$paths[] = array( '/wp/v2/liber-docs/' . $page->ID, 'OPTIONS' );
 		}
 
 		return $paths;
@@ -191,10 +239,11 @@ final class Screen {
 	 */
 	private function app_data( ?WP_Post $page, WP_Block_Editor_Context $context ): array {
 		return array(
-			'pageId'   => $page ? $page->ID : 0,
-			'url'      => self::url(),
-			'siteName' => get_bloginfo( 'name' ),
-			'settings' => get_block_editor_settings(
+			'pageId'    => $page ? $page->ID : 0,
+			'url'       => self::url(),
+			'siteName'  => get_bloginfo( 'name' ),
+			'canCreate' => current_user_can( 'edit_liber_docs' ),
+			'settings'  => get_block_editor_settings(
 				array(
 					'titlePlaceholder' => __( 'Untitled', 'liber' ),
 					'bodyPlaceholder'  => __( 'Type / for commands', 'liber' ),

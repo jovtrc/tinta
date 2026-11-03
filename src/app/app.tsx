@@ -5,7 +5,8 @@ import { Button, Popover, SlotFillProvider } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { SnackbarNotices } from '@wordpress/notices';
 
-import { PageEditor } from '../editor/page-editor';
+import { OpenPage } from '../editor/open-page';
+import { config } from './config';
 import { Sidebar } from './sidebar/sidebar';
 import { useCreatePage } from './use-create-page';
 import { usePageRoute } from './use-page-route';
@@ -22,7 +23,7 @@ export function App() {
 				<Sidebar currentId={ pageId } onOpen={ openPage } />
 				<main className="liber-workspace__main">
 					{ pageId ? (
-						<PageEditor key={ pageId } pageId={ pageId } />
+						<OpenPage key={ pageId } pageId={ pageId } />
 					) : (
 						<EmptyWorkspace onOpen={ openPage } />
 					) }
@@ -46,9 +47,11 @@ function EmptyWorkspace( { onOpen }: { onOpen: ( pageId: number ) => void } ) {
 	return (
 		<div className="liber-workspace__empty">
 			<p>{ __( 'No pages yet.', 'liber' ) }</p>
-			<Button variant="primary" onClick={ () => createPage() }>
-				{ __( 'Create the first page', 'liber' ) }
-			</Button>
+			{ config.canCreate && (
+				<Button variant="primary" onClick={ () => createPage() }>
+					{ __( 'Create the first page', 'liber' ) }
+				</Button>
+			) }
 		</div>
 	);
 }
