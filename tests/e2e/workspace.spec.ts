@@ -352,6 +352,73 @@ async function dragOnto(
 	await page.mouse.up();
 }
 
+test.describe( 'Pinned, recent and expanded', () => {
+	test.beforeEach( async ( { requestUtils } ) => {
+		await deleteAllPages( requestUtils );
+		await requestUtils.rest( {
+			method: 'POST',
+			path: '/wp/v2/users/me',
+			data: {
+				liber_prefs: {
+					pinned: [],
+					recent: [],
+					expanded: [],
+					emojis: [],
+				},
+			},
+		} );
+	} );
+
+	test( 'keeps pins, recent pages and expanded branches per user', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		await createPage( requestUtils, 'Onboarding', handbook );
+		const roadmap = await createPage( requestUtils, 'Roadmap' );
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=liber&doc=${ roadmap }`
+		);
+
+		await sidebarLink( page, 'Handbook' ).click();
+		const recent = page.getByRole( 'list', { name: 'Recent' } );
+		await expect( recent.getByRole( 'link' ) ).toHaveText( [
+			'Handbook',
+			'Roadmap',
+		] );
+
+		await sidebarLink( page, 'Roadmap' ).hover();
+		await page
+			.getByRole( 'button', { name: 'Actions for “Roadmap”' } )
+			.click();
+		await page.getByRole( 'menuitem', { name: 'Pin' } ).click();
+		await expect(
+			page.getByRole( 'list', { name: 'Pinned' } ).getByRole( 'link' )
+		).toHaveText( [ 'Roadmap' ] );
+		await page.getByRole( 'button', { name: 'Expand' } ).click();
+		await expect( sidebarLink( page, 'Onboarding' ) ).toBeVisible();
+		await expect
+			.poll( async () => {
+				const { liber_prefs: prefs } = await requestUtils.rest< {
+					liber_prefs: { pinned: number[]; expanded: number[] };
+				} >( {
+					path: '/wp/v2/users/me',
+					params: { context: 'edit' },
+				} );
+				return [ prefs.pinned, prefs.expanded ];
+			} )
+			.toEqual( [ [ roadmap ], [ handbook ] ] );
+
+		await page.reload();
+		await expect(
+			page.getByRole( 'list', { name: 'Pinned' } ).getByRole( 'link' )
+		).toHaveText( [ 'Roadmap' ] );
+		await expect( sidebarLink( page, 'Onboarding' ) ).toBeVisible();
+	} );
+} );
+
 test.describe( 'Blocks', () => {
 	test.beforeEach( async ( { requestUtils } ) => {
 		await deleteAllPages( requestUtils );
@@ -548,14 +615,14 @@ function getPage( requestUtils: RequestUtils, pageId: number ) {
 }
 
 /**
- * A page link in the workspace sidebar.
+ * A page link in the sidebar's page tree.
  *
  * @param page  Playwright page.
  * @param title Page title.
  */
 function sidebarLink( page: import( '@playwright/test' ).Page, title: string ) {
 	return page
-		.getByRole( 'navigation', { name: 'Workspace' } )
+		.getByRole( 'list', { name: 'Pages' } )
 		.getByRole( 'link', { name: title } );
 }
 

@@ -1,6 +1,6 @@
 /**
- * A tree row's actions: add a subpage, and a menu with Move to trash.
- * Shown on hover or focus; hidden from users who can't edit.
+ * A tree row's actions, shown on hover or focus: a menu with Pin (everyone)
+ * and Move to trash (editors), and + to add a subpage (editors).
  */
 import {
 	Button,
@@ -9,13 +9,21 @@ import {
 	MenuItem,
 } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
-import { moreHorizontal, plus, trash } from '@wordpress/icons';
+import {
+	moreHorizontal,
+	plus,
+	starEmpty,
+	starFilled,
+	trash,
+} from '@wordpress/icons';
 
 import { config, MAX_DEPTH } from '../config';
 
 interface PageActionsProps {
 	title: string;
 	level: number;
+	isPinned: boolean;
+	onTogglePin: () => void;
 	onAddSubpage: () => void;
 	onTrash: () => void;
 }
@@ -26,19 +34,19 @@ interface PageActionsProps {
  * @param props              Props.
  * @param props.title        Page title, for labels.
  * @param props.level        Page level, 1 at the top.
+ * @param props.isPinned     Whether the page is pinned.
+ * @param props.onTogglePin  Pins or unpins the page.
  * @param props.onAddSubpage Adds a page inside this one.
  * @param props.onTrash      Asks to move the page to the trash.
  */
 export function PageActions( {
 	title,
 	level,
+	isPinned,
+	onTogglePin,
 	onAddSubpage,
 	onTrash,
 }: PageActionsProps ) {
-	if ( ! config.canCreate ) {
-		return null;
-	}
-
 	return (
 		<div className="liber-tree__actions">
 			<DropdownMenu
@@ -53,18 +61,31 @@ export function PageActions( {
 				{ ( { onClose } ) => (
 					<MenuGroup>
 						<MenuItem
-							icon={ trash }
+							icon={ isPinned ? starFilled : starEmpty }
 							onClick={ () => {
 								onClose();
-								onTrash();
+								onTogglePin();
 							} }
 						>
-							{ __( 'Move to trash', 'liber' ) }
+							{ isPinned
+								? __( 'Unpin', 'liber' )
+								: __( 'Pin', 'liber' ) }
 						</MenuItem>
+						{ config.canCreate && (
+							<MenuItem
+								icon={ trash }
+								onClick={ () => {
+									onClose();
+									onTrash();
+								} }
+							>
+								{ __( 'Move to trash', 'liber' ) }
+							</MenuItem>
+						) }
 					</MenuGroup>
 				) }
 			</DropdownMenu>
-			{ level < MAX_DEPTH && (
+			{ config.canCreate && level < MAX_DEPTH && (
 				<Button
 					size="small"
 					icon={ plus }

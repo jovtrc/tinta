@@ -9,6 +9,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { emojiGroups } from './emoji';
 
 interface EmojiPickerProps {
+	recent?: string[];
 	hasIcon: boolean;
 	onSelect: ( emoji: string ) => void;
 	onRemove: () => void;
@@ -18,11 +19,13 @@ interface EmojiPickerProps {
  * Renders the picker.
  *
  * @param props          Props.
+ * @param props.recent   Recently used emoji, shown first.
  * @param props.hasIcon  Whether the page has an icon to remove.
  * @param props.onSelect Sets the icon.
  * @param props.onRemove Removes the icon.
  */
 export function EmojiPicker( {
+	recent = [],
 	hasIcon,
 	onSelect,
 	onRemove,
@@ -32,7 +35,15 @@ export function EmojiPicker( {
 	const groups = useMemo( () => {
 		const term = filter.trim().toLowerCase();
 
-		return emojiGroups()
+		const recentGroup = {
+			label: __( 'Recently used', 'liber' ),
+			emojis: recent.map( ( emoji ): [ string, string ] => [
+				emoji,
+				emoji,
+			] ),
+		};
+
+		return [ ...( term ? [] : [ recentGroup ] ), ...emojiGroups() ]
 			.map( ( group ) => ( {
 				...group,
 				emojis: group.emojis.filter(
@@ -41,7 +52,7 @@ export function EmojiPicker( {
 				),
 			} ) )
 			.filter( ( group ) => group.emojis.length );
-	}, [ filter ] );
+	}, [ filter, recent ] );
 
 	return (
 		<div className="liber-emoji-picker">

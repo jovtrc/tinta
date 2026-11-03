@@ -8,6 +8,7 @@ import { humanTimeDiff } from '@wordpress/date';
 import { PostTitle, store as editorStore } from '@wordpress/editor';
 import { __, sprintf } from '@wordpress/i18n';
 
+import { store as prefsStore } from '../app/store/prefs';
 import { EmojiPicker } from './emoji-picker';
 
 export const ICON_META = '_liber_icon';
@@ -25,7 +26,12 @@ export function PageHeader() {
 			 )?.[ ICON_META ] ?? '',
 		[]
 	);
+	const recent = useSelect(
+		( select ) => select( prefsStore ).getPrefs().emojis,
+		[]
+	);
 	const { editPost } = useDispatch( editorStore );
+	const { rememberEmoji } = useDispatch( prefsStore );
 	const setIcon = ( value: string ) =>
 		editPost( { meta: { [ ICON_META ]: value } } );
 
@@ -50,9 +56,11 @@ export function PageHeader() {
 				) }
 				renderContent={ ( { onClose } ) => (
 					<EmojiPicker
+						recent={ recent }
 						hasIcon={ !! icon }
 						onSelect={ ( emoji ) => {
 							setIcon( emoji );
+							rememberEmoji( emoji );
 							onClose();
 						} }
 						onRemove={ () => {

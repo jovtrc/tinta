@@ -220,6 +220,7 @@ final class Screen {
 			'/wp/v2/types/' . Post_Type::NAME . '?context=edit',
 			'/wp/v2/users/me',
 			'/liber/v1/tree',
+			'/wp/v2/users/me?_fields=liber_prefs&context=edit',
 		);
 
 		if ( $page ) {

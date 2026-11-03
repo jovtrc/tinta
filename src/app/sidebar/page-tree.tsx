@@ -1,7 +1,7 @@
 /**
- * The page tree: nested links, collapsible, with the open page's ancestors
- * expanded, hover actions to add a subpage or move a page to the trash, and
- * drag and drop to move pages.
+ * The page tree: nested links, collapsible (expanded branches are saved per
+ * user, the open page's ancestors included), hover actions to pin, add a
+ * subpage or move a page to the trash, and drag and drop to move pages.
  */
 import {
 	DndContext,
@@ -11,7 +11,7 @@ import {
 	useDroppable,
 } from '@dnd-kit/core';
 import { Button, Spinner } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import {
 	createContext,
 	useContext,
@@ -31,6 +31,7 @@ import type { MouseEvent, MutableRefObject } from 'react';
 
 import { config, pageUrl } from '../config';
 import { store as workspaceStore, type TreePage } from '../store';
+import { store as prefsStore } from '../store/prefs';
 import { ancestorsOf, groupByParent } from '../tree-utils';
 import { useCreatePage } from '../use-create-page';
 import { PageActions } from './page-actions';
@@ -41,6 +42,8 @@ interface TreeState {
 	childrenOf: Map< number, TreePage[] >;
 	expanded: Set< number >;
 	toggle: ( pageId: number ) => void;
+	pinned: number[];
+	onTogglePin: ( pageId: number ) => void;
 	currentId: number;
 	onOpen: ( pageId: number ) => void;
 	onAddSubpage: ( parent: TreePage ) => void;
@@ -70,34 +73,30 @@ export function PageTree( { currentId, onOpen }: PageTreeProps ) {
 		[]
 	);
 	const childrenOf = useMemo( () => groupByParent( pages ?? [] ), [ pages ] );
-	const [ expanded, setExpanded ] = useState< Set< number > >(
-		() => new Set()
+	const prefs = useSelect(
+		( select ) => select( prefsStore ).getPrefs(),
+		[]
 	);
+	const { setExpanded, togglePin } = useDispatch( prefsStore );
+	const expanded = useMemo( () => new Set( prefs.expanded ), [ prefs ] );
 	const [ trashing, setTrashing ] = useState< TreePage | null >( null );
 	const createPage = useCreatePage( onOpen );
-	const expand = ( pageId: number ) =>
-		setExpanded( ( open ) => new Set( [ ...open, pageId ] ) );
+	const expand = ( pageId: number ) => setExpanded( [ pageId ], true );
 	const drag = useTreeDrag( pages ?? [], expand );
 
 	useEffect( () => {
 		const ancestors = ancestorsOf( currentId, pages ?? [] );
 		if ( ancestors.length ) {
-			setExpanded( ( open ) => new Set( [ ...open, ...ancestors ] ) );
+			setExpanded( ancestors, true );
 		}
-	}, [ currentId, pages ] );
+	}, [ currentId, pages, setExpanded ] );
 
 	if ( ! pages ) {
 		return <Spinner />;
 	}
 
 	const toggle = ( pageId: number ) =>
-		setExpanded( ( open ) => {
-			const next = new Set( open );
-			if ( ! next.delete( pageId ) ) {
-				next.add( pageId );
-			}
-			return next;
-		} );
+		setExpanded( [ pageId ], ! expanded.has( pageId ) );
 
 	const onAddSubpage = ( parent: TreePage ) => {
 		expand( parent.id );
@@ -111,6 +110,8 @@ export function PageTree( { currentId, onOpen }: PageTreeProps ) {
 				childrenOf,
 				expanded,
 				toggle,
+				pinned: prefs.pinned,
+				onTogglePin: togglePin,
 				currentId,
 				onOpen,
 				onAddSubpage,
@@ -158,7 +159,11 @@ function TreeLevel( { parent, depth }: { parent: number; depth: number } ) {
 	const { childrenOf } = useContext( TreeContext )!;
 
 	return (
-		<ul className="liber-tree" role={ depth ? 'group' : undefined }>
+		<ul
+			className="liber-tree"
+			role={ depth ? 'group' : undefined }
+			aria-label={ depth ? undefined : __( 'Pages', 'liber' ) }
+		>
 			{ ( childrenOf.get( parent ) ?? [] ).map( ( page ) => (
 				<TreeItem key={ page.id } page={ page } depth={ depth } />
 			) ) }
@@ -178,6 +183,8 @@ function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
 		childrenOf,
 		expanded,
 		toggle,
+		pinned,
+		onTogglePin,
 		currentId,
 		onOpen,
 		onAddSubpage,
@@ -253,6 +260,8 @@ function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
 				<PageActions
 					title={ title }
 					level={ depth + 1 }
+					isPinned={ pinned.includes( page.id ) }
+					onTogglePin={ () => onTogglePin( page.id ) }
 					onAddSubpage={ () => onAddSubpage( page ) }
 					onTrash={ () => onTrash( page ) }
 				/>

@@ -2,13 +2,15 @@
  * Workspace layout: the sidebar and the open page's editor, plus ⌘K commands and the trash.
  */
 import { Button, Popover, SlotFillProvider } from '@wordpress/components';
-import { useState } from '@wordpress/element';
+import { useDispatch } from '@wordpress/data';
+import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { SnackbarNotices } from '@wordpress/notices';
 
 import { OpenPage } from '../editor/open-page';
 import { WorkspaceCommands } from './commands';
 import { config } from './config';
+import { store as prefsStore } from './store/prefs';
 import { Sidebar } from './sidebar/sidebar';
 import { TrashDialog } from './sidebar/trash-dialog';
 import { useCreatePage } from './use-create-page';
@@ -22,6 +24,13 @@ export function App() {
 	const [ pageId, openPage ] = usePageRoute();
 	const [ isTrashOpen, setTrashOpen ] = useState( false );
 	useTreeRefresh();
+	const { visitPage } = useDispatch( prefsStore );
+
+	useEffect( () => {
+		if ( pageId ) {
+			visitPage( pageId );
+		}
+	}, [ pageId, visitPage ] );
 
 	return (
 		<SlotFillProvider>
