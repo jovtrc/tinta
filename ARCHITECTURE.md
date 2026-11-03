@@ -25,7 +25,7 @@ The workspace is one admin screen, `admin.php?page=liber&doc=ID`. Liber's React 
 
 **What Liber builds because core's UI is private:**
 - **Notes.** Liber's panel on core's data: comments with `comment_type = note`, linked to blocks through the block attribute `metadata.noteId`. Same storage as core, so core's UI can read Liber's notes and the reverse. Notes on selected text (core marks them with a format carrying `data-id`) come after the MVP.
-- **Locks per page.** Core's `PostLockedModal` reads the lock from editor settings, which PHP computes for the first page only. A small route takes and reports the lock for each page Liber opens, and Liber releases the lock of the page it leaves. A read-only view for the second user comes after the MVP.
+- **Locks per page.** Core's `PostLockedModal` reads the lock from editor settings, which PHP computes for the first page only. A small route takes and reports the lock for each page Liber opens (in parallel with loading the page), and Liber releases the lock of the page it leaves. The dialog mounts after the editor stored the lock, since it reads it once. A 403 from the route means the user can't edit: they get a reader (`content.rendered`, view context) instead of the editor. A read-only view for the second editor comes after the MVP.
 - **Page layout in the canvas.** Content width and spacing through editor styles (core's layout wrappers are private).
 
 **Postponed:** History (core still saves revisions), Liber Dark (core's editor UI doesn't follow a dark scheme), List View (only `__experimentalListView`).
@@ -51,7 +51,7 @@ The workspace is one admin screen, `admin.php?page=liber&doc=ID`. Liber's React 
 | `Liber\Docs\Revisions` | `includes/docs/class-revisions.php` | Revision snapshots (one per author per 10 min), 10 kept |
 | `Liber\Docs\Tree` | `includes/docs/class-tree.php` | Tree skeleton query, cache and invalidation |
 | `Liber\Roles\Roles` | `includes/roles/class-roles.php` | Member and Viewer roles, caps |
-| `Liber\Workspace\Screen` | `includes/workspace/class-screen.php` | Workspace screen: block-editor setup, preloads, assets (§2) |
+| `Liber\Workspace\Screen` | `includes/workspace/class-screen.php` | Workspace screen: block-editor setup, preloads, assets (§2); page edit/preview links and core's page screens lead to it |
 | `Liber\Workspace\Mode` | `includes/workspace/class-mode.php` | Login landing, admin chrome, wp-admin gate |
 | `Liber\Workspace\Private_Site` | `includes/workspace/class-private-site.php` | Login redirect, REST login requirement, feeds/sitemaps/oEmbed/author archives off |
 | `Liber\Workspace\Color_Schemes` | `includes/workspace/class-color-schemes.php` | Liber Light (Liber Dark postponed) |
@@ -175,7 +175,7 @@ Maybe one more (`/docs/{id}/restore`) if core's update can't restore to the top 
 - `src/app/commands/` — ⌘K commands.
 - `src/app/emoji-picker/`
 - `src/app/theme/` — color scheme → `ThemeProvider`.
-- `src/editor/` — editor host: `EditorProvider` per page, header, canvas, inspector.
+- `src/editor/` — the open page: `OpenPage` picks `PageEditor` (`EditorProvider` per page, header, canvas, inspector, lock dialog, continuous save) or `PageView` (read-only).
 - `src/notes/` — Notes panel, threads, @mentions.
 - `src/types/` — type shims.
 - `src/blocks/page-link/`, `src/blocks/callout/`.

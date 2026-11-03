@@ -83,7 +83,8 @@ Tree behaviour:
 - `/` opens the core inserter, filtered to allowed blocks. Empty pages show "Type / for commands".
 - Header actions: undo/redo, save status ("Saving…" / "Saved"), Notes, "⋯" page actions. No Publish or Save button: pages save as you type (a moment after the last edit, and when you leave the page), like Notion. ⌘S saves at once.
 - **Notes:** Liber's UI on core's note data. Notes on blocks, threads, replies, @mentions, resolve. Notes on selected text come in v1.1. Anyone who can edit can add notes; Viewers don't see them (core requires edit rights).
-- **Locking (core post locks):** one editor at a time. Others get core's dialog, "Maria is editing this page", with "Take over". Liber only feeds it the lock of each page it opens. A read-only view instead of the dialog comes in v1.1.
+- **Locking (core post locks):** one editor at a time. Others get core's dialog, "Maria is editing this page", with "Take over". Liber only feeds it the lock of each page it opens; nothing saves while someone else holds it. A read-only view instead of the dialog comes in v1.1.
+- **Viewers** get a read-only page (the server's rendered HTML) instead of the editor, and no New page button.
 - **History:** postponed to v1.1. Core keeps saving revisions as snapshots: at most one per author every 10 minutes, the last 10 kept (configurable).
 - **Images:** core uploads and media library. WP 7.1 processes images in the browser (HEIC included); Liber's screen turns this on the same way core's editor does.
 

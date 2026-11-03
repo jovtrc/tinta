@@ -15,7 +15,8 @@
   - [x] `liber_doc` post type; Member and Viewer roles; every page private — tested on core's test suite, single site and multisite.
   - [x] TypeScript tooling (`@wordpress/scripts`); e2e tests on Playground.
   - [x] Workspace screen: page tree from a cached `liber/v1/tree`, editor that switches pages in place, New page.
-  - [ ] Locks per page (lock route), Heartbeat tree refresh, drag to move, page icons, mobile drawer.
+  - [x] Continuous saving with revision snapshots; locks per page; read-only view for Viewers.
+  - [ ] Heartbeat tree refresh, drag to move, page icons, page actions (add child, rename, trash), mobile drawer.
   - [ ] CI, once the GitHub repo exists.
 
 ## v1.0 — MVP (wordpress.org)
