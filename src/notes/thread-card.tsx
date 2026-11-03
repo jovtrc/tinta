@@ -3,9 +3,9 @@
  */
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
-import { useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { humanTimeDiff } from '@wordpress/date';
-import { RawHTML, useState } from '@wordpress/element';
+import { RawHTML, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { trash } from '@wordpress/icons';
 
@@ -30,12 +30,34 @@ interface ThreadCardProps {
 export function ThreadCard( { thread, actions }: ThreadCardProps ) {
 	const { selectBlock } = useDispatch( blockEditorStore );
 	const [ isReplying, setReplying ] = useState( false );
+	const ref = useRef< HTMLElement >( null );
+	const isActive = useSelect(
+		( select ) =>
+			!! thread.clientId &&
+			(
+				select( blockEditorStore ) as unknown as {
+					getSelectedBlockClientId: () => string | null;
+				}
+			 ).getSelectedBlockClientId() === thread.clientId,
+		[ thread.clientId ]
+	);
+
+	useEffect( () => {
+		if ( isActive ) {
+			ref.current?.scrollIntoView( { block: 'nearest' } );
+		}
+	}, [ isActive ] );
 
 	return (
 		<article
-			className={ `liber-thread${
-				thread.isResolved ? ' is-resolved' : ''
-			}` }
+			ref={ ref }
+			className={ [
+				'liber-thread',
+				thread.isResolved && 'is-resolved',
+				isActive && 'is-active',
+			]
+				.filter( Boolean )
+				.join( ' ' ) }
 		>
 			<NoteItem
 				note={ thread.root }

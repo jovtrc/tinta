@@ -452,6 +452,10 @@ body.liber-workspace-mode.liber-workspace-screen {
 	&.is-resolved {
 		opacity: 0.75;
 	}
+
+	&.is-active {
+		border-color: var(--wp-admin-theme-color, #3858e9);
+	}
 }
 
 .liber-thread__actions {

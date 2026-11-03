@@ -30,7 +30,8 @@
   - [x] Workspace mode: login landing, full-window workspace, Members and Viewers kept in it, private site.
   - [x] Mobile: the sidebar as a drawer; Notes and block settings cover the page.
   - [x] Page menu (Pin, Rename, Move to…, Move to trash) from "⋯" in the tree and page header, and on right click; hide the sidebar.
-  - [ ] Drag to reorder pins, a marker on blocks with open notes, setup wizard, Liber Light, pt_BR.
+  - [x] Columns block; Blocks panel ("Browse all"); click below the last block to keep writing; markers beside blocks with open notes.
+  - [ ] Drag to reorder pins, a drag handle on hover, setup wizard, Liber Light, pt_BR.
 
 ## v1.0 — MVP (wordpress.org)
 Full scope in PLAN §4:

@@ -20,6 +20,7 @@ import { InlineNotices } from '@wordpress/notices';
 import type { ComponentType } from 'react';
 
 import { config } from '../app/config';
+import { NoteMarkers } from '../notes/note-markers';
 import { NotesPanel } from '../notes/notes-panel';
 import { store as notesStore } from '../notes/store';
 import { BlocksPanel } from './blocks-panel';
@@ -54,7 +55,12 @@ const CANVAS_STYLES = [
 		.liber-page-icon__add { margin-inline-start: -6px; padding: 4px 6px; border-radius: 4px; font-size: 14px; color: #757575; opacity: 0; }
 		.liber-page-header:hover .liber-page-icon__add, .liber-page-icon__add:focus-visible, .liber-page-icon__add[aria-expanded="true"] { opacity: 1; }
 		.liber-page-icon__add:hover { background: rgba(0, 0, 0, 0.05); }
-		.liber-page-meta { margin: 0 0 24px; font-size: 13px; color: #757575; }`,
+		.liber-page-meta { margin: 0 0 24px; font-size: 13px; color: #757575; }
+		.editor-styles-wrapper { position: relative; }
+		.liber-note-markers { position: absolute; inset: 0; pointer-events: none; }
+		.liber-note-marker { position: absolute; display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 8px; font: 500 12px/1 inherit; color: #1e1e1e; background: #fff; border: 1px solid #e0e0e0; border-radius: 13px; cursor: pointer; pointer-events: auto; }
+		.liber-note-marker:hover { border-color: #949494; }
+		.liber-note-marker svg { fill: currentColor; }`,
 	},
 ];
 
@@ -145,6 +151,7 @@ function EditorLayout() {
 						<PageHeader />
 						<BlockList />
 						<ClickBelowToWrite />
+						<NoteMarkers />
 					</BlockCanvas>
 				</div>
 				{ isBlocksOpen && <BlocksPanel /> }

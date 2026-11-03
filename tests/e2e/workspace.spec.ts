@@ -679,6 +679,47 @@ test.describe( 'Notes', () => {
 		await deleteAllPages( requestUtils );
 	} );
 
+	test( 'marks blocks with open notes, and opens them', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const pageId = await createPage( requestUtils, 'Setup' );
+		const note = ( content: string, parent = 0 ) =>
+			requestUtils.rest< { id: number } >( {
+				method: 'POST',
+				path: '/wp/v2/comments',
+				data: {
+					post: pageId,
+					content,
+					parent,
+					type: 'note',
+					status: 'hold',
+				},
+			} );
+		const root = await note( 'Check the Node version.' );
+		await note( 'Done.', root.id );
+		await requestUtils.rest( {
+			method: 'POST',
+			path: `/wp/v2/liber-docs/${ pageId }`,
+			data: {
+				content: `<!-- wp:paragraph {"metadata":{"noteId":[${ root.id }]}} --><p>Install Node.</p><!-- /wp:paragraph -->`,
+			},
+		} );
+
+		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ pageId }` );
+		await editor.canvas
+			.getByRole( 'button', { name: '2 notes on this block' } )
+			.click();
+
+		await expect(
+			page
+				.getByRole( 'complementary', { name: 'Notes' } )
+				.getByText( 'Check the Node version.' )
+		).toBeVisible();
+	} );
+
 	test( 'adds a note with a mention, replies and resolves it', async ( {
 		admin,
 		editor,
