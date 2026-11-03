@@ -37,6 +37,7 @@
 				<element value="liber_access"/>
 				<element value="edit_liber_docs"/>
 				<element value="liber_manage"/>
+				<element value="read_private_liber_docs"/>
 			</property>
 		</properties>
 	</rule>

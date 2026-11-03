@@ -28,6 +28,7 @@ final class Plugin {
 		( new Docs\Last_Editor() )->register();
 		( new Docs\Notes_Access() )->register();
 		( new Docs\Read_Access() )->register();
+		( new Docs\Other_Roles() )->register();
 		$tree->register();
 		( new Cache\Tree_Pulse( $tree ) )->register();
 		( new Rest\Tree_Controller( $tree ) )->register();
