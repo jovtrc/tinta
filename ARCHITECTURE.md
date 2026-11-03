@@ -24,7 +24,7 @@ The workspace is one admin screen, `admin.php?page=liber&doc=ID`. Liber's React 
 **Editor (JS).** One `EditorProvider` per page, remounted on switch (`key` = page ID), with `BlockCanvas` + `PostTitle` + `BlockList`, `BlockInspector`, the public `Inserter`, undo/redo, `PostSavedState`, `AutosaveMonitor`, `UnsavedChangesWarning`, editor keyboard shortcuts, notices and snackbars. `EditorProvider` uses its own data registry, so editor state isn't in the global `wp.data` stores. No private or `__experimental*` APIs.
 
 **What Liber builds because core's UI is private:**
-- **Notes.** Liber's panel on core's data: comments with `comment_type = note`, linked to blocks through the block attribute `metadata.noteId`. Same storage as core, so core's UI can read Liber's notes and the reverse. Notes on selected text (core marks them with a format carrying `data-id`) come after the MVP.
+- **Notes.** Liber's panel on core's data, written exactly as core's own Notes UI writes it: comments with `type: note` (status `hold`; replies via `parent`), threads linked to blocks through `metadata.noteId` (an array), resolve/reopen as core does (thread `approved`/`hold` plus a child note with `_wp_note_status`), mentions as `<span class="wp-note-mention user-N">` chips (core emails mentioned people). Core's UI and Liber's read each other's notes. "Add note" sits in every block's toolbar (`editor.BlockEdit` filter); the panel shares the right side with block settings. People to mention come from `liber/v1/people` (core's user list shows non-admins only authors of published posts). Core's comments route also wants `edit_posts` to list notes by type and status; `Liber\Docs\Notes_Access` grants it for that one request, on pages the user can edit. Notes on selected text come after the MVP.
 - **Locks per page.** Core's `PostLockedModal` reads the lock from editor settings, which PHP computes for the first page only. A small route takes and reports the lock for each page Liber opens (in parallel with loading the page), and Liber releases the lock of the page it leaves. The dialog mounts after the editor stored the lock, since it reads it once. A 403 from the route means the user can't edit: they get a reader (`content.rendered`, view context) instead of the editor. A read-only view for the second editor comes after the MVP.
 - **Page layout in the canvas.** Content width and spacing through editor styles (core's layout wrappers are private).
 
@@ -58,6 +58,8 @@ The workspace is one admin screen, `admin.php?page=liber&doc=ID`. Liber's React 
 | `Liber\Workspace\Private_Site` | `includes/workspace/class-private-site.php` | Login redirect, REST login requirement, feeds/sitemaps/oEmbed/author archives off |
 | `Liber\Workspace\Color_Schemes` | `includes/workspace/class-color-schemes.php` | Liber Light (Liber Dark postponed) |
 | `Liber\Rest\Tree_Controller` | `includes/rest/class-tree-controller.php` | `GET liber/v1/tree` |
+| `Liber\Rest\People_Controller` | `includes/rest/class-people-controller.php` | `GET liber/v1/people` (who can be mentioned) |
+| `Liber\Docs\Notes_Access` | `includes/docs/class-notes-access.php` | Grants `edit_posts` while listing notes of pages the user can edit |
 | `Liber\Rest\Move_Controller` | `includes/rest/class-move-controller.php` | `POST liber/v1/docs/{id}/move` |
 | `Liber\Docs\Mover` | `includes/docs/class-mover.php` | Move checks (cycles, depth) and sibling renumbering; only `post_parent`/`menu_order` change |
 | `Liber\Rest\Lock_Controller` | `includes/rest/class-lock-controller.php` | `POST`/`DELETE liber/v1/docs/{id}/lock` |
@@ -149,6 +151,7 @@ Core only lets users with `read_private_liber_docs` read a private post — in R
 | Method | Route | Purpose | Permission |
 |---|---|---|---|
 | GET | `/tree` | Whole skeleton + generation; cached | `liber_access` |
+| GET | `/people` | People who can edit pages: id, name, avatar (for @mentions) | `edit_liber_docs` |
 | POST | `/docs/(?P<id>\d+)/move` | New parent + position; depth ≤ 5, no cycles; renumbers siblings in one go | `edit_post` on the page and the new parent |
 | POST, DELETE | `/docs/(?P<id>\d+)/lock` | Take the page's lock (or report who holds it) with the nonces `PostLockedModal` needs; release it on leaving | `edit_post` on the page |
 | POST | `/docs/(?P<id>\d+)/share` (v1.1) | Share or unshare a page and its subtree | `publish_post` on the page, "Allow public pages" on |
@@ -279,7 +282,8 @@ liber/
 | Editor host breaks on a WP update | Med | High | Public editor components only; CI against WP trunk |
 | Core keeps editor features private (Notes UI, visual revisions, List View) | High | Med | Liber's UI on core's data; switch to core's UI if `Editor` becomes public (`@wordpress/lazy-editor` hints at it) |
 | Notes stop working (another plugin disables comments or removes the route) | Med | Med | Never disable comments; such plugins go on the conflict list |
-| Liber's notes drift from core's note format | Low | Med | Same storage as core (`note` comments, `metadata.noteId`); integration test that core reads them |
+| Liber's notes drift from core's note format | Low | Med | Same storage as core (`note` comments, `metadata.noteId`, status and `_wp_note_status`); PHP and e2e tests on the data |
+| Core changes who may list notes | Med | Med | The `edit_posts` grant is scoped to one request; a PHP test fails if Members can't list notes |
 | Core real-time collaboration arrives with different assumptions | Low | Med | Stay on core locks and Notes so it can be switched on later (`wp_is_post_type_collaboration_disabled`) |
 | Design System packages (`@wordpress/theme`, `ui`, `admin-ui`) change | Med | Low | Fallback to `--wp-admin-theme-color` |
 | Multisite admins lack `unfiltered_html` | High | Med | kses-safe blocks; tests as a non-super-admin |
