@@ -613,6 +613,39 @@ test.describe( 'Notes', () => {
 	} );
 } );
 
+test.describe( 'Settings', () => {
+	test.afterEach( async ( { requestUtils } ) => {
+		await requestUtils.rest( {
+			method: 'POST',
+			path: '/wp/v2/settings',
+			data: { liber_settings: { workspace_mode: false } },
+		} );
+	} );
+
+	test( 'turns workspace mode on from the settings', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		await deleteAllPages( requestUtils );
+		await createPage( requestUtils, 'Handbook' );
+		await admin.visitAdminPage( 'admin.php', 'page=liber' );
+		await expect( page.locator( '#adminmenuwrap' ) ).toBeVisible();
+
+		await page
+			.getByRole( 'button', { name: 'Workspace settings' } )
+			.click();
+		await page.getByRole( 'checkbox', { name: 'Workspace mode' } ).check();
+		await page.getByRole( 'button', { name: 'Save', exact: true } ).click();
+
+		await expect( page.locator( '#adminmenuwrap' ) ).toBeHidden();
+		await page.getByRole( 'button', { name: 'Your account' } ).click();
+		await expect(
+			page.getByRole( 'menuitem', { name: 'Admin tools' } )
+		).toBeVisible();
+	} );
+} );
+
 test.describe( 'Locks and roles', () => {
 	test.beforeEach( async ( { requestUtils } ) => {
 		await deleteAllPages( requestUtils );

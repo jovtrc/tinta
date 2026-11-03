@@ -8,6 +8,8 @@ export interface WorkspaceConfig {
 	canCreate: boolean;
 	canManage: boolean;
 	userId: number;
+	user: { name: string; avatar: string };
+	links: { profile: string; admin: string; invite: string; logout: string };
 	settings: Record< string, unknown > & { styles?: object[] };
 }
 

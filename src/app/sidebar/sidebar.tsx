@@ -1,5 +1,6 @@
 /**
- * Sidebar: workspace name, New page, Pinned, Recent, the page tree, and the trash.
+ * Sidebar: workspace name, New page, Pinned, Recent, the page tree, the trash,
+ * and the account menu.
  */
 import { Button } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -11,6 +12,7 @@ import { store as prefsStore } from '../store/prefs';
 import { useCreatePage } from '../use-create-page';
 import { PageSection } from './page-section';
 import { PageTree } from './page-tree';
+import { UserMenu } from './user-menu';
 
 interface SidebarProps {
 	currentId: number;
@@ -73,6 +75,7 @@ export function Sidebar( { currentId, onOpen, onOpenTrash }: SidebarProps ) {
 					{ __( 'Trash', 'liber' ) }
 				</Button>
 			) }
+			<UserMenu />
 		</nav>
 	);
 }

@@ -12,6 +12,23 @@ body.liber-workspace-screen {
 	}
 }
 
+// Workspace mode: the workspace fills the window; admin menu and toolbar hide.
+html.wp-toolbar:has(body.liber-workspace-mode.liber-workspace-screen) {
+	padding-top: 0;
+}
+
+body.liber-workspace-mode.liber-workspace-screen {
+
+	#adminmenumain,
+	#wpadminbar {
+		display: none;
+	}
+
+	.liber-workspace {
+		inset: 0;
+	}
+}
+
 .liber-workspace {
 	position: fixed;
 	inset: var(--wp-admin--admin-bar--height, 32px) 0 0 160px;
@@ -106,6 +123,41 @@ body.liber-workspace-screen {
 
 .liber-sidebar__action.liber-sidebar__trash {
 	margin-top: auto;
+}
+
+.liber-sidebar__footer {
+	display: flex;
+	gap: 4px;
+	align-items: center;
+	padding-top: 8px;
+	border-top: 1px solid #e0e0e0;
+}
+
+.liber-user-menu {
+	flex: 1;
+	min-width: 0;
+
+	.components-button {
+		gap: 8px;
+		width: 100%;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+}
+
+.liber-user-menu__avatar {
+	flex: none;
+	border-radius: 50%;
+}
+
+.liber-settings {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.liber-settings__error {
+	color: #cc1818;
 }
 
 .liber-sidebar__heading {

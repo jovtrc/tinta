@@ -246,6 +246,16 @@ final class Screen {
 			'canCreate' => current_user_can( 'edit_liber_docs' ),
 			'canManage' => current_user_can( 'liber_manage' ),
 			'userId'    => get_current_user_id(),
+			'user'      => array(
+				'name'   => wp_get_current_user()->display_name,
+				'avatar' => get_avatar_url( get_current_user_id(), array( 'size' => 48 ) ),
+			),
+			'links'     => array(
+				'profile' => get_edit_profile_url(),
+				'admin'   => admin_url(),
+				'invite'  => admin_url( 'user-new.php' ),
+				'logout'  => wp_logout_url(),
+			),
 			'settings'  => get_block_editor_settings(
 				array(
 					'titlePlaceholder' => __( 'Untitled', 'liber' ),
