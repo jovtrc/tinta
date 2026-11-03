@@ -62,7 +62,9 @@ The workspace is one admin screen, `admin.php?page=liber&doc=ID`. Liber's React 
 | `Liber\Workspace\Color_Schemes` | `includes/workspace/class-color-schemes.php` | Liber Light (Liber Dark postponed) |
 | `Liber\Rest\Tree_Controller` | `includes/rest/class-tree-controller.php` | `GET liber/v1/tree` |
 | `Liber\Rest\People_Controller` | `includes/rest/class-people-controller.php` | `GET liber/v1/people` (who can be mentioned) |
-| `Liber\Docs\Notes_Access` | `includes/docs/class-notes-access.php` | Grants `edit_posts` while listing notes of pages the user can edit |
+| `Liber\Docs\Notes_Access` | `includes/docs/class-notes-access.php` | Grants `edit_posts`, to the requester only, while listing notes of pages the user can edit |
+| `Liber\Docs\Read_Access` | `includes/docs/class-read-access.php` | Reading a page takes `read_private_liber_docs`, authors included |
+| `Liber\Docs\Other_Roles` | `includes/docs/class-other-roles.php` | Keeps pages' files and notes out of other roles' media library and comment queries |
 | `Liber\Rest\Move_Controller` | `includes/rest/class-move-controller.php` | `POST liber/v1/docs/{id}/move` |
 | `Liber\Docs\Mover` | `includes/docs/class-mover.php` | Move checks (cycles, depth) and sibling renumbering; only `post_parent`/`menu_order` change |
 | `Liber\Rest\Lock_Controller` | `includes/rest/class-lock-controller.php` | `POST`/`DELETE liber/v1/docs/{id}/lock` |
@@ -102,7 +104,10 @@ Core only lets users with `read_private_liber_docs` read a private post — in R
 3. Restore from trash as `private` (core restores to `draft` since 5.6; filter `wp_untrash_post_status`).
 4. Setting any status needs `publish_liber_docs`, so Members get it.
 5. The core REST collection refuses `status=private` to users without `edit_liber_docs` (Viewers). The tree endpoint serves everyone, and ⌘K title search runs on the tree. Full-text search for Viewers needs a small route or waits — decide during the build.
-6. Tests: logged-out, Viewer, Member, Administrator and other roles, on single site and multisite.
+6. Core lets authors read their own private posts with just `read`; `Read_Access` makes reading a page (or its revisions) also take `read_private_liber_docs`, so losing the Liber role, or being made a page's author, gives no access.
+7. Core hides the pages from other roles, but not their traces: `Other_Roles` keeps files attached to pages out of the media library, and notes on pages out of comment queries (and their counts), for people without a Liber role. Uploaded files still have public URLs, as all WordPress uploads do.
+8. Where a page can sit is checked on every write: REST explains a refused parent; other writes keep the current one (`wp_insert_post_parent`).
+9. Tests: logged-out, Viewer, Member, Administrator and other roles, on single site and multisite.
 
 ## 4. Caching
 

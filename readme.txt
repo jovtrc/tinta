@@ -29,6 +29,8 @@ Liber turns a WordPress site into a private wiki for your team. Write docs, note
 
 Every page is private: only people with a Liber role (and administrators) can read them, and nothing is ever public. Liber stores everything in your own WordPress database and sends no data anywhere.
 
+Images and files you add to pages go to the media library, like any WordPress upload. Liber keeps them out of the media library for people without a Liber role, but, as with all WordPress uploads, anyone who has a file's link can open it.
+
 = Source code =
 
 The JavaScript in `build/` is compiled from the TypeScript sources at https://github.com/jovtrc/liber, where you can also report issues and contribute.
