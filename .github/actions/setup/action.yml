@@ -1,0 +1,23 @@
+# PHP 8.2, Node 24 and pnpm, dependencies installed, and the plugin built.
+name: Setup
+description: Installs PHP and Node dependencies and builds the plugin.
+
+runs:
+  using: composite
+  steps:
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        tools: composer
+        coverage: none
+    - uses: pnpm/action-setup@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 24
+        cache: pnpm
+    - run: composer install --no-interaction --no-progress
+      shell: bash
+    - run: pnpm install --frozen-lockfile
+      shell: bash
+    - run: pnpm build
+      shell: bash

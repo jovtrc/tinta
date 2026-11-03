@@ -1,0 +1,57 @@
+# Standards, types, build, PHP tests (single site and multisite) and e2e tests.
+name: CI
+
+on:
+  push:
+    branches: [ trunk ]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  standards:
+    name: Standards and types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: composer run phpcs
+      - run: composer run phpstan
+      - run: pnpm typecheck
+      - run: pnpm lint:js
+      - run: pnpm lint:css
+
+  php:
+    name: PHP tests (${{ matrix.site }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        site: [ single, multisite ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm wp-env:test start
+      - run: pnpm test:php
+        if: matrix.site == 'single'
+      - run: pnpm test:php:multisite
+        if: matrix.site == 'multisite'
+
+  e2e:
+    name: E2E tests (Playground)
+    runs-on: ubuntu-latest
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-artifacts
+          path: artifacts/
+          retention-days: 7
