@@ -218,7 +218,7 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 ### Tests
 - **PHP:** WordPress's own test suite (`WP_UnitTestCase`) with PHPUnit 9.6 + `yoast/phpunit-polyfills` — the setup core and most plugins use (core's suite doesn't run on newer PHPUnit). Runs in a separate wp-env (`.wp-env.test.json`, port 8889), because the suite wipes its database; single site and multisite (`WP_MULTISITE=1`). Strict config: fail on warnings, risky tests and deprecations.
 - **JS unit:** Vitest (wp-scripts default since v36).
-- **E2E:** Playwright via `wp-scripts test-playwright` against WordPress Playground (`@wp-playground/cli`), started from a blueprint: no Docker, a fresh site per run.
+- **E2E:** Playwright via `wp-scripts test-playwright` against WordPress Playground (`@wp-playground/cli`), started from a blueprint: no Docker, a fresh site per run. Three projects: Chromium, Firefox and WebKit (Safari's engine); CI runs each as its own job.
 
 ### Build
 - pnpm (one package, no turbo). `pnpm-workspace.yaml` holds pnpm 11's build-script approvals.
@@ -227,7 +227,7 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 
 ### CI (GitHub Actions)
 - PHP 8.2 and 8.5 × WP 7.1, latest and trunk (trunk may fail) × single site and multisite.
-- Jobs: phpcs, phpstan, PHP unit + integration, tsc, eslint, vitest, e2e (latest WP only), build, Plugin Check (`wordpress/plugin-check-action`), `.pot` generation.
+- Jobs: phpcs, phpstan, PHP unit + integration, tsc, eslint, vitest, e2e in Chromium, Firefox and WebKit (latest WP only), build, Plugin Check (`wordpress/plugin-check-action`), `.pot` generation.
 
 ### Release
 - Tag → `composer install --no-dev --optimize-autoloader` → `pnpm build` → zip using `.distignore` (drops `src/`, `bin/`, `.github/`, `tests/`, `node_modules/`, `prototype/`, planning docs and tool configs; keeps `composer.json` beside `vendor/`, as Plugin Check asks) → Plugin Check → SVN deploy with `10up/action-wordpress-plugin-deploy`.
@@ -245,7 +245,7 @@ pnpm wp-env:test start            # PHPUnit site, http://localhost:8889
 composer run phpcs                # also: phpcbf, phpstan
 pnpm typecheck && pnpm lint:js && pnpm lint:css
 pnpm test:php                     # and test:php:multisite
-pnpm test:e2e                     # starts Playground on :9400 (pnpm playground)
+pnpm test:e2e                     # starts Playground on :9400 (pnpm playground); --project=webkit for one browser
 ```
 `pnpm env` is a built-in pnpm command, hence the `wp-env` script names.
 

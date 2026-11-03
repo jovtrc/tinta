@@ -1025,6 +1025,7 @@ test.describe( 'Setup', () => {
 		).toBeChecked();
 		await wizard.getByRole( 'button', { name: 'Continue' } ).click();
 		await wizard.getByRole( 'button', { name: 'Finish' } ).click();
+		await page.waitForURL( /[?&]doc=\d+/ );
 
 		await expect(
 			editor.canvas.getByRole( 'textbox', { name: 'Untitled' } )

@@ -1,5 +1,5 @@
-# Standards, types, build, PHP tests (single site and multisite), e2e tests,
-# and Plugin Check on the release contents.
+# Standards, types, build, PHP tests (single site and multisite), e2e tests
+# (Chrome, Firefox and Safari's engine), and Plugin Check on the release contents.
 name: CI
 
 on:
@@ -41,19 +41,23 @@ jobs:
         if: matrix.site == 'multisite'
 
   e2e:
-    name: E2E tests (Playground)
+    name: E2E tests (${{ matrix.browser }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [ chromium, firefox, webkit ]
     env:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm test:e2e
+      - run: pnpm exec playwright install --with-deps ${{ matrix.browser }}
+      - run: pnpm test:e2e --project=${{ matrix.browser }}
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: e2e-artifacts
+          name: e2e-artifacts-${{ matrix.browser }}
           path: artifacts/
           retention-days: 7
 

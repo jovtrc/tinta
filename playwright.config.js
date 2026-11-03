@@ -1,13 +1,14 @@
 /**
  * E2E tests on WordPress Playground: the @wordpress/scripts Playwright config,
- * with Playground (`pnpm playground`) as the web server instead of wp-env.
+ * with Playground (`pnpm playground`) as the web server instead of wp-env,
+ * in Chrome, Firefox and Safari's engine (`--project=webkit` runs one).
  *
  * The URL is set, not defaulted: `wp-scripts test-playwright` sets WP_BASE_URL
  * from .wp-env.json, which would run the tests (and their cleanup) on the dev site.
  */
 process.env.WP_BASE_URL = 'http://127.0.0.1:9400';
 
-const { defineConfig } = require( '@playwright/test' );
+const { defineConfig, devices } = require( '@playwright/test' );
 const baseConfig = require( '@wordpress/scripts/config/playwright.config.js' );
 
 module.exports = defineConfig( {
@@ -25,4 +26,9 @@ module.exports = defineConfig( {
 		port: 9400,
 		reuseExistingServer: ! process.env.CI,
 	},
+	projects: [
+		{ name: 'chromium', use: { ...devices[ 'Desktop Chrome' ] } },
+		{ name: 'firefox', use: { ...devices[ 'Desktop Firefox' ] } },
+		{ name: 'webkit', use: { ...devices[ 'Desktop Safari' ] } },
+	],
 } );
