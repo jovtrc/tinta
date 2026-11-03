@@ -23,6 +23,7 @@ final class Plugin {
 		( new Setup\Installer() )->register();
 		( new Docs\Post_Type() )->register();
 		( new Docs\Private_Status() )->register();
+		( new Docs\Revisions() )->register();
 		$tree->register();
 		( new Rest\Tree_Controller( $tree ) )->register();
 		( new Workspace\Screen( $tree ) )->register();
