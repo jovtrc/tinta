@@ -1,14 +1,14 @@
 /**
- * Workspace entry: registers core blocks and mounts the app on Liber's admin screen.
+ * Workspace entry: registers blocks and mounts the app on Liber's admin screen.
  */
-import { registerCoreBlocks } from '@wordpress/block-library';
 import { createRoot } from '@wordpress/element';
 import '@wordpress/format-library';
 
 import { App } from './app';
+import { registerBlocks } from './blocks';
 import './workspace.scss';
 
-registerCoreBlocks();
+registerBlocks();
 
 const root = document.getElementById( 'liber-workspace' );
 

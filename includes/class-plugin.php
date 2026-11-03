@@ -33,5 +33,6 @@ final class Plugin {
 		( new Rest\Restore_Controller() )->register();
 		( new Rest\Move_Controller( new Docs\Mover( $tree ) ) )->register();
 		( new Workspace\Screen( $tree ) )->register();
+		( new Blocks\Allowlist() )->register();
 	}
 }
