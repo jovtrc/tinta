@@ -13,6 +13,12 @@ const baseConfig = require( '@wordpress/scripts/config/playwright.config.js' );
 module.exports = defineConfig( {
 	...baseConfig,
 	testDir: './tests/e2e',
+	// Playground runs about 2.5 times slower on CI runners than on a laptop.
+	expect: { timeout: process.env.CI ? 15_000 : 5_000 },
+	use: {
+		...baseConfig.use,
+		actionTimeout: process.env.CI ? 20_000 : 10_000,
+	},
 	webServer: {
 		...baseConfig.webServer,
 		command: 'pnpm playground',
