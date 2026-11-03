@@ -545,6 +545,16 @@ body.liber-workspace-mode.liber-workspace-screen {
 
 // Notes
 
+.liber-notes-toggle.components-button.has-text {
+	gap: 2px;
+	padding-inline-end: 8px;
+}
+
+.liber-notes-toggle__count {
+	font-size: 12px;
+	font-weight: 500;
+}
+
 .liber-notes {
 	display: flex;
 	flex: none;

@@ -6,8 +6,8 @@ import { Button, Spinner } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';
 import { useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
-import { closeSmall } from '@wordpress/icons';
+import { __, _n, sprintf } from '@wordpress/i18n';
+import { closeSmall, comment } from '@wordpress/icons';
 
 import { NoteComposer } from './note-composer';
 import { store as notesStore } from './store';
@@ -100,7 +100,7 @@ export function NotesPanel() {
 }
 
 /**
- * Header button with the number of open threads.
+ * Header button: the notes icon, with the number of open threads beside it.
  */
 export function NotesToggle() {
 	const postId = useSelect(
@@ -114,13 +114,31 @@ export function NotesToggle() {
 
 	return (
 		<Button
+			className="liber-notes-toggle"
+			icon={ comment }
+			label={
+				open
+					? sprintf(
+							/* translators: %d: number of open notes. */
+							_n(
+								'Notes, %d open',
+								'Notes, %d open',
+								open,
+								'liber'
+							),
+							open
+						)
+					: __( 'Notes', 'liber' )
+			}
 			size="compact"
 			isPressed={ isOpen }
 			onClick={ () => setOpen( ! isOpen ) }
 		>
-			{ open
-				? `${ __( 'Notes', 'liber' ) } · ${ open }`
-				: __( 'Notes', 'liber' ) }
+			{ open > 0 && (
+				<span className="liber-notes-toggle__count" aria-hidden="true">
+					{ open }
+				</span>
+			) }
 		</Button>
 	);
 }
