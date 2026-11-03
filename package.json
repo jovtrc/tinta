@@ -8,12 +8,49 @@
 		"node": ">=24"
 	},
 	"scripts": {
-		"env": "wp-env",
-		"env:test": "wp-env --config=.wp-env.test.json",
+		"build": "wp-scripts build",
+		"start": "wp-scripts start",
+		"typecheck": "tsc",
+		"lint:js": "wp-scripts lint-js src tests/e2e",
+		"lint:css": "wp-scripts lint-style \"src/**/*.scss\"",
+		"format": "wp-scripts format src tests/e2e",
+		"wp-env": "wp-env",
+		"wp-env:test": "wp-env --config=.wp-env.test.json",
 		"test:php": "wp-env run cli --config=.wp-env.test.json --env-cwd=wp-content/plugins/liber vendor/bin/phpunit",
-		"test:php:multisite": "wp-env run cli --config=.wp-env.test.json --env-cwd=wp-content/plugins/liber env WP_MULTISITE=1 vendor/bin/phpunit"
+		"test:php:multisite": "wp-env run cli --config=.wp-env.test.json --env-cwd=wp-content/plugins/liber env WP_MULTISITE=1 vendor/bin/phpunit",
+		"test:e2e": "wp-scripts test-playwright",
+		"playground": "wp-playground-cli server --port=9400 --wp=7.1 --php=8.2 --auto-mount"
 	},
+	"prettier": "@wordpress/prettier-config",
 	"devDependencies": {
-		"@wordpress/env": "^12.0.0"
+		"@playwright/test": "^1.64.1",
+		"@types/node": "^24.19.2",
+		"@types/react": "^18.3.31",
+		"@types/react-dom": "^18.3.7",
+		"@wordpress/api-fetch": "^8.0.0",
+		"@wordpress/block-editor": "^19.0.0",
+		"@wordpress/block-library": "^12.0.0",
+		"@wordpress/blocks": "^17.0.0",
+		"@wordpress/commands": "^2.0.0",
+		"@wordpress/components": "^43.0.0",
+		"@wordpress/core-data": "^9.0.0",
+		"@wordpress/data": "^11.0.0",
+		"@wordpress/e2e-test-utils-playwright": "^3.1.0",
+		"@wordpress/editor": "^16.0.0",
+		"@wordpress/element": "^10.0.0",
+		"@wordpress/env": "^12.0.0",
+		"@wordpress/format-library": "^6.0.0",
+		"@wordpress/html-entities": "^5.0.0",
+		"@wordpress/i18n": "^7.0.0",
+		"@wordpress/icons": "^19.0.0",
+		"@wordpress/notices": "^6.0.0",
+		"@wordpress/prettier-config": "^5.0.0",
+		"@wordpress/scripts": "^37.0.0",
+		"@wordpress/url": "^5.0.0",
+		"@wp-playground/cli": "^3.1.62",
+		"prettier": "npm:wp-prettier@^3.9.6",
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1",
+		"typescript": "^6.0.3"
 	}
 }
