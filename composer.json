@@ -1,0 +1,63 @@
+{
+	"name": "liber/liber",
+	"description": "A private team wiki for WordPress: pages in a tree, written in the block editor.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"require": {
+		"php": ">=8.2"
+	},
+	"require-dev": {
+		"automattic/vipwpcs": "^3.0",
+		"brainmaestro/composer-git-hooks": "^3.0",
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"phpstan/phpstan": "^2.1",
+		"phpunit/phpunit": "^11.5",
+		"szepeviktor/phpstan-wordpress": "^2.0",
+		"wp-coding-standards/wpcs": "^3.1"
+	},
+	"autoload": {
+		"classmap": [
+			"includes/"
+		]
+	},
+	"autoload-dev": {
+		"classmap": [
+			"tests/unit/"
+		],
+		"exclude-from-classmap": [
+			"tests/unit/stubs/"
+		]
+	},
+	"config": {
+		"platform": {
+			"php": "8.2"
+		},
+		"optimize-autoloader": true,
+		"sort-packages": true,
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	},
+	"scripts": {
+		"phpcs": "phpcs",
+		"phpcs:staged": "bash bin/phpcs-staged.sh",
+		"phpcbf": "phpcbf",
+		"phpstan": "phpstan analyse --memory-limit=1G",
+		"test:unit": "phpunit",
+		"install-git-hooks": "@php bin/install-git-hooks.php",
+		"post-install-cmd": [
+			"@install-git-hooks"
+		],
+		"post-update-cmd": [
+			"@install-git-hooks"
+		]
+	},
+	"extra": {
+		"hooks": {
+			"pre-commit": [
+				"composer run phpcs:staged"
+			]
+		}
+	}
+}

@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<ruleset name="Liber">
+	<description>WordPress Coding Standards (Core, Docs, Extra), WordPress VIP and PHP compatibility.</description>
+
+	<file>.</file>
+
+	<!-- Keep each pattern on one line: bin/phpcs-staged.sh reads them. -->
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/build/*</exclude-pattern>
+	<exclude-pattern>*/prototype/*</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg name="severity" value="1"/>
+	<arg name="parallel" value="8"/>
+	<arg value="sp"/>
+	<arg name="colors"/>
+
+	<config name="testVersion" value="8.2-"/>
+	<config name="minimum_wp_version" value="7.1"/>
+
+	<rule ref="WordPress"/>
+	<rule ref="WordPress-VIP-Go"/>
+	<rule ref="PHPCompatibilityWP"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="liber"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- PHPUnit 11 finds a test class by its file name, so test files are named like their class. -->
+	<rule ref="WordPress.Files.FileName">
+		<exclude-pattern>*/tests/unit/*_Test.php</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="liber"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>
