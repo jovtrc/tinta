@@ -70,7 +70,8 @@ Tree behaviour:
 - The whole tree skeleton (id, parent, order, title, icon) arrives in one cached request — no lazy loading.
 - Expand/collapse state remembered per user.
 - Drag to reorder; drag onto a page to move it under that page (depth 5 enforced; invalid drops refused).
-- Hovering a page shows "+" (add a child) and "⋯" (rename, pin, move to trash).
+- Hovering a page shows "+" (add a child) and "⋯" (pin, rename, move to…, move to trash). A right click on any page in the sidebar opens the same menu at the pointer.
+- The sidebar can be hidden (button in its header, or ⌘K → Toggle sidebar); a button in the page header brings it back.
 - Other people's changes show up within one Heartbeat tick (~15–60 s). No real-time.
 - Each page has a bookmarkable URL; back/forward works.
 
@@ -81,7 +82,7 @@ Tree behaviour:
   - **Callout** — tinted box with an emoji and rich text.
 - Page header: emoji icon (click to change) above a large title (`post_title`), then "Edited by Maria · 2 h ago".
 - `/` opens the core inserter, filtered to allowed blocks. Empty pages show "Type / for commands".
-- Header actions: undo/redo, save status ("Saving…" / "Saved"), Notes, "⋯" page actions. No Publish or Save button: pages save as you type (a moment after the last edit, and when you leave the page), like Notion. ⌘S saves at once.
+- Header actions: undo/redo, save status ("Saving…" / "Saved"), Notes, block settings, "⋯" page actions (the same menu as in the tree). No Publish or Save button: pages save as you type (a moment after the last edit, and when you leave the page), like Notion. ⌘S saves at once.
 - **Notes:** Liber's UI on core's note data. Notes on blocks, threads, replies, @mentions, resolve. Notes on selected text come in v1.1. Anyone who can edit can add notes; Viewers don't see them (core requires edit rights).
 - **Locking (core post locks):** one editor at a time. Others get core's dialog, "Maria is editing this page", with "Take over". Liber only feeds it the lock of each page it opens; nothing saves while someone else holds it. A read-only view instead of the dialog comes in v1.1.
 - **Viewers** get a read-only page (the server's rendered HTML) instead of the editor, and no New page button.

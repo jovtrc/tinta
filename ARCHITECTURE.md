@@ -181,9 +181,11 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 
 ### Modules
 - `src/app/` — workspace shell: layout, sidebar and page tree, URL routing, page creation.
-- `src/app/store/` — `liber/workspace` and `liber/prefs` stores.
+- `src/app/store/` — `liber/workspace` (the tree and the actions that change it), `liber/prefs` (per-user lists) and `liber/ui` (open dialog, right-click menu, sidebar shown or hidden) stores.
 - `src/app/commands.tsx` — ⌘K commands.
-- `src/app/drawer.tsx` — the sidebar as a drawer on small screens (`useViewportMatch( 'medium', '<' )`), with the menu button pages put in their header.
+- `src/app/dialogs.tsx` — renders the open dialog (rename, move, move to trash, trash, settings), whichever menu or command opened it.
+- `src/app/sidebar/page-menu.tsx` — the page menu, shared by the tree's "⋯", the page header's "⋯" and right click.
+- `src/app/sidebar/use-sidebar.ts`, `sidebar-toggle.tsx`, `drawer.tsx` — the sidebar shown or hidden on wide screens, a drawer on small ones (`useViewportMatch( 'medium', '<' )`), and the button pages put in their header to bring it back.
 - `src/app/theme/` — color scheme → `ThemeProvider`.
 - `src/editor/` — page header (icon picker with a curated emoji list, title, "Edited by"), and the open page: `OpenPage` picks `PageEditor` (`EditorProvider` per page, header, canvas, inspector, lock dialog, continuous save) or `PageView` (read-only).
 - `src/notes/` — Notes: panel, thread cards, composer with @mentions, block toolbar button, `liber/notes` UI store.
