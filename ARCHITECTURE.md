@@ -187,7 +187,7 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 - `src/app/sidebar/page-menu.tsx` — the page menu, shared by the tree's "⋯", the page header's "⋯" and right click.
 - `src/app/sidebar/use-sidebar.ts`, `sidebar-toggle.tsx`, `drawer.tsx` — the sidebar shown or hidden on wide screens, a drawer on small ones (`useViewportMatch( 'medium', '<' )`), and the button pages put in their header to bring it back.
 - `src/app/theme/` — color scheme → `ThemeProvider`.
-- `src/editor/` — page header (icon picker with a curated emoji list, title, "Edited by"), and the open page: `OpenPage` picks `PageEditor` (`EditorProvider` per page, header, canvas, inspector, lock dialog, continuous save) or `PageView` (read-only).
+- `src/editor/` — page header (icon picker with a curated emoji list, title, "Edited by"), and the open page: `OpenPage` picks `PageEditor` (`EditorProvider` per page, header, canvas, one side panel at a time — Blocks, Notes or block settings —, lock dialog, continuous save) or `PageView` (read-only). `EditorProvider` gives each page its own `core/editor` and `core/block-editor` stores, so anything that reads them (like which panel is open) renders inside it. The Blocks panel is Liber's own, built on the public `getInserterItems` selector: core's block library component is `__experimental` and its lint rule forbids it. Callout's `__experimentalOnEnter` support flag is the one experimental key Liber uses; without it, Enter would simply stay inside the callout.
 - `src/notes/` — Notes: panel, thread cards, composer with @mentions, block toolbar button, `liber/notes` UI store.
 - `src/types/` — type shims.
 - `src/blocks/page-link/`, `src/blocks/callout/`.
