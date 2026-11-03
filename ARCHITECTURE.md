@@ -43,7 +43,7 @@ The workspace is one admin screen, `admin.php?page=liber&doc=ID`. Liber's React 
 | Class | File | Job |
 |---|---|---|
 | `Liber\Plugin` | `includes/class-plugin.php` | Bootstrap; wires hooks on `plugins_loaded` |
-| `Liber\Setup\Activator`, `Deactivator`, `Uninstaller` | `includes/setup/` | Roles and caps, rewrite-rules flag, cleanup |
+| `Liber\Setup\Installer`, `Uninstaller` | `includes/setup/` | Roles and caps per site (on activation, new network sites and upgrades); on delete, removes roles, caps, settings, the cached tree and people's preferences on every site — pages stay |
 | `Liber\Setup\Wizard` | `includes/setup/class-wizard.php` | Wizard state, sample content |
 | `Liber\Docs\Post_Type` | `includes/docs/class-post-type.php` | CPT, `_liber_icon` meta, depth check, revisions cap |
 | `Liber\Docs\Private_Status` | `includes/docs/class-private-status.php` | Every page `private`; no "Private:" title prefix; trash restores to `private` |

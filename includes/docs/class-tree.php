@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Tree {
 
-	private const CACHE_KEY = 'liber_tree';
+	public const CACHE_KEY = 'liber_tree';
 
 	public const GENERATION_OPTION = 'liber_tree_generation';
 
