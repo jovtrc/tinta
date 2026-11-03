@@ -7,7 +7,7 @@ import { useMergeRefs, useResizeObserver } from '@wordpress/compose';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';
 import { useLayoutEffect, useState } from '@wordpress/element';
-import { _n, sprintf } from '@wordpress/i18n';
+import { _n, isRTL, sprintf } from '@wordpress/i18n';
 import { comment, Icon } from '@wordpress/icons';
 
 import { store as notesStore } from './store';
@@ -20,7 +20,7 @@ interface Marker {
 	clientId: string;
 	count: number;
 	top: number;
-	left: number;
+	start: number;
 }
 
 /**
@@ -73,10 +73,11 @@ export function NoteMarkers() {
 		}
 
 		const origin = layer.getBoundingClientRect();
-		const left = Math.min(
-			content.getBoundingClientRect().right - origin.left + GAP,
-			origin.width - MARKER_WIDTH
-		);
+		const box = content.getBoundingClientRect();
+		const after = isRTL()
+			? origin.right - box.left
+			: box.right - origin.left;
+		const start = Math.min( after + GAP, origin.width - MARKER_WIDTH );
 
 		setMarkers(
 			[ ...counts ].flatMap( ( [ clientId, count ] ) => {
@@ -92,7 +93,7 @@ export function NoteMarkers() {
 								top:
 									block.getBoundingClientRect().top -
 									origin.top,
-								left,
+								start,
 							},
 						]
 					: [];
@@ -107,7 +108,10 @@ export function NoteMarkers() {
 					key={ marker.clientId }
 					type="button"
 					className="liber-note-marker"
-					style={ { top: marker.top, left: marker.left } }
+					style={ {
+						top: marker.top,
+						insetInlineStart: marker.start,
+					} }
 					aria-label={ sprintf(
 						/* translators: %d: number of notes. */
 						_n(

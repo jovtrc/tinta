@@ -9,6 +9,10 @@
 		color: #757575;
 		content: "→" / "";
 	}
+
+	&:dir(rtl)::after {
+		content: "←" / "";
+	}
 }
 
 .wp-block-liber-page-link__title {

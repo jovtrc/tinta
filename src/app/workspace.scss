@@ -33,17 +33,18 @@ body.liber-workspace-mode.liber-workspace-screen {
 
 .liber-workspace {
 	position: fixed;
-	inset: var(--wp-admin--admin-bar--height, 32px) 0 0 160px;
+	inset-block: var(--wp-admin--admin-bar--height, 32px) 0;
+	inset-inline: 160px 0;
 	background: #fff;
 
 	.folded & {
-		left: 36px;
+		inset-inline-start: 36px;
 	}
 
 	@media (max-width: 960px) {
 
 		.auto-fold & {
-			left: 36px;
+			inset-inline-start: 36px;
 		}
 	}
 
@@ -52,7 +53,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 		&,
 		.folded &,
 		.auto-fold & {
-			left: 0;
+			inset-inline-start: 0;
 		}
 	}
 }
@@ -123,7 +124,8 @@ body.liber-workspace-mode.liber-workspace-screen {
 
 .liber-drawer {
 	position: absolute;
-	inset: 0 auto 0 0;
+	inset-block: 0;
+	inset-inline: 0 auto;
 	z-index: 21;
 	display: flex;
 	width: min(85vw, 320px);

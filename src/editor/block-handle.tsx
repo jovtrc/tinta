@@ -1,5 +1,5 @@
 /**
- * A drag handle at the left of the block under the pointer, like Notion's:
+ * A drag handle before the block under the pointer, like Notion's:
  * drag it to move the block, click it to select the block. Hidden while
  * typing. Inside a callout it moves the whole callout. Drops go through core's own drop zones, which read the same
  * `wp-blocks` drag data core's block toolbar sets.
@@ -8,7 +8,7 @@ import { store as blockEditorStore } from '@wordpress/block-editor';
 import { useMergeRefs, useRefEffect } from '@wordpress/compose';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, isRTL } from '@wordpress/i18n';
 import { dragHandle, Icon } from '@wordpress/icons';
 import type { DragEvent } from 'react';
 
@@ -22,7 +22,7 @@ const CALLOUT = '[data-type="liber/callout"]';
 interface Hovered {
 	clientId: string;
 	top: number;
-	left: number;
+	start: number;
 }
 
 interface BlockSelectors {
@@ -75,17 +75,17 @@ export function BlockHandle() {
 				const origin = node.getBoundingClientRect();
 				const rect = block.getBoundingClientRect();
 				const top = rect.top - origin.top;
-				const left = Math.max(
-					0,
-					rect.left - origin.left - HANDLE_WIDTH - 4
-				);
+				const before = isRTL()
+					? origin.right - rect.right
+					: rect.left - origin.left;
+				const start = Math.max( 0, before - HANDLE_WIDTH - 4 );
 
 				setHovered( ( current ) =>
 					current?.clientId === clientId &&
 					current.top === top &&
-					current.left === left
+					current.start === start
 						? current
-						: { clientId, top, left }
+						: { clientId, top, start }
 				);
 			};
 
@@ -132,7 +132,10 @@ export function BlockHandle() {
 					draggable
 					tabIndex={ -1 }
 					className="liber-block-handle"
-					style={ { top: hovered.top, left: hovered.left } }
+					style={ {
+						top: hovered.top,
+						insetInlineStart: hovered.start,
+					} }
 					aria-label={ __( 'Drag to move', 'liber' ) }
 					onClick={ () => selectBlock( hovered.clientId ) }
 					onDragStart={ ( event ) =>
