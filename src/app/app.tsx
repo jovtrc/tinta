@@ -1,15 +1,18 @@
 /**
- * Workspace layout: the sidebar and the open page's editor, plus ⌘K commands and the trash.
+ * Workspace layout: the sidebar and the open page's editor, plus ⌘K commands
+ * and the trash. On small screens the sidebar is a drawer.
  */
 import { Button, Popover, SlotFillProvider } from '@wordpress/components';
+import { useViewportMatch } from '@wordpress/compose';
 import { useDispatch } from '@wordpress/data';
-import { useEffect, useState } from '@wordpress/element';
+import { useCallback, useEffect, useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { SnackbarNotices } from '@wordpress/notices';
 
 import { OpenPage } from '../editor/open-page';
 import { WorkspaceCommands } from './commands';
 import { config } from './config';
+import { Drawer, DrawerBar, DrawerContext } from './drawer';
 import { store as prefsStore } from './store/prefs';
 import { Sidebar } from './sidebar/sidebar';
 import { TrashDialog } from './sidebar/trash-dialog';
@@ -21,12 +24,29 @@ import { useTreeRefresh } from './use-tree-refresh';
  * Renders the workspace.
  */
 export function App() {
-	const [ pageId, openPage ] = usePageRoute();
+	const [ pageId, navigate ] = usePageRoute();
 	const [ isTrashOpen, setTrashOpen ] = useState( false );
+	const [ isDrawerOpen, setDrawerOpen ] = useState( false );
+	const isMobile = useViewportMatch( 'medium', '<' );
 	useTreeRefresh();
 	const { visitPage } = useDispatch( prefsStore );
+	const drawer = useMemo(
+		() => ( { isMobile, isOpen: isDrawerOpen, setOpen: setDrawerOpen } ),
+		[ isMobile, isDrawerOpen ]
+	);
+
+	const closeDrawer = useCallback( () => setDrawerOpen( false ), [] );
+	const openPage = useCallback(
+		( id: number ) => {
+			setDrawerOpen( false );
+			navigate( id );
+		},
+		[ navigate ]
+	);
 
 	useEffect( () => {
+		setDrawerOpen( false );
+
 		if ( pageId ) {
 			visitPage( pageId );
 		}
@@ -34,24 +54,38 @@ export function App() {
 
 	return (
 		<SlotFillProvider>
-			<WorkspaceCommands
-				onOpen={ openPage }
-				onOpenTrash={ () => setTrashOpen( true ) }
-			/>
-			<div className="liber-workspace__layout">
-				<Sidebar
-					currentId={ pageId }
+			<DrawerContext.Provider value={ drawer }>
+				<WorkspaceCommands
 					onOpen={ openPage }
 					onOpenTrash={ () => setTrashOpen( true ) }
 				/>
-				<main className="liber-workspace__main">
-					{ pageId ? (
-						<OpenPage key={ pageId } pageId={ pageId } />
-					) : (
-						<EmptyWorkspace onOpen={ openPage } />
+				<div className="liber-workspace__layout">
+					{ ! isMobile && (
+						<Sidebar
+							currentId={ pageId }
+							onOpen={ openPage }
+							onOpenTrash={ () => setTrashOpen( true ) }
+						/>
 					) }
-				</main>
-			</div>
+					<main className="liber-workspace__main">
+						{ pageId ? (
+							<OpenPage key={ pageId } pageId={ pageId } />
+						) : (
+							<EmptyWorkspace onOpen={ openPage } />
+						) }
+					</main>
+				</div>
+				{ isMobile && isDrawerOpen && (
+					<Drawer onClose={ closeDrawer }>
+						<Sidebar
+							currentId={ pageId }
+							onOpen={ openPage }
+							onOpenTrash={ () => setTrashOpen( true ) }
+							onClose={ closeDrawer }
+						/>
+					</Drawer>
+				) }
+			</DrawerContext.Provider>
 			{ isTrashOpen && (
 				<TrashDialog onClose={ () => setTrashOpen( false ) } />
 			) }
@@ -71,13 +105,16 @@ function EmptyWorkspace( { onOpen }: { onOpen: ( pageId: number ) => void } ) {
 	const createPage = useCreatePage( onOpen );
 
 	return (
-		<div className="liber-workspace__empty">
-			<p>{ __( 'No pages yet.', 'liber' ) }</p>
-			{ config.canCreate && (
-				<Button variant="primary" onClick={ () => createPage() }>
-					{ __( 'Create the first page', 'liber' ) }
-				</Button>
-			) }
+		<div className="liber-editor">
+			<DrawerBar />
+			<div className="liber-workspace__empty">
+				<p>{ __( 'No pages yet.', 'liber' ) }</p>
+				{ config.canCreate && (
+					<Button variant="primary" onClick={ () => createPage() }>
+						{ __( 'Create the first page', 'liber' ) }
+					</Button>
+				) }
+			</div>
 		</div>
 	);
 }

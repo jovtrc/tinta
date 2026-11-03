@@ -46,7 +46,12 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 
 	@media (max-width: 782px) {
-		left: 0;
+
+		&,
+		.folded &,
+		.auto-fold & {
+			left: 0;
+		}
 	}
 }
 
@@ -57,7 +62,6 @@ body.liber-workspace-mode.liber-workspace-screen {
 
 	@media (max-width: 782px) {
 		grid-template-columns: minmax(0, 1fr);
-		grid-template-rows: auto minmax(0, 1fr);
 	}
 }
 
@@ -85,11 +89,58 @@ body.liber-workspace-mode.liber-workspace-screen {
 .liber-workspace__empty {
 	display: flex;
 	flex-direction: column;
+	flex: 1;
 	align-items: center;
 	justify-content: center;
 	gap: 12px;
-	height: 100%;
 	color: #757575;
+}
+
+// Mobile drawer
+
+.liber-drawer__backdrop {
+	position: absolute;
+	inset: 0;
+	z-index: 20;
+	background: rgba(0, 0, 0, 0.35);
+	animation: liber-fade-in 0.2s ease-out;
+}
+
+.liber-drawer {
+	position: absolute;
+	inset: 0 auto 0 0;
+	z-index: 21;
+	display: flex;
+	width: min(85vw, 320px);
+	box-shadow: 0 0 24px rgba(0, 0, 0, 0.2);
+	animation: liber-slide-in 0.2s ease-out;
+
+	.liber-sidebar {
+		flex: 1;
+		border-right: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.liber-drawer,
+	.liber-drawer__backdrop {
+		animation: none;
+	}
+}
+
+@keyframes liber-fade-in {
+
+	from {
+		opacity: 0;
+	}
+}
+
+@keyframes liber-slide-in {
+
+	from {
+		transform: translateX(-100%);
+	}
 }
 
 // Sidebar
@@ -102,18 +153,24 @@ body.liber-workspace-mode.liber-workspace-screen {
 	overflow-y: auto;
 	background: #f6f7f7;
 	border-right: 1px solid #e0e0e0;
-
-	@media (max-width: 782px) {
-		max-height: 40vh;
-		border-right: 0;
-		border-bottom: 1px solid #e0e0e0;
-	}
 }
 
 .liber-sidebar__header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 24px;
 	padding: 6px 8px 10px;
 	font-size: 14px;
 	font-weight: 600;
+}
+
+.liber-sidebar__name {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .liber-sidebar__action.components-button {
@@ -337,6 +394,14 @@ body.liber-workspace-mode.liber-workspace-screen {
 	overflow-y: auto;
 	background: #fafafa;
 	border-left: 1px solid #e0e0e0;
+
+	@media (max-width: 782px) {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		width: auto;
+		border-left: 0;
+	}
 }
 
 .liber-notes__header {
@@ -525,6 +590,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 }
 
 .liber-editor__body {
+	position: relative;
 	display: flex;
 	flex: 1;
 	min-height: 0;
@@ -548,6 +614,10 @@ body.liber-workspace-mode.liber-workspace-screen {
 	padding: 64px 24px 160px;
 	font-size: 16px;
 	line-height: 1.6;
+
+	@media (max-width: 600px) {
+		padding: 24px 16px 120px;
+	}
 }
 
 .liber-reader__icon {
@@ -571,7 +641,16 @@ body.liber-workspace-mode.liber-workspace-screen {
 	flex: none;
 	width: 280px;
 	overflow-y: auto;
+	background: #fff;
 	border-left: 1px solid #e0e0e0;
+
+	@media (max-width: 782px) {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		width: auto;
+		border-left: 0;
+	}
 }
 
 .liber-editor__message {

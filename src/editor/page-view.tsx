@@ -5,6 +5,7 @@ import { RawHTML } from '@wordpress/element';
 import { decodeEntities } from '@wordpress/html-entities';
 import { __ } from '@wordpress/i18n';
 
+import { DrawerToggle } from '../app/drawer';
 import { EditedByLine, ICON_META } from './page-header';
 import { LoadingPage, MissingPage } from './page-message';
 import { usePageRecord } from './use-page-record';
@@ -29,6 +30,7 @@ export function PageView( { pageId }: { pageId: number } ) {
 	return (
 		<div className="liber-editor">
 			<div className="liber-editor__header">
+				<DrawerToggle />
 				<div className="liber-editor__spacer" />
 				<span className="liber-editor__status">
 					{ __( 'View only', 'liber' ) }

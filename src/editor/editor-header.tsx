@@ -1,5 +1,6 @@
 /**
- * Editor header: undo/redo, save status, Notes and the block settings toggle.
+ * Editor header: the mobile menu button, undo/redo, save status, Notes and the
+ * block settings toggle.
  */
 import { Button } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -11,6 +12,7 @@ import {
 import { __ } from '@wordpress/i18n';
 import { drawerRight } from '@wordpress/icons';
 
+import { DrawerToggle } from '../app/drawer';
 import { NotesToggle } from '../notes/notes-panel';
 
 interface EditorHeaderProps {
@@ -31,6 +33,7 @@ export function EditorHeader( {
 }: EditorHeaderProps ) {
 	return (
 		<div className="liber-editor__header">
+			<DrawerToggle />
 			<EditorHistoryUndo />
 			<EditorHistoryRedo />
 			<div className="liber-editor__spacer" />

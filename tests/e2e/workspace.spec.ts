@@ -646,6 +646,46 @@ test.describe( 'Settings', () => {
 	} );
 } );
 
+test.describe( 'Mobile', () => {
+	test.use( { viewport: { width: 390, height: 844 } } );
+
+	test.beforeEach( async ( { requestUtils } ) => {
+		await deleteAllPages( requestUtils );
+	} );
+
+	test( 'opens the sidebar as a drawer', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		await createPage( requestUtils, 'Roadmap' );
+		const drawer = page.getByRole( 'dialog', { name: 'Sidebar' } );
+		const menuButton = page.getByRole( 'button', { name: 'Open sidebar' } );
+
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=liber&doc=${ handbook }`
+		);
+		await expect( menuButton ).toBeVisible();
+		await expect( sidebarLink( page, 'Roadmap' ) ).toBeHidden();
+
+		await menuButton.click();
+		await expect( drawer ).toBeVisible();
+		await page.keyboard.press( 'Escape' );
+		await expect( drawer ).toBeHidden();
+		await expect( menuButton ).toBeFocused();
+
+		await menuButton.click();
+		await sidebarLink( page, 'Roadmap' ).click();
+		await expect( drawer ).toBeHidden();
+		await expect(
+			editor.canvas.getByRole( 'textbox', { name: 'Untitled' } )
+		).toHaveText( 'Roadmap' );
+	} );
+} );
+
 test.describe( 'Locks and roles', () => {
 	test.beforeEach( async ( { requestUtils } ) => {
 		await deleteAllPages( requestUtils );

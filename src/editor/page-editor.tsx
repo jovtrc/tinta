@@ -42,6 +42,7 @@ const CANVAS_STYLES = [
 	...( config.settings.styles ?? [] ),
 	{
 		css: `.editor-styles-wrapper { padding: 48px 24px 160px; }
+		@media (max-width: 600px) { .editor-styles-wrapper { padding: 24px 16px 120px; } }
 		.editor-styles-wrapper .liber-page-header,
 		.editor-styles-wrapper .is-root-container { max-width: 720px; margin-inline: auto; }
 		.liber-page-icon, .liber-page-icon__add { display: block; border: 0; background: none; cursor: pointer; font-family: inherit; }

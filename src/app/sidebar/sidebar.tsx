@@ -5,7 +5,7 @@
 import { Button } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { plus, trash } from '@wordpress/icons';
+import { closeSmall, plus, trash } from '@wordpress/icons';
 
 import { config } from '../config';
 import { store as prefsStore } from '../store/prefs';
@@ -18,6 +18,7 @@ interface SidebarProps {
 	currentId: number;
 	onOpen: ( pageId: number ) => void;
 	onOpenTrash: () => void;
+	onClose?: () => void;
 }
 
 /**
@@ -27,8 +28,14 @@ interface SidebarProps {
  * @param props.currentId   Open page.
  * @param props.onOpen      Opens a page.
  * @param props.onOpenTrash Opens the trash.
+ * @param props.onClose     Closes the sidebar, when it's a drawer.
  */
-export function Sidebar( { currentId, onOpen, onOpenTrash }: SidebarProps ) {
+export function Sidebar( {
+	currentId,
+	onOpen,
+	onOpenTrash,
+	onClose,
+}: SidebarProps ) {
 	const createPage = useCreatePage( onOpen );
 	const prefs = useSelect(
 		( select ) => select( prefsStore ).getPrefs(),
@@ -40,7 +47,17 @@ export function Sidebar( { currentId, onOpen, onOpenTrash }: SidebarProps ) {
 			className="liber-sidebar"
 			aria-label={ __( 'Workspace', 'liber' ) }
 		>
-			<div className="liber-sidebar__header">{ config.siteName }</div>
+			<div className="liber-sidebar__header">
+				<span className="liber-sidebar__name">{ config.siteName }</span>
+				{ onClose && (
+					<Button
+						icon={ closeSmall }
+						label={ __( 'Close sidebar', 'liber' ) }
+						size="small"
+						onClick={ onClose }
+					/>
+				) }
+			</div>
 			{ config.canCreate && (
 				<Button
 					className="liber-sidebar__action"

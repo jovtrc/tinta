@@ -4,13 +4,18 @@
 import { Spinner } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
+import { DrawerBar } from '../app/drawer';
+
 /**
  * A spinner while the page loads.
  */
 export function LoadingPage() {
 	return (
-		<div className="liber-editor__message">
-			<Spinner />
+		<div className="liber-editor">
+			<DrawerBar />
+			<div className="liber-editor__message">
+				<Spinner />
+			</div>
 		</div>
 	);
 }
@@ -20,8 +25,14 @@ export function LoadingPage() {
  */
 export function MissingPage() {
 	return (
-		<p className="liber-editor__message">
-			{ __( 'This page doesn’t exist, or you can’t open it.', 'liber' ) }
-		</p>
+		<div className="liber-editor">
+			<DrawerBar />
+			<p className="liber-editor__message">
+				{ __(
+					'This page doesn’t exist, or you can’t open it.',
+					'liber'
+				) }
+			</p>
+		</div>
 	);
 }
