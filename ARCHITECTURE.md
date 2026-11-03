@@ -49,6 +49,7 @@ The workspace is one admin screen, `admin.php?page=liber&doc=ID`. Liber's React 
 | `Liber\Docs\Private_Status` | `includes/docs/class-private-status.php` | Every page `private`; no "Private:" title prefix; trash restores to `private` |
 | `Liber\Docs\Subtree_Trash` | `includes/docs/class-subtree-trash.php` | Cascade trash (`_liber_trashed_with`), restore and delete; only admins delete for good |
 | `Liber\Rest\Restore_Controller` | `includes/rest/class-restore-controller.php` | `POST liber/v1/docs/{id}/restore` |
+| `Liber\Docs\Last_Editor` | `includes/docs/class-last-editor.php` | Records `_edit_last` on title, content or icon changes (core sets it only on classic screens); `last_editor` REST field |
 | `Liber\Docs\Revisions` | `includes/docs/class-revisions.php` | Revision snapshots (one per author per 10 min), 10 kept |
 | `Liber\Docs\Tree` | `includes/docs/class-tree.php` | Tree skeleton query, cache and invalidation |
 | `Liber\Roles\Roles` | `includes/roles/class-roles.php` | Member and Viewer roles, caps |
@@ -78,7 +79,8 @@ No custom tables.
 | `posts` | `post_parent`, `menu_order` | Tree and sibling order |
 | `postmeta` | `_liber_icon` | Page emoji |
 | `postmeta` | `_liber_share_root`, `_liber_indexable` (v1.1) | The page sharing was turned on from; search-engine opt-in |
-| `postmeta` | `_edit_lock`, `_edit_last`, `_wp_trash_meta_*` | Core: locks, last editor, trash |
+| `postmeta` | `_edit_lock`, `_edit_last`, `_wp_trash_meta_*` | Core: locks, last editor (Liber records it on REST saves), trash |
+| `postmeta` | `_liber_trashed_with` | Set on subpages trashed along with a page, so they come back with it |
 | `comments` | `comment_type = note` | Notes (core's data, Liber's UI) |
 | block attributes | `metadata.noteId` | Links a note thread to a block (core's format) |
 | user option | `liber_prefs` | `pinned[]`, `recent[5]`, `expanded[]`, `emojis[]` — per user, per site |
@@ -176,9 +178,8 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 - `src/app/` — workspace shell: layout, sidebar and page tree, URL routing, page creation.
 - `src/app/store/` — `liber/workspace` store.
 - `src/app/commands.tsx` — ⌘K commands.
-- `src/app/emoji-picker/`
 - `src/app/theme/` — color scheme → `ThemeProvider`.
-- `src/editor/` — the open page: `OpenPage` picks `PageEditor` (`EditorProvider` per page, header, canvas, inspector, lock dialog, continuous save) or `PageView` (read-only).
+- `src/editor/` — page header (icon picker with a curated emoji list, title, "Edited by"), and the open page: `OpenPage` picks `PageEditor` (`EditorProvider` per page, header, canvas, inspector, lock dialog, continuous save) or `PageView` (read-only).
 - `src/notes/` — Notes panel, threads, @mentions.
 - `src/types/` — type shims.
 - `src/blocks/page-link/`, `src/blocks/callout/`.

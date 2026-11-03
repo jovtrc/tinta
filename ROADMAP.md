@@ -20,7 +20,8 @@
   - [x] Page actions: add a subpage, move to trash (with subpages); Trash dialog with restore and, for admins, delete; 5-level limit.
   - [x] Drag to move pages (above, below, inside).
   - [x] ⌘K: find pages by title (with their path), New page, Open trash.
-  - [ ] "Move to…" menu item (keyboard path for moving), page icons, pinned and recent, mobile drawer.
+  - [x] Page header: emoji icon picker (curated list, any typed emoji), "Edited by … · 2 hours ago".
+  - [ ] "Move to…" menu item (keyboard path for moving), pinned and recent (with recently used emoji), mobile drawer.
   - [ ] CI, once the GitHub repo exists.
 
 ## v1.0 — MVP (wordpress.org)
