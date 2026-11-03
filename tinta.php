@@ -21,5 +21,6 @@ define( 'TINTA_FILE', __FILE__ );
 require_once __DIR__ . '/vendor/autoload.php';
 
 register_activation_hook( __FILE__, array( Tinta\Setup\Installer::class, 'install' ) );
+register_activation_hook( __FILE__, array( Tinta\Setup\Setup_Redirect::class, 'flag' ) );
 
 add_action( 'plugins_loaded', array( Tinta\Plugin::class, 'boot' ) );

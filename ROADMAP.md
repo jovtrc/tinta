@@ -53,7 +53,7 @@ Full scope in PLAN §4:
 - Notes on blocks: threads, replies, @mentions (Tinta's UI on core's data).
 - Core post locks (core's lock dialog) and command palette commands.
 - Emoji page icons.
-- Workspace mode (opt-in): login landing, hidden admin chrome, private site.
+- Workspace mode (on by default; the setup wizard opens on activation): login landing, hidden admin chrome, private site.
 - Roles: Administrator, Member, Viewer.
 - Themes from admin color schemes + Tinta Light.
 - Setup wizard (warns about plugins; never deactivates them).

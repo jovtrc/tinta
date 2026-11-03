@@ -109,32 +109,34 @@ final class Workspace_Mode_Test extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Workspace users land in the workspace after login, only with workspace mode on.
+	 * Workspace users land in the workspace after login, while workspace mode is
+	 * on (the default).
 	 */
 	public function test_logins_land_in_the_workspace(): void {
 		$member = get_user_by( 'id', self::factory()->user->create( array( 'role' => Roles::MEMBER ) ) );
 
-		$this->assertSame( admin_url(), apply_filters( 'login_redirect', admin_url(), '', $member ) );
-
-		update_option( 'tinta_settings', array( 'workspace_mode' => true ) );
-
 		$this->assertSame( Screen::url(), apply_filters( 'login_redirect', admin_url(), '', $member ) );
 		$this->assertSame( home_url( '/x' ), apply_filters( 'login_redirect', home_url( '/x' ), home_url( '/x' ), $member ) );
+
+		update_option( 'tinta_settings', array( 'workspace_mode' => false ) );
+
+		$this->assertSame( admin_url(), apply_filters( 'login_redirect', admin_url(), '', $member ) );
 	}
 
 	/**
-	 * The REST API asks visitors to log in and sitemaps go away, only with workspace mode on.
+	 * The REST API asks visitors to log in and sitemaps go away, while workspace
+	 * mode is on (the default).
 	 */
 	public function test_makes_the_site_private(): void {
 		wp_set_current_user( 0 );
 
-		$this->assertNotWPError( apply_filters( 'rest_authentication_errors', null ) );
-		$this->assertTrue( apply_filters( 'wp_sitemaps_enabled', true ) );
-
-		update_option( 'tinta_settings', array( 'workspace_mode' => true ) );
-
 		$this->assertWPError( apply_filters( 'rest_authentication_errors', null ) );
 		$this->assertFalse( apply_filters( 'wp_sitemaps_enabled', true ) );
+
+		update_option( 'tinta_settings', array( 'workspace_mode' => false ) );
+
+		$this->assertNotWPError( apply_filters( 'rest_authentication_errors', null ) );
+		$this->assertTrue( apply_filters( 'wp_sitemaps_enabled', true ) );
 	}
 
 	/**

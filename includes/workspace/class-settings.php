@@ -19,7 +19,7 @@ final class Settings {
 	public const OPTION = 'tinta_settings';
 
 	public const DEFAULTS = array(
-		'workspace_mode' => false,
+		'workspace_mode' => true,
 		'revisions'      => 10,
 		'setup_done'     => false,
 	);

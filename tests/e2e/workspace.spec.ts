@@ -1068,6 +1068,34 @@ test.describe( 'Setup', () => {
 			page.getByRole( 'dialog', { name: 'Set up your workspace' } )
 		).toHaveCount( 0 );
 	} );
+
+	test( 'opens when the plugin is activated', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		const setPluginStatus = ( status: string ) =>
+			requestUtils.rest( {
+				method: 'PUT',
+				path: '/wp/v2/plugins/tinta/tinta',
+				data: { status },
+			} );
+
+		await setPluginStatus( 'inactive' );
+		try {
+			await admin.visitAdminPage( 'plugins.php' );
+			await page
+				.getByRole( 'link', { name: 'Activate Tinta – Team Wiki' } )
+				.click();
+
+			await expect( page ).toHaveURL( /[?&]page=tinta/ );
+			await expect(
+				page.getByRole( 'dialog', { name: 'Set up your workspace' } )
+			).toBeVisible();
+		} finally {
+			await setPluginStatus( 'active' );
+		}
+	} );
 } );
 
 test.describe( 'Locks and roles', () => {

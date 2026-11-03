@@ -43,6 +43,7 @@ The workspace is one admin screen, `admin.php?page=tinta&doc=ID`. Tinta's React 
 | Class | File | Job |
 |---|---|---|
 | `Tinta\Plugin` | `includes/class-plugin.php` | Bootstrap; wires hooks on `plugins_loaded` |
+| `Tinta\Setup\Setup_Redirect` | `includes/setup/class-setup-redirect.php` | After activation, sends the administrator who did it to the workspace, where the setup wizard opens (once; not for bulk or network activation, WP-CLI, or when setup is done) |
 | `Tinta\Setup\Installer`, `Uninstaller` | `includes/setup/` | Roles and caps per site (on activation, new network sites and upgrades); on delete, removes roles, caps, settings, the cached tree and people's preferences on every site — pages stay |
 | `Tinta\Setup\Wizard` | `includes/setup/class-wizard.php` | Wizard state, sample content |
 | `Tinta\Docs\Post_Type` | `includes/docs/class-post-type.php` | CPT, `_tinta_icon` meta, depth check, revisions cap |
@@ -301,6 +302,6 @@ tinta/
 | Design System packages (`@wordpress/theme`, `ui`, `admin-ui`) change | Med | Low | Fallback to `--wp-admin-theme-color` |
 | Multisite admins lack `unfiltered_html` | High | Med | kses-safe blocks; tests as a non-super-admin |
 | Plugin conflicts | High | Med | Wizard warns; docs |
-| wp.org review rejects a behaviour | Low | High | Opt-in and reversible; Plugin Check in CI |
+| wp.org review rejects a behaviour | Low | High | Reversible with one switch, shown by the wizard right after activation; Plugin Check in CI |
 | No persistent object cache | High | Low | Transient fallback; correctness doesn't depend on it |
 | Tree too big for one request (5k+ pages) | Low | Med | ~100 bytes per page; add lazy children or virtualization if needed |

@@ -12,7 +12,7 @@ A private team wiki inside WordPress: pages inside pages, written in the block e
 - Notes on blocks, with replies, @mentions and resolve.
 - Pinned and recent pages, emoji page icons, and ⌘K to find any page.
 - Two roles: Members read and write every page, Viewers only read.
-- Workspace mode: everyone lands in the workspace after logging in, and the site becomes private.
+- Workspace mode (on by default): everyone lands in the workspace after logging in, and the site becomes private.
 - Follows each person's admin color scheme. Works on mobile, in right-to-left languages, and on multisite (each site has its own workspace).
 
 ## Requirements
@@ -23,7 +23,7 @@ WordPress 7.1 or later and PHP 8.2 or later.
 
 1. Download `tinta.zip` from the [latest release](https://github.com/jovtrc/tinta/releases/latest).
 2. In WordPress, go to **Plugins → Add New Plugin → Upload Plugin** and install it.
-3. Open **Workspace** in the admin menu. The setup wizard walks you through naming the workspace, choosing who new people are, and adding sample pages.
+3. Activate it. The setup wizard opens right away and walks you through naming the workspace, choosing who new people are, adding sample pages, and workspace mode.
 
 ## Privacy
 

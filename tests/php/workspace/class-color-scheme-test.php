@@ -46,6 +46,8 @@ final class Color_Scheme_Test extends WP_UnitTestCase {
 	 * Without workspace mode, new people keep core's default.
 	 */
 	public function test_new_people_keep_the_default_otherwise(): void {
+		update_option( Settings::OPTION, array( 'workspace_mode' => false ) );
+
 		$user_id = self::factory()->user->create();
 
 		$this->assertNotSame( Color_Scheme::NAME, get_user_option( 'admin_color', $user_id ) );

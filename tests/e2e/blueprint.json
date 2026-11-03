@@ -4,6 +4,14 @@
 		{
 			"step": "activatePlugin",
 			"pluginPath": "tinta/tinta.php"
+		},
+		{
+			"step": "setSiteOptions",
+			"options": {
+				"tinta_settings": {
+					"workspace_mode": false
+				}
+			}
 		}
 	]
 }

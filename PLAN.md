@@ -18,7 +18,7 @@
 
 1. **Core first.** Use what WordPress ships before writing our own: block editor, post locks, Notes and revisions data, the command palette, admin color schemes, the Design System, Heartbeat, core REST endpoints, Site Title and Site Icon. Tinta's own code covers only what core lacks: the workspace shell, the page tree, page icons, two blocks and the privacy layer. When core's UI for a feature is private (Notes), Tinta builds the UI on core's data, so nothing needs migrating if core opens it up.
 2. **Stable over shiny.** No private or experimental APIs (`__experimental*`, private-API unlocks, `@wordpress/boot` / `@wordpress/route`). An exception needs a strong reason and a row in the risk register.
-3. **Opt-in and reversible.** Activating the plugin changes nothing about how the site behaves. "Workspace mode" is a switch the admin turns on; turning it off (or deactivating) gives back a normal WordPress site.
+3. **Clear and reversible.** Activating the plugin opens the setup wizard, which shows what workspace mode does. Workspace mode starts on; turning it off (or deactivating) gives back a normal WordPress site.
 4. **Focus.** Tinta is a workspace. Security hardening, 2FA, login-screen branding, SMTP and backups stay with dedicated plugins.
 5. **Fresh data for signed-in users.** Cache only what's expensive and shared; every write clears it at once.
 6. **All WordPress coding standards.** WPCS (Core, Docs, Extra) plus WordPress VIP, unmodified (ARCHITECTURE §7).
@@ -44,14 +44,14 @@
 - In v1.1, Share turns a page and everything under it public (`publish`) — §4.15.
 - Meta: `_tinta_icon` (one emoji). Everything else is core: author, modified date, `_edit_lock`, revisions.
 
-### 4.2 Workspace mode (opt-in)
-- **Off** (default after activation): Tinta adds a "Workspace" menu item. The workspace works; the rest of WordPress is untouched.
-- **On** (from the wizard or settings; reversible):
+### 4.2 Workspace mode (on by default)
+- **On** (the default; the setup wizard and Workspace settings switch it):
   - Everyone lands in the workspace after logging in.
   - The WordPress admin menu and toolbar are hidden on workspace screens.
   - Members and Viewers can't open other wp-admin screens (enforced server-side), except their profile.
   - Admins reach the rest of wp-admin through "Admin tools" in the user menu.
   - The site is private: logged-out visitors are sent to the login screen (from v1.1, shared pages are the exception); the REST API requires login; feeds, sitemaps, oEmbed and author archives are off.
+- **Off**: Tinta adds a "Workspace" menu item. The workspace works; the rest of WordPress is untouched.
 - Comments are **not** disabled — Notes are built on them.
 
 ### 4.3 Sidebar & page tree
@@ -136,7 +136,7 @@ Per user and per site (multisite-safe): pinned (ordered), recent (last 5), tree 
 - **Tinta Dark** is postponed: core's editor UI (block toolbar, inspector, inserter) doesn't follow a dark scheme.
 
 ### 4.12 Setup wizard
-Opens on an administrator's first visit; "Skip for now" (or closing it) marks setup as done. Workspace settings → "Run setup again" reopens it. Choices save at the end through core's settings, and the screen reloads.
+Activating the plugin takes the administrator who did it to the workspace, where the wizard opens (not for bulk or network activation, or WP-CLI); it also opens on an administrator's first visit until setup is done. "Skip for now" (or closing it) marks setup as done. Workspace settings → "Run setup again" reopens it. Choices save at the end through core's settings, and the screen reloads.
 1. Welcome — what Tinta does.
 2. Name & icon (core Site Title / Site Icon, picked from the media library). The sidebar header shows the icon, or the name's first letter.
 3. Plugin check (only when one is active) — active plugins known to conflict, with why, and a link to the Plugins screen. The list lives in `Workspace\Conflicts` (translatable reasons), updated each release. Tinta never deactivates plugins (wp.org rule).

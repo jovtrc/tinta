@@ -22,7 +22,7 @@ Tinta turns a WordPress site into a private wiki for your team. Write docs, note
 * Notes on blocks, with replies, @mentions and resolve.
 * Pinned and recent pages, emoji page icons, and ⌘K to find any page.
 * Two roles: Members read and write every page, Viewers only read.
-* Workspace mode: everyone lands in the workspace after logging in, and the site becomes private.
+* Workspace mode (on by default): everyone lands in the workspace after logging in, and the site becomes private.
 * Works on mobile, and on multisite (each site has its own workspace).
 
 = Privacy =
@@ -38,7 +38,7 @@ The JavaScript in `build/` is compiled from the TypeScript sources at https://gi
 == Installation ==
 
 1. Install and activate Tinta.
-2. Open **Workspace** in the admin menu. The setup wizard walks you through naming the workspace, choosing who new people are, and adding sample pages.
+2. The setup wizard opens right away. It walks you through naming the workspace, choosing who new people are, adding sample pages, and workspace mode.
 3. Invite your team from **Users → Add New**, as Members or Viewers.
 
 == Frequently Asked Questions ==
@@ -49,7 +49,7 @@ Administrators, Members and Viewers. Other roles, and logged-out visitors, can't
 
 = Do I have to make my whole site private? =
 
-No. Workspace mode is optional. Without it, the rest of the site works as usual and the workspace lives in the admin.
+No. Workspace mode, which makes the site private, is on when you install Tinta. Turn it off in the setup wizard or later in Workspace settings, and the rest of the site works as usual, with the workspace in the admin.
 
 = What happens to the pages if I delete Tinta? =
 
