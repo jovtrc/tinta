@@ -81,10 +81,10 @@ Tree behaviour:
   - **Callout** — tinted box with an emoji and rich text.
 - Page header: emoji icon (click to change) above a large title (`post_title`), then "Edited by Maria · 2 h ago".
 - `/` opens the core inserter, filtered to allowed blocks. Empty pages show "Type / for commands".
-- Header actions: undo/redo, save status ("Saved"), Notes, "⋯" page actions. No Publish button; autosave plus ⌘S.
+- Header actions: undo/redo, save status ("Saving…" / "Saved"), Notes, "⋯" page actions. No Publish or Save button: pages save as you type (a moment after the last edit, and when you leave the page), like Notion. ⌘S saves at once.
 - **Notes:** Liber's UI on core's note data. Notes on blocks, threads, replies, @mentions, resolve. Notes on selected text come in v1.1. Anyone who can edit can add notes; Viewers don't see them (core requires edit rights).
 - **Locking (core post locks):** one editor at a time. Others get core's dialog, "Maria is editing this page", with "Take over". Liber only feeds it the lock of each page it opens. A read-only view instead of the dialog comes in v1.1.
-- **History:** postponed to v1.1. Core keeps saving revisions (10 by default, configurable).
+- **History:** postponed to v1.1. Core keeps saving revisions as snapshots: at most one per author every 10 minutes, the last 10 kept (configurable).
 - **Images:** core uploads and media library. WP 7.1 processes images in the browser (HEIC included); Liber's screen turns this on the same way core's editor does.
 
 ### 4.5 Command palette (⌘K)
@@ -209,4 +209,5 @@ Push back if these creep in:
 | History | Core visual revisions | v1.1 (revisions still saved) | Private outside core's post editor; keeps the MVP small |
 | Locking | Core locks with a read-only view | Core lock dialog in the MVP; read-only view in v1.1 | The dialog is public; the read-only view needs Liber UI |
 | Liber Dark | MVP | Postponed | Core's editor UI doesn't follow a dark scheme |
+| Saving | Autosave + ⌘S | Continuous, like Notion; revisions throttled to one per author per 10 min | Feels like an app; saving every second would flush history |
 | PHP tests | PHPUnit 11 with WordPress stubs + PHPUnit 9.6 on core's suite | One suite: PHPUnit 9.6 on core's suite (wp-env); e2e on Playground | Standard tools contributors know (principle 8) |

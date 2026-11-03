@@ -48,6 +48,8 @@ The workspace is one admin screen, `admin.php?page=liber&doc=ID`. Liber's React 
 | `Liber\Docs\Post_Type` | `includes/docs/class-post-type.php` | CPT, `_liber_icon` meta, depth check, revisions cap |
 | `Liber\Docs\Private_Status` | `includes/docs/class-private-status.php` | Every page `private`; no "Private:" title prefix; trash restores to `private` |
 | `Liber\Docs\Subtree_Trash` | `includes/docs/class-subtree-trash.php` | Cascade trash; restore to top level |
+| `Liber\Docs\Revisions` | `includes/docs/class-revisions.php` | Revision snapshots (one per author per 10 min), 10 kept |
+| `Liber\Docs\Tree` | `includes/docs/class-tree.php` | Tree skeleton query, cache and invalidation |
 | `Liber\Roles\Roles` | `includes/roles/class-roles.php` | Member and Viewer roles, caps |
 | `Liber\Workspace\Screen` | `includes/workspace/class-screen.php` | Workspace screen: block-editor setup, preloads, assets (§2) |
 | `Liber\Workspace\Mode` | `includes/workspace/class-mode.php` | Login landing, admin chrome, wp-admin gate |
@@ -157,6 +159,7 @@ Maybe one more (`/docs/{id}/restore`) if core's update can't restore to the top 
 ### Stack
 - TypeScript everywhere. `@wordpress/scripts` 37 builds it (Babel strips types), so `tsc` runs as its own step (`pnpm typecheck`). `@wordpress/*` dev dependencies are for types and bundling; at runtime the app uses WordPress's own scripts. `@wordpress/block-editor` and `block-library` declare no types → shims in `src/types/`.
 - React 18 via `@wordpress/element` (React 19 isn't in core yet).
+- Saving: continuous. `ContinuousSave` calls core-data's `saveEditedEntityRecord` a second after the last edit and when a page closes (no editor "Page updated" notice each time); failures retry with backoff. `Liber\Docs\Revisions` skips a revision when the same author saved one in the last 10 minutes (`wp_save_post_revision_post_has_changed`).
 - Data: `@wordpress/data` + `@wordpress/core-data` (entities, undo, saving), plus a small `liber/workspace` store for the tree and UI state. `EditorProvider` runs on its own registry; stores it doesn't register (the workspace store, notices) fall through to the global one.
 - Notices: `InlineNotices` / `SnackbarNotices` from `@wordpress/notices` (core deprecated `EditorNotices` / `EditorSnackbars` in 7.0; they go in 7.2).
 - UI: `@wordpress/components`, `@wordpress/icons` (not a script handle in 7.1; wp-scripts bundles it). `@wordpress/ui` isn't registered in 7.1 either; use it only if wp-scripts bundles it cleanly. DataViews (bundled) only if the Trash list needs it.
