@@ -515,7 +515,7 @@ test.describe( 'Blocks', () => {
 		await page.keyboard.type( '/callout' );
 		await expect(
 			page.getByRole( 'option', { name: 'Callout' } )
-		).toBeVisible();
+		).toHaveAttribute( 'aria-selected', 'true' );
 		await page.keyboard.press( 'Enter' );
 		await page.keyboard.type( 'Remember the handbook.' );
 
@@ -799,18 +799,13 @@ test.describe( 'Locks and roles', () => {
 		const context = await browser.newContext( {
 			baseURL: requestUtils.baseURL,
 		} );
+		await context.request.post( '/wp-login.php', {
+			failOnStatusCode: true,
+			form: { log: 'vera', pwd: TEST_PASSWORD },
+		} );
 		const page = await context.newPage();
 
-		await page.goto(
-			`/wp-login.php?redirect_to=${ encodeURIComponent(
-				`/wp-admin/admin.php?page=liber&doc=${ handbook }`
-			) }`
-		);
-		await page.getByLabel( 'Username or Email Address' ).fill( 'vera' );
-		await page
-			.getByLabel( 'Password', { exact: true } )
-			.fill( TEST_PASSWORD );
-		await page.getByRole( 'button', { name: 'Log In' } ).click();
+		await page.goto( `/wp-admin/admin.php?page=liber&doc=${ handbook }` );
 
 		await expect( page.getByText( 'View only' ) ).toBeVisible();
 		await expect(
