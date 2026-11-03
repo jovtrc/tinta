@@ -23,7 +23,7 @@
   - [x] Page header: emoji icon picker (curated list, any typed emoji), "Edited by … · 2 hours ago".
   - [x] Block allowlist; Page link and Callout blocks.
   - [x] Pinned and Recent sections, remembered tree branches, recently used emoji (per user, per site).
-  - [x] CI on GitHub Actions: standards, PHP tests (single site and multisite), e2e on Playground.
+  - [x] CI on GitHub Actions: standards, PHP tests (single site and multisite), e2e on Playground in Chromium, Firefox and WebKit (Safari's engine).
   - [x] "Move to…" (keyboard path for moving).
   - [x] Notes on blocks: threads, replies, @mentions, resolve and reopen (core's data, Liber's panel).
   - [x] Workspace settings (name, workspace mode, new people's role, versions kept) and the account menu.
@@ -36,7 +36,7 @@
   - [x] Setup wizard: name and icon, conflicting plugins, new people's role, sample pages, workspace mode.
   - [x] `readme.txt`, `.distignore`, and Plugin Check in CI on the release contents (clean, experimental checks included).
   - [x] Translation-ready: 196 strings extract cleanly from the release files (pt_BR is translated on translate.wordpress.org after release).
-  - [x] Prototype polish: breadcrumbs, bold titles, the editor's avatar in "Edited by", an arrow on page links, "+" beside Pages, your role under your name, the workspace icon in the sidebar.
+  - [x] Prototype polish: breadcrumbs, bold titles, the editor's avatar in "Edited by", an arrow on page links, "+" beside Pages, your role under your name, the workspace icon in the sidebar, the Notes button as the comment icon with its count.
   - [x] Liber Light admin color scheme (built on core's scheme partials), given to people who join in workspace mode.
   - [x] The sidebar wears the admin color scheme (Midnight, Ocean, Modern…), so the workspace matches the rest of wp-admin.
   - [x] Security review of permissions and REST, with fixes: reading takes a Liber role (authors too), pages' files and notes stay out of other roles' listings, open-registration warning, parent rules on every write, loop guards.
