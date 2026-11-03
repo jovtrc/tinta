@@ -1,7 +1,8 @@
 /**
- * A flat sidebar section of pages, like Pinned or Recent. Hidden when empty.
+ * A flat sidebar section of pages, like Pinned or Recent, with the page menu
+ * on right click. Hidden when empty.
  */
-import { useSelect } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { decodeEntities } from '@wordpress/html-entities';
 import { __ } from '@wordpress/i18n';
 import { Icon, page as pageIcon } from '@wordpress/icons';
@@ -9,6 +10,8 @@ import type { MouseEvent } from 'react';
 
 import { pageUrl } from '../config';
 import { store as workspaceStore, type TreePage } from '../store';
+import { store as uiStore } from '../store/ui';
+import { menuPosition } from './page-menu';
 
 interface PageSectionProps {
 	title: string;
@@ -36,6 +39,11 @@ export function PageSection( {
 		( select ) => select( workspaceStore ).getPages() ?? [],
 		[]
 	);
+	const menuPageId = useSelect(
+		( select ) => select( uiStore ).getContextMenu()?.pageId,
+		[]
+	);
+	const { openContextMenu } = useDispatch( uiStore );
 	const listed = pageIds
 		.map( ( id ) => pages.find( ( page ) => page.id === id ) )
 		.filter( ( page ): page is TreePage => !! page );
@@ -57,7 +65,20 @@ export function PageSection( {
 			<ul className="liber-tree" aria-label={ title }>
 				{ listed.map( ( page ) => (
 					<li key={ page.id }>
-						<div className="liber-tree__row">
+						<div
+							className={
+								page.id === menuPageId
+									? 'liber-tree__row is-menu-open'
+									: 'liber-tree__row'
+							}
+							onContextMenu={ ( event ) => {
+								event.preventDefault();
+								openContextMenu(
+									page.id,
+									...menuPosition( event )
+								);
+							} }
+						>
 							<span className="liber-tree__toggle" />
 							<a
 								className="liber-tree__link"

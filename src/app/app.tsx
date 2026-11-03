@@ -1,21 +1,23 @@
 /**
  * Workspace layout: the sidebar and the open page's editor, plus ⌘K commands
- * and the trash. On small screens the sidebar is a drawer.
+ * and dialogs. On small screens the sidebar is a drawer.
  */
 import { Button, Popover, SlotFillProvider } from '@wordpress/components';
-import { useViewportMatch } from '@wordpress/compose';
 import { useDispatch } from '@wordpress/data';
-import { useCallback, useEffect, useMemo, useState } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { SnackbarNotices } from '@wordpress/notices';
 
 import { OpenPage } from '../editor/open-page';
 import { WorkspaceCommands } from './commands';
 import { config } from './config';
-import { Drawer, DrawerBar, DrawerContext } from './drawer';
-import { store as prefsStore } from './store/prefs';
+import { Dialogs } from './dialogs';
+import { Drawer } from './sidebar/drawer';
 import { Sidebar } from './sidebar/sidebar';
-import { TrashDialog } from './sidebar/trash-dialog';
+import { SidebarBar } from './sidebar/sidebar-toggle';
+import { useSidebar } from './sidebar/use-sidebar';
+import { store as prefsStore } from './store/prefs';
+import { store as uiStore } from './store/ui';
 import { useCreatePage } from './use-create-page';
 import { usePageRoute } from './use-page-route';
 import { useTreeRefresh } from './use-tree-refresh';
@@ -25,70 +27,59 @@ import { useTreeRefresh } from './use-tree-refresh';
  */
 export function App() {
 	const [ pageId, navigate ] = usePageRoute();
-	const [ isTrashOpen, setTrashOpen ] = useState( false );
-	const [ isDrawerOpen, setDrawerOpen ] = useState( false );
-	const isMobile = useViewportMatch( 'medium', '<' );
+	const sidebar = useSidebar();
 	useTreeRefresh();
 	const { visitPage } = useDispatch( prefsStore );
-	const drawer = useMemo(
-		() => ( { isMobile, isOpen: isDrawerOpen, setOpen: setDrawerOpen } ),
-		[ isMobile, isDrawerOpen ]
+	const { setDrawerOpen } = useDispatch( uiStore );
+	const closeDrawer = useCallback(
+		() => setDrawerOpen( false ),
+		[ setDrawerOpen ]
 	);
 
-	const closeDrawer = useCallback( () => setDrawerOpen( false ), [] );
 	const openPage = useCallback(
 		( id: number ) => {
-			setDrawerOpen( false );
+			closeDrawer();
 			navigate( id );
 		},
-		[ navigate ]
+		[ closeDrawer, navigate ]
 	);
 
 	useEffect( () => {
-		setDrawerOpen( false );
+		closeDrawer();
 
 		if ( pageId ) {
 			visitPage( pageId );
 		}
-	}, [ pageId, visitPage ] );
+	}, [ pageId, visitPage, closeDrawer ] );
+
+	const layoutClass = [
+		'liber-workspace__layout',
+		! sidebar.isOpen && ! sidebar.isMobile && 'is-sidebar-hidden',
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
 	return (
 		<SlotFillProvider>
-			<DrawerContext.Provider value={ drawer }>
-				<WorkspaceCommands
-					onOpen={ openPage }
-					onOpenTrash={ () => setTrashOpen( true ) }
-				/>
-				<div className="liber-workspace__layout">
-					{ ! isMobile && (
-						<Sidebar
-							currentId={ pageId }
-							onOpen={ openPage }
-							onOpenTrash={ () => setTrashOpen( true ) }
-						/>
-					) }
-					<main className="liber-workspace__main">
-						{ pageId ? (
-							<OpenPage key={ pageId } pageId={ pageId } />
-						) : (
-							<EmptyWorkspace onOpen={ openPage } />
-						) }
-					</main>
-				</div>
-				{ isMobile && isDrawerOpen && (
-					<Drawer onClose={ closeDrawer }>
-						<Sidebar
-							currentId={ pageId }
-							onOpen={ openPage }
-							onOpenTrash={ () => setTrashOpen( true ) }
-							onClose={ closeDrawer }
-						/>
-					</Drawer>
+			<WorkspaceCommands currentId={ pageId } onOpen={ openPage } />
+			<div className={ layoutClass }>
+				{ sidebar.isOpen && ! sidebar.isMobile && (
+					<Sidebar currentId={ pageId } onOpen={ openPage } />
 				) }
-			</DrawerContext.Provider>
-			{ isTrashOpen && (
-				<TrashDialog onClose={ () => setTrashOpen( false ) } />
+				<main className="liber-workspace__main">
+					{ pageId ? (
+						<OpenPage key={ pageId } pageId={ pageId } />
+					) : (
+						<EmptyWorkspace onOpen={ openPage } />
+					) }
+				</main>
+			</div>
+			{ sidebar.isOpen && sidebar.isMobile && (
+				<Drawer onClose={ closeDrawer }>
+					<Sidebar currentId={ pageId } onOpen={ openPage } />
+				</Drawer>
 			) }
+			<Dialogs currentId={ pageId } onOpen={ openPage } />
 			<SnackbarNotices className="liber-workspace__snackbar" />
 			<Popover.Slot />
 		</SlotFillProvider>
@@ -106,7 +97,7 @@ function EmptyWorkspace( { onOpen }: { onOpen: ( pageId: number ) => void } ) {
 
 	return (
 		<div className="liber-editor">
-			<DrawerBar />
+			<SidebarBar />
 			<div className="liber-workspace__empty">
 				<p>{ __( 'No pages yet.', 'liber' ) }</p>
 				{ config.canCreate && (

@@ -233,6 +233,62 @@ test.describe( 'Page actions and trash', () => {
 		);
 	} );
 
+	test( 'renames and pins pages from their menu', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=liber&doc=${ handbook }`
+		);
+
+		await sidebarLink( page, 'Handbook' ).click( { button: 'right' } );
+		await page.getByRole( 'menuitem', { name: 'Rename' } ).click();
+		await page
+			.getByRole( 'textbox', { name: 'Title' } )
+			.fill( 'Team handbook' );
+		await page.keyboard.press( 'Enter' );
+
+		await expect( sidebarLink( page, 'Team handbook' ) ).toBeVisible();
+		await expect(
+			editor.canvas.getByRole( 'textbox', { name: 'Untitled' } )
+		).toHaveText( 'Team handbook' );
+		await expect
+			.poll(
+				async () =>
+					( await getPage( requestUtils, handbook ) ).title.raw
+			)
+			.toBe( 'Team handbook' );
+
+		await page.getByRole( 'button', { name: 'Page actions' } ).click();
+		await page.getByRole( 'menuitem', { name: 'Pin' } ).click();
+		await expect(
+			page
+				.getByRole( 'list', { name: 'Pinned' } )
+				.getByRole( 'link', { name: 'Team handbook' } )
+		).toBeVisible();
+	} );
+
+	test( 'hides and shows the sidebar', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=liber&doc=${ handbook }`
+		);
+
+		await page.getByRole( 'button', { name: 'Close sidebar' } ).click();
+		await expect( sidebarLink( page, 'Handbook' ) ).toBeHidden();
+		await page.getByRole( 'button', { name: 'Open sidebar' } ).click();
+		await expect( sidebarLink( page, 'Handbook' ) ).toBeVisible();
+	} );
+
 	test( 'moves a page and its subpages to the trash, and restores them', async ( {
 		admin,
 		page,

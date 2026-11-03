@@ -8,18 +8,18 @@ import {
 	MenuGroup,
 	MenuItem,
 } from '@wordpress/components';
-import { useState } from '@wordpress/element';
+import { useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { cog, external } from '@wordpress/icons';
 
 import { config } from '../config';
-import { SettingsDialog } from './settings-dialog';
+import { store as uiStore } from '../store/ui';
 
 /**
  * Renders the footer.
  */
 export function UserMenu() {
-	const [ isSettingsOpen, setSettingsOpen ] = useState( false );
+	const { openDialog } = useDispatch( uiStore );
 
 	return (
 		<div className="liber-sidebar__footer">
@@ -71,11 +71,8 @@ export function UserMenu() {
 				<Button
 					icon={ cog }
 					label={ __( 'Workspace settings', 'liber' ) }
-					onClick={ () => setSettingsOpen( true ) }
+					onClick={ () => openDialog( 'settings' ) }
 				/>
-			) }
-			{ isSettingsOpen && (
-				<SettingsDialog onClose={ () => setSettingsOpen( false ) } />
 			) }
 		</div>
 	);

@@ -4,7 +4,7 @@
 import { Spinner } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
-import { DrawerBar } from '../app/drawer';
+import { SidebarBar } from '../app/sidebar/sidebar-toggle';
 
 /**
  * A spinner while the page loads.
@@ -12,7 +12,7 @@ import { DrawerBar } from '../app/drawer';
 export function LoadingPage() {
 	return (
 		<div className="liber-editor">
-			<DrawerBar />
+			<SidebarBar />
 			<div className="liber-editor__message">
 				<Spinner />
 			</div>
@@ -26,7 +26,7 @@ export function LoadingPage() {
 export function MissingPage() {
 	return (
 		<div className="liber-editor">
-			<DrawerBar />
+			<SidebarBar />
 			<p className="liber-editor__message">
 				{ __(
 					'This page doesn’t exist, or you can’t open it.',

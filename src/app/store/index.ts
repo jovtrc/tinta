@@ -1,6 +1,6 @@
 /**
  * `liber/workspace` store: the page tree (from `liber/v1/tree`, with its
- * generation) and page creation.
+ * generation) and the actions that change it.
  */
 import apiFetch from '@wordpress/api-fetch';
 import { store as coreStore } from '@wordpress/core-data';
@@ -132,6 +132,31 @@ const actions = {
 				} );
 			} finally {
 				dispatch.invalidateResolution( 'getPages', [] );
+			}
+		},
+
+	/**
+	 * Renames a page in the tree at once, then on the server; refetches if that fails.
+	 *
+	 * @param id    Page ID.
+	 * @param title New title.
+	 */
+	renamePage:
+		( id: number, title: string ) =>
+		async ( { dispatch, registry }: ThunkArgs ) => {
+			dispatch( { type: 'UPDATE_PAGE', id, changes: { title } } );
+			try {
+				await registry
+					.dispatch( coreStore )
+					.saveEntityRecord(
+						'postType',
+						POST_TYPE,
+						{ id, title },
+						{ throwOnError: true }
+					);
+			} catch ( error ) {
+				dispatch.invalidateResolution( 'getPages', [] );
+				throw error;
 			}
 		},
 

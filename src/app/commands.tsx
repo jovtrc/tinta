@@ -1,39 +1,66 @@
 /**
- * ⌘K commands in core's command palette: find a page by title, create a page,
- * open the trash.
+ * ⌘K commands in core's command palette: find a page by title, create a page
+ * or a subpage, pin the open page, open the trash or settings, and show or
+ * hide the sidebar.
  */
 import { useCommand, useCommandLoader } from '@wordpress/commands';
-import { useSelect } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { useMemo } from '@wordpress/element';
 import { decodeEntities } from '@wordpress/html-entities';
 import { __ } from '@wordpress/i18n';
-import { page as pageIcon, plus, trash } from '@wordpress/icons';
+import {
+	cog,
+	drawerLeft,
+	page as pageIcon,
+	plus,
+	starEmpty,
+	starFilled,
+	trash,
+} from '@wordpress/icons';
 
-import { config } from './config';
+import { config, MAX_DEPTH } from './config';
+import { useSidebar } from './sidebar/use-sidebar';
 import { store as workspaceStore, type TreePage } from './store';
-import { ancestorsOf } from './tree-utils';
+import { store as prefsStore } from './store/prefs';
+import { store as uiStore } from './store/ui';
+import { ancestorsOf, levelOf } from './tree-utils';
 import { useCreatePage } from './use-create-page';
 import { navigateTo } from './use-page-route';
 
 const MAX_RESULTS = 10;
 
 interface WorkspaceCommandsProps {
+	currentId: number;
 	onOpen: ( pageId: number ) => void;
-	onOpenTrash: () => void;
 }
 
 /**
  * Registers the commands while the workspace is open.
  *
- * @param props             Props.
- * @param props.onOpen      Opens a page.
- * @param props.onOpenTrash Opens the trash.
+ * @param props           Props.
+ * @param props.currentId Open page.
+ * @param props.onOpen    Opens a page.
  */
 export function WorkspaceCommands( {
+	currentId,
 	onOpen,
-	onOpenTrash,
 }: WorkspaceCommandsProps ) {
 	const createPage = useCreatePage( onOpen );
+	const sidebar = useSidebar();
+	const { openDialog } = useDispatch( uiStore );
+	const { togglePin } = useDispatch( prefsStore );
+	const { isPinned, level } = useSelect(
+		( select ) => ( {
+			isPinned: select( prefsStore )
+				.getPrefs()
+				.pinned.includes( currentId ),
+			level: levelOf(
+				currentId,
+				select( workspaceStore ).getPages() ?? []
+			),
+		} ),
+		[ currentId ]
+	);
 
 	useCommand( {
 		name: 'liber/new-page',
@@ -47,13 +74,58 @@ export function WorkspaceCommands( {
 	} );
 
 	useCommand( {
+		name: 'liber/new-subpage',
+		label: __( 'New subpage here', 'liber' ),
+		icon: plus,
+		disabled: ! config.canCreate || ! level || level >= MAX_DEPTH,
+		callback: ( { close } ) => {
+			close();
+			createPage( currentId );
+		},
+	} );
+
+	useCommand( {
+		name: 'liber/toggle-pin',
+		label: isPinned
+			? __( 'Unpin this page', 'liber' )
+			: __( 'Pin this page', 'liber' ),
+		icon: isPinned ? starFilled : starEmpty,
+		disabled: ! currentId,
+		callback: ( { close } ) => {
+			close();
+			togglePin( currentId );
+		},
+	} );
+
+	useCommand( {
 		name: 'liber/open-trash',
 		label: __( 'Open trash', 'liber' ),
 		icon: trash,
 		disabled: ! config.canCreate,
 		callback: ( { close } ) => {
 			close();
-			onOpenTrash();
+			openDialog( 'trash' );
+		},
+	} );
+
+	useCommand( {
+		name: 'liber/settings',
+		label: __( 'Workspace settings', 'liber' ),
+		icon: cog,
+		disabled: ! config.canManage,
+		callback: ( { close } ) => {
+			close();
+			openDialog( 'settings' );
+		},
+	} );
+
+	useCommand( {
+		name: 'liber/toggle-sidebar',
+		label: __( 'Toggle sidebar', 'liber' ),
+		icon: drawerLeft,
+		callback: ( { close } ) => {
+			close();
+			sidebar.setOpen( ! sidebar.isOpen );
 		},
 	} );
 

@@ -1,6 +1,6 @@
 /**
- * Editor header: the mobile menu button, undo/redo, save status, Notes and the
- * block settings toggle.
+ * Editor header: the sidebar button (when the sidebar is hidden or a drawer),
+ * undo/redo, save status, Notes, the block settings toggle and the page menu.
  */
 import { Button } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -12,7 +12,8 @@ import {
 import { __ } from '@wordpress/i18n';
 import { drawerRight } from '@wordpress/icons';
 
-import { DrawerToggle } from '../app/drawer';
+import { PageMenu } from '../app/sidebar/page-menu';
+import { SidebarToggle } from '../app/sidebar/sidebar-toggle';
 import { NotesToggle } from '../notes/notes-panel';
 
 interface EditorHeaderProps {
@@ -31,9 +32,14 @@ export function EditorHeader( {
 	isInspectorOpen,
 	onToggleInspector,
 }: EditorHeaderProps ) {
+	const pageId = useSelect(
+		( select ) => select( editorStore ).getCurrentPostId() as number,
+		[]
+	);
+
 	return (
 		<div className="liber-editor__header">
-			<DrawerToggle />
+			<SidebarToggle />
 			<EditorHistoryUndo />
 			<EditorHistoryRedo />
 			<div className="liber-editor__spacer" />
@@ -44,6 +50,11 @@ export function EditorHeader( {
 				label={ __( 'Block settings', 'liber' ) }
 				isPressed={ isInspectorOpen }
 				onClick={ onToggleInspector }
+				size="compact"
+			/>
+			<PageMenu
+				pageId={ pageId }
+				label={ __( 'Page actions', 'liber' ) }
 				size="compact"
 			/>
 		</div>

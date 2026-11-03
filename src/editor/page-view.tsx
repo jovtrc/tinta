@@ -5,7 +5,8 @@ import { RawHTML } from '@wordpress/element';
 import { decodeEntities } from '@wordpress/html-entities';
 import { __ } from '@wordpress/i18n';
 
-import { DrawerToggle } from '../app/drawer';
+import { PageMenu } from '../app/sidebar/page-menu';
+import { SidebarToggle } from '../app/sidebar/sidebar-toggle';
 import { EditedByLine, ICON_META } from './page-header';
 import { LoadingPage, MissingPage } from './page-message';
 import { usePageRecord } from './use-page-record';
@@ -30,11 +31,16 @@ export function PageView( { pageId }: { pageId: number } ) {
 	return (
 		<div className="liber-editor">
 			<div className="liber-editor__header">
-				<DrawerToggle />
+				<SidebarToggle />
 				<div className="liber-editor__spacer" />
 				<span className="liber-editor__status">
 					{ __( 'View only', 'liber' ) }
 				</span>
+				<PageMenu
+					pageId={ pageId }
+					label={ __( 'Page actions', 'liber' ) }
+					size="compact"
+				/>
 			</div>
 			<div className="liber-reader">
 				<article className="liber-reader__page">

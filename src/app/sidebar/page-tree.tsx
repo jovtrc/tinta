@@ -1,7 +1,8 @@
 /**
  * The page tree: nested links, collapsible (expanded branches are saved per
- * user, the open page's ancestors included), hover actions to pin, add a
- * subpage or move a page to the trash, and drag and drop to move pages.
+ * user, the open page's ancestors included), hover actions (the page menu and
+ * add a subpage), the page menu on right click, and drag and drop to move
+ * pages.
  */
 import {
 	DndContext,
@@ -17,7 +18,6 @@ import {
 	useContext,
 	useEffect,
 	useMemo,
-	useState,
 } from '@wordpress/element';
 import { decodeEntities } from '@wordpress/html-entities';
 import { __ } from '@wordpress/i18n';
@@ -32,24 +32,20 @@ import type { MouseEvent, MutableRefObject } from 'react';
 import { config, pageUrl } from '../config';
 import { store as workspaceStore, type TreePage } from '../store';
 import { store as prefsStore } from '../store/prefs';
+import { store as uiStore } from '../store/ui';
 import { ancestorsOf, groupByParent } from '../tree-utils';
 import { useCreatePage } from '../use-create-page';
 import { PageActions } from './page-actions';
-import { MoveDialog } from './move-dialog';
-import { TrashConfirm } from './trash-confirm';
+import { menuPosition } from './page-menu';
 import { useTreeDrag, type DropTarget } from './use-tree-drag';
 
 interface TreeState {
 	childrenOf: Map< number, TreePage[] >;
 	expanded: Set< number >;
 	toggle: ( pageId: number ) => void;
-	pinned: number[];
-	onTogglePin: ( pageId: number ) => void;
 	currentId: number;
 	onOpen: ( pageId: number ) => void;
 	onAddSubpage: ( parent: TreePage ) => void;
-	onTrash: ( page: TreePage ) => void;
-	onMove: ( page: TreePage ) => void;
 	draggedId: number;
 	target: DropTarget | null;
 	justDropped: MutableRefObject< boolean >;
@@ -79,10 +75,8 @@ export function PageTree( { currentId, onOpen }: PageTreeProps ) {
 		( select ) => select( prefsStore ).getPrefs(),
 		[]
 	);
-	const { setExpanded, togglePin } = useDispatch( prefsStore );
+	const { setExpanded } = useDispatch( prefsStore );
 	const expanded = useMemo( () => new Set( prefs.expanded ), [ prefs ] );
-	const [ trashing, setTrashing ] = useState< TreePage | null >( null );
-	const [ moving, setMoving ] = useState< TreePage | null >( null );
 	const createPage = useCreatePage( onOpen );
 	const expand = ( pageId: number ) => setExpanded( [ pageId ], true );
 	const drag = useTreeDrag( pages ?? [], expand );
@@ -113,13 +107,9 @@ export function PageTree( { currentId, onOpen }: PageTreeProps ) {
 				childrenOf,
 				expanded,
 				toggle,
-				pinned: prefs.pinned,
-				onTogglePin: togglePin,
 				currentId,
 				onOpen,
 				onAddSubpage,
-				onTrash: setTrashing,
-				onMove: setMoving,
 				draggedId: drag.draggedId,
 				target: drag.target,
 				justDropped: drag.justDropped,
@@ -140,20 +130,6 @@ export function PageTree( { currentId, onOpen }: PageTreeProps ) {
 					) }
 				</DragOverlay>
 			</DndContext>
-			{ moving && (
-				<MoveDialog
-					page={ moving }
-					onClose={ () => setMoving( null ) }
-				/>
-			) }
-			{ trashing && (
-				<TrashConfirm
-					page={ trashing }
-					currentId={ currentId }
-					onOpen={ onOpen }
-					onClose={ () => setTrashing( null ) }
-				/>
-			) }
 		</TreeContext.Provider>
 	);
 }
@@ -193,13 +169,9 @@ function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
 		childrenOf,
 		expanded,
 		toggle,
-		pinned,
-		onTogglePin,
 		currentId,
 		onOpen,
 		onAddSubpage,
-		onTrash,
-		onMove,
 		draggedId,
 		target,
 		justDropped,
@@ -209,6 +181,11 @@ function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
 		disabled: ! config.canCreate,
 	} );
 	const droppable = useDroppable( { id: page.id } );
+	const { openContextMenu } = useDispatch( uiStore );
+	const isMenuOpen = useSelect(
+		( select ) => select( uiStore ).getContextMenu()?.pageId === page.id,
+		[ page.id ]
+	);
 	const hasChildren = !! childrenOf.get( page.id )?.length;
 	const isExpanded = expanded.has( page.id );
 	const title = decodeEntities( page.title ) || __( 'Untitled', 'liber' );
@@ -217,6 +194,7 @@ function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
 		'liber-tree__row',
 		draggedId === page.id && 'is-dragging',
 		target?.id === page.id && `is-drop-${ target.zone }`,
+		isMenuOpen && 'is-menu-open',
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -240,6 +218,10 @@ function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
 				className={ rowClass }
 				style={ { paddingInlineStart: depth * 12 } }
 				{ ...draggable.listeners }
+				onContextMenu={ ( event ) => {
+					event.preventDefault();
+					openContextMenu( page.id, ...menuPosition( event ) );
+				} }
 			>
 				{ hasChildren ? (
 					<Button
@@ -269,13 +251,10 @@ function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
 					<span className="liber-tree__title">{ title }</span>
 				</a>
 				<PageActions
+					pageId={ page.id }
 					title={ title }
 					level={ depth + 1 }
-					isPinned={ pinned.includes( page.id ) }
-					onTogglePin={ () => onTogglePin( page.id ) }
 					onAddSubpage={ () => onAddSubpage( page ) }
-					onMove={ () => onMove( page ) }
-					onTrash={ () => onTrash( page ) }
 				/>
 			</div>
 			{ hasChildren && isExpanded && (

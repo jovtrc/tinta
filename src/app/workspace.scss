@@ -60,6 +60,10 @@ body.liber-workspace-mode.liber-workspace-screen {
 	grid-template-columns: 264px minmax(0, 1fr);
 	height: 100%;
 
+	&.is-sidebar-hidden {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
 	@media (max-width: 782px) {
 		grid-template-columns: minmax(0, 1fr);
 	}
@@ -94,6 +98,15 @@ body.liber-workspace-mode.liber-workspace-screen {
 	justify-content: center;
 	gap: 12px;
 	color: #757575;
+}
+
+// Menus ring their first item only when opened from the keyboard.
+.components-dropdown-menu__menu {
+
+	.components-menu-item__button:focus:not(:focus-visible) {
+		box-shadow: none;
+		outline: none;
+	}
 }
 
 // Mobile drawer
@@ -178,6 +191,18 @@ body.liber-workspace-mode.liber-workspace-screen {
 	width: 100%;
 }
 
+.liber-sidebar__shortcut {
+	margin-inline-start: auto;
+	font-family: inherit;
+	font-size: 12px;
+	color: #757575;
+	background: none;
+
+	@media (max-width: 782px) {
+		display: none;
+	}
+}
+
 .liber-sidebar__action.liber-sidebar__trash {
 	margin-top: auto;
 }
@@ -244,7 +269,8 @@ body.liber-workspace-mode.liber-workspace-screen {
 	gap: 2px;
 	border-radius: 4px;
 
-	&:hover {
+	&:hover,
+	&.is-menu-open {
 		background: rgba(0, 0, 0, 0.05);
 	}
 

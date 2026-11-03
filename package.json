@@ -48,6 +48,7 @@
 		"@wordpress/html-entities": "^5.0.0",
 		"@wordpress/i18n": "^7.0.0",
 		"@wordpress/icons": "^19.0.0",
+		"@wordpress/keycodes": "^5.0.0",
 		"@wordpress/notices": "^6.0.0",
 		"@wordpress/prettier-config": "^5.0.0",
 		"@wordpress/scripts": "^37.0.0",
