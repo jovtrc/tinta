@@ -40,6 +40,7 @@ export function Sidebar( { currentId, onOpen }: SidebarProps ) {
 	);
 	const { open: openCommandPalette } = useDispatch( commandsStore );
 	const { openDialog } = useDispatch( uiStore );
+	const { updatePrefs } = useDispatch( prefsStore );
 
 	return (
 		<nav
@@ -79,6 +80,7 @@ export function Sidebar( { currentId, onOpen }: SidebarProps ) {
 				pageIds={ prefs.pinned }
 				currentId={ currentId }
 				onOpen={ onOpen }
+				onReorder={ ( pinned ) => updatePrefs( { pinned } ) }
 			/>
 			<PageSection
 				title={ __( 'Recent', 'liber' ) }

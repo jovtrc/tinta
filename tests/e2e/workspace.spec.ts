@@ -447,6 +447,55 @@ test.describe( 'Pinned, recent and expanded', () => {
 		} );
 	} );
 
+	test( 'reorders pinned pages by dragging them', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		const roadmap = await createPage( requestUtils, 'Roadmap' );
+		await requestUtils.rest( {
+			method: 'POST',
+			path: '/wp/v2/users/me',
+			data: { liber_prefs: { pinned: [ handbook, roadmap ] } },
+		} );
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=liber&doc=${ handbook }`
+		);
+
+		const pinned = page.getByRole( 'list', { name: 'Pinned' } );
+		await expect( pinned.getByRole( 'link' ) ).toHaveCount( 2 );
+		const start = ( await pinned
+			.getByRole( 'link', { name: 'Roadmap' } )
+			.boundingBox() )!;
+		const end = ( await pinned
+			.getByRole( 'link', { name: 'Handbook' } )
+			.boundingBox() )!;
+		await page.mouse.move( start.x + 20, start.y + start.height / 2 );
+		await page.mouse.down();
+		await page.mouse.move( start.x + 20, start.y, { steps: 5 } );
+		await page.mouse.move( end.x + 20, end.y + 2, { steps: 10 } );
+		await page.mouse.up();
+
+		await expect( pinned.getByRole( 'link' ) ).toHaveText( [
+			'Roadmap',
+			'Handbook',
+		] );
+		await expect( page ).toHaveURL( new RegExp( `doc=${ handbook }` ) );
+		await expect
+			.poll( async () => {
+				const { liber_prefs: prefs } = await requestUtils.rest< {
+					liber_prefs: { pinned: number[] };
+				} >( {
+					path: '/wp/v2/users/me',
+					params: { context: 'edit' },
+				} );
+				return prefs.pinned;
+			} )
+			.toEqual( [ roadmap, handbook ] );
+	} );
+
 	test( 'keeps pins, recent pages and expanded branches per user', async ( {
 		admin,
 		page,

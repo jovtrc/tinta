@@ -32,7 +32,8 @@
   - [x] Page menu (Pin, Rename, Move to…, Move to trash) from "⋯" in the tree and page header, and on right click; hide the sidebar.
   - [x] Columns block; Blocks panel ("Browse all"); click below the last block to keep writing; markers beside blocks with open notes.
   - [x] Drag handle on hover to move blocks.
-  - [ ] Drag to reorder pins, setup wizard, Liber Light, pt_BR.
+  - [x] Drag to reorder pins.
+  - [ ] Setup wizard, Liber Light, pt_BR.
 
 ## v1.0 — MVP (wordpress.org)
 Full scope in PLAN §4:

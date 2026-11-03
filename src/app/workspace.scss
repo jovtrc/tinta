@@ -279,7 +279,8 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-tree__row.is-dragging {
+.liber-tree__row.is-dragging,
+.liber-tree .is-dragging {
 	opacity: 0.4;
 }
 
