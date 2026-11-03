@@ -27,6 +27,7 @@ final class Plugin {
 		( new Docs\Subtree_Trash() )->register();
 		( new Docs\Last_Editor() )->register();
 		( new Docs\Notes_Access() )->register();
+		( new Docs\Read_Access() )->register();
 		$tree->register();
 		( new Cache\Tree_Pulse( $tree ) )->register();
 		( new Rest\Tree_Controller( $tree ) )->register();
