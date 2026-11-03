@@ -32,6 +32,7 @@ final class Plugin {
 		( new Rest\Lock_Controller() )->register();
 		( new Rest\Restore_Controller() )->register();
 		( new Rest\Move_Controller( new Docs\Mover( $tree ) ) )->register();
+		( new Rest\User_Prefs_Field() )->register();
 		( new Workspace\Screen( $tree ) )->register();
 		( new Blocks\Registry() )->register();
 		( new Blocks\Allowlist() )->register();
