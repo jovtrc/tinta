@@ -12,6 +12,8 @@ export interface WorkspaceConfig {
 	setup: {
 		done: boolean;
 		conflicts: Array< { name: string; reason: string } >;
+		openRegistration: boolean;
+		registrationUrl: string;
 	} | null;
 	userId: number;
 	user: { name: string; role: string; avatar: string };

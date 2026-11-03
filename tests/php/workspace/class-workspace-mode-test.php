@@ -10,6 +10,7 @@ namespace Liber\Tests\Workspace;
 use Liber\Roles\Roles;
 use Liber\Workspace\Mode;
 use Liber\Workspace\Screen;
+use Liber\Workspace\Settings;
 use WP_REST_Request;
 use WP_UnitTestCase;
 
@@ -49,8 +50,50 @@ final class Workspace_Mode_Test extends WP_UnitTestCase {
 			),
 			get_option( 'liber_settings' )
 		);
-		$this->assertSame( Roles::MEMBER, get_option( 'default_role' ) );
+		$this->assertSame( is_multisite() ? 'subscriber' : Roles::MEMBER, get_option( 'default_role' ) );
 		$this->assertSame( 25, wp_revisions_to_keep( get_post( self::factory()->post->create( array( 'post_type' => 'liber_doc' ) ) ) ) );
+	}
+
+	/**
+	 * New people can't be made Administrators or Editors through Liber, as in
+	 * core's own setting.
+	 */
+	public function test_default_role_leaves_out_administrators(): void {
+		$this->skipWithMultisite();
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+
+		$request = new WP_REST_Request( 'POST', '/wp/v2/settings' );
+		$request->set_body_params( array( 'default_role' => 'administrator' ) );
+
+		$this->assertSame( 400, rest_get_server()->dispatch( $request )->get_status() );
+		$this->assertSame( 'subscriber', get_option( 'default_role' ) );
+	}
+
+	/**
+	 * Networks keep the default role out of site settings, as core does.
+	 */
+	public function test_default_role_is_not_a_site_setting_on_networks(): void {
+		$this->skipWithoutMultisite();
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+
+		$data = rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/wp/v2/settings' ) )->get_data();
+
+		$this->assertArrayNotHasKey( 'default_role', $data );
+	}
+
+	/**
+	 * Open registration is spotted, so the workspace can warn about it.
+	 */
+	public function test_knows_when_anyone_can_sign_up(): void {
+		$this->assertFalse( Settings::is_registration_open() );
+
+		if ( is_multisite() ) {
+			update_site_option( 'registration', 'user' );
+		} else {
+			update_option( 'users_can_register', 1 );
+		}
+
+		$this->assertTrue( Settings::is_registration_open() );
 	}
 
 	/**

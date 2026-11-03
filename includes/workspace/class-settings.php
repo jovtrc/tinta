@@ -60,6 +60,11 @@ final class Settings {
 			)
 		);
 
+		// Core only lets single sites change the default role from General settings.
+		if ( is_multisite() ) {
+			return;
+		}
+
 		register_setting(
 			'general',
 			'default_role',
@@ -67,8 +72,36 @@ final class Settings {
 				'type'         => 'string',
 				'default'      => 'subscriber',
 				'show_in_rest' => array(
-					'schema' => array( 'enum' => array_keys( wp_roles()->roles ) ),
+					'schema' => array( 'enum' => self::default_roles() ),
 				),
+			)
+		);
+	}
+
+	/**
+	 * Whether anyone can sign up, and so get the default role.
+	 */
+	public static function is_registration_open(): bool {
+		return is_multisite()
+			? in_array( get_site_option( 'registration' ), array( 'user', 'all' ), true )
+			: (bool) get_option( 'users_can_register' );
+	}
+
+	/**
+	 * Roles new people can get: core's own choices for this setting, which leave
+	 * out Administrator and Editor unless one is already the default.
+	 *
+	 * @return string[]
+	 */
+	private static function default_roles(): array {
+		/** This filter is documented in wp-admin/options-general.php */
+		$excluded = (array) apply_filters( 'default_role_dropdown_excluded_roles', array( 'administrator', 'editor' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Applies core's filter, as core does.
+		$current  = get_option( 'default_role' );
+
+		return array_values(
+			array_filter(
+				array_keys( wp_roles()->roles ),
+				static fn( string $role ): bool => $role === $current || ! in_array( $role, $excluded, true )
 			)
 		);
 	}

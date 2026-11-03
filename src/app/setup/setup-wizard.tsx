@@ -21,6 +21,7 @@ import { useEffect, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 import { config, pageUrl } from '../config';
+import { RegistrationNotice } from '../registration-notice';
 import { LIBER_ROLES, roleOptions } from '../roles';
 import { store as workspaceStore } from '../store';
 import { createSamplePages } from './sample-pages';
@@ -31,7 +32,7 @@ interface Choices {
 	title: string;
 	siteIcon: number;
 	iconUrl: string;
-	defaultRole: string;
+	defaultRole?: string;
 	workspaceMode: boolean;
 	sample: boolean;
 }
@@ -39,7 +40,7 @@ interface Choices {
 interface StoredSettings {
 	title: string;
 	site_icon: number;
-	default_role: string;
+	default_role?: string;
 	liber_settings: { workspace_mode: boolean };
 }
 
@@ -88,9 +89,7 @@ export function SetupWizard( { onClose }: { onClose: () => void } ) {
 				title: stored.title,
 				siteIcon: stored.site_icon,
 				iconUrl: config.siteIcon,
-				defaultRole: LIBER_ROLES.includes( stored.default_role )
-					? stored.default_role
-					: 'liber_member',
+				defaultRole: suggestedRole( stored.default_role ),
 				workspaceMode: stored.liber_settings.workspace_mode,
 				sample: ! hasPages,
 			} )
@@ -365,23 +364,51 @@ function PluginsStep( {
  * @param props.onChange Updates choices.
  */
 function PeopleStep( { choices, onChange }: StepProps ) {
+	const { defaultRole } = choices;
+
 	return (
 		<>
-			<SelectControl
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
-				label={ __( 'New people join as', 'liber' ) }
-				value={ choices.defaultRole }
-				options={ roleOptions( choices.defaultRole ) }
-				onChange={ ( defaultRole ) => onChange( { defaultRole } ) }
-				help={ __(
-					'Members read and write every page. Viewers only read.',
-					'liber'
-				) }
-			/>
+			{ defaultRole !== undefined && (
+				<>
+					<SelectControl
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+						label={ __( 'New people join as', 'liber' ) }
+						value={ defaultRole }
+						options={ roleOptions( defaultRole ) }
+						onChange={ ( role ) =>
+							onChange( { defaultRole: role } )
+						}
+						help={ __(
+							'Members read and write every page. Viewers only read.',
+							'liber'
+						) }
+					/>
+					<RegistrationNotice role={ defaultRole } />
+				</>
+			) }
 			<ExternalLink href={ config.links.invite }>
 				{ __( 'Invite people', 'liber' ) }
 			</ExternalLink>
 		</>
 	);
+}
+
+/**
+ * The role the wizard suggests: Member, unless anyone can sign up (then the
+ * current role stays) or a Liber role is already chosen. Undefined where the
+ * site can't change it (multisite).
+ *
+ * @param current The current default role.
+ */
+function suggestedRole( current?: string ): string | undefined {
+	if (
+		current === undefined ||
+		LIBER_ROLES.includes( current ) ||
+		config.setup?.openRegistration
+	) {
+		return current;
+	}
+
+	return 'liber_member';
 }

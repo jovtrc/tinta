@@ -248,8 +248,10 @@ final class Screen {
 			'canManage' => current_user_can( 'liber_manage' ),
 			'roles'     => current_user_can( 'liber_manage' ) ? array_map( 'translate_user_role', wp_roles()->get_names() ) : array(),
 			'setup'     => current_user_can( 'liber_manage' ) ? array(
-				'done'      => Settings::get()['setup_done'],
-				'conflicts' => Conflicts::active(),
+				'done'             => Settings::get()['setup_done'],
+				'conflicts'        => Conflicts::active(),
+				'openRegistration' => Settings::is_registration_open(),
+				'registrationUrl'  => is_multisite() ? network_admin_url( 'settings.php' ) : admin_url( 'options-general.php' ),
 			) : null,
 			'userId'    => get_current_user_id(),
 			'user'      => array(

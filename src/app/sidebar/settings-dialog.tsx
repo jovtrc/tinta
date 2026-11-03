@@ -17,12 +17,13 @@ import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 import { config } from '../config';
+import { RegistrationNotice } from '../registration-notice';
 import { roleOptions } from '../roles';
 import { store as uiStore } from '../store/ui';
 
 interface WorkspaceSettings {
 	title: string;
-	default_role: string;
+	default_role?: string;
 	liber_settings: { workspace_mode: boolean; revisions: number };
 }
 
@@ -100,21 +101,28 @@ export function SettingsDialog( { onClose }: { onClose: () => void } ) {
 							} )
 						}
 					/>
-					<SelectControl
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
-						label={ __( 'New people join as', 'liber' ) }
-						value={ settings.default_role }
-						options={ roleOptions( settings.default_role ) }
-						onChange={ ( defaultRole ) =>
-							change( { default_role: defaultRole } )
-						}
-						help={
-							<a href={ config.links.invite }>
-								{ __( 'Invite people', 'liber' ) }
-							</a>
-						}
-					/>
+					{ settings.default_role !== undefined && (
+						<>
+							<SelectControl
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+								label={ __( 'New people join as', 'liber' ) }
+								value={ settings.default_role }
+								options={ roleOptions( settings.default_role ) }
+								onChange={ ( defaultRole ) =>
+									change( { default_role: defaultRole } )
+								}
+								help={
+									<a href={ config.links.invite }>
+										{ __( 'Invite people', 'liber' ) }
+									</a>
+								}
+							/>
+							<RegistrationNotice
+								role={ settings.default_role }
+							/>
+						</>
+					) }
 					<TextControl
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
