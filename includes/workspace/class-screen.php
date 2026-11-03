@@ -243,8 +243,14 @@ final class Screen {
 			'pageId'    => $page ? $page->ID : 0,
 			'url'       => self::url(),
 			'siteName'  => get_bloginfo( 'name' ),
+			'siteIcon'  => get_site_icon_url( 64 ),
 			'canCreate' => current_user_can( 'edit_liber_docs' ),
 			'canManage' => current_user_can( 'liber_manage' ),
+			'roles'     => current_user_can( 'liber_manage' ) ? array_map( 'translate_user_role', wp_roles()->get_names() ) : array(),
+			'setup'     => current_user_can( 'liber_manage' ) ? array(
+				'done'      => Settings::get()['setup_done'],
+				'conflicts' => Conflicts::active(),
+			) : null,
 			'userId'    => get_current_user_id(),
 			'user'      => array(
 				'name'   => wp_get_current_user()->display_name,
@@ -254,6 +260,7 @@ final class Screen {
 				'profile' => get_edit_profile_url(),
 				'admin'   => admin_url(),
 				'invite'  => admin_url( 'user-new.php' ),
+				'plugins' => admin_url( 'plugins.php' ),
 				'logout'  => wp_logout_url(),
 			),
 			'settings'  => get_block_editor_settings(

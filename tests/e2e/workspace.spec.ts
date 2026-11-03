@@ -21,6 +21,14 @@ interface PageRecord {
 	title: { raw: string };
 }
 
+/**
+ * The setup wizard opens on an administrator's first visit; tests other than
+ * its own start with setup done.
+ */
+test.beforeAll( async ( { requestUtils } ) => {
+	await setSetupDone( requestUtils, true );
+} );
+
 test.describe( 'Workspace', () => {
 	test.beforeEach( async ( { requestUtils } ) => {
 		await deleteAllPages( requestUtils );
@@ -945,6 +953,90 @@ test.describe( 'Mobile', () => {
 	} );
 } );
 
+test.describe( 'Setup', () => {
+	test.beforeEach( async ( { requestUtils } ) => {
+		await deleteAllPages( requestUtils );
+		await setSetupDone( requestUtils, false );
+	} );
+
+	test.afterEach( async ( { requestUtils } ) => {
+		await setSetupDone( requestUtils, true );
+		await requestUtils.rest( {
+			method: 'POST',
+			path: '/wp/v2/settings',
+			data: { title: 'My WordPress Website', default_role: 'subscriber' },
+		} );
+	} );
+
+	test( 'sets up the workspace with sample pages', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		await admin.visitAdminPage( 'admin.php', 'page=liber' );
+		const wizard = page.getByRole( 'dialog', {
+			name: 'Set up your workspace',
+		} );
+
+		await wizard.getByRole( 'button', { name: 'Get started' } ).click();
+		await wizard
+			.getByRole( 'textbox', { name: 'Workspace name' } )
+			.fill( 'Acme' );
+		await wizard.getByRole( 'button', { name: 'Continue' } ).click();
+		await expect(
+			wizard.getByRole( 'combobox', { name: 'New people join as' } )
+		).toHaveValue( 'liber_member' );
+		await wizard.getByRole( 'button', { name: 'Continue' } ).click();
+		await expect(
+			wizard.getByRole( 'checkbox', { name: 'Add sample pages' } )
+		).toBeChecked();
+		await wizard.getByRole( 'button', { name: 'Continue' } ).click();
+		await wizard.getByRole( 'button', { name: 'Finish' } ).click();
+
+		await expect(
+			editor.canvas.getByRole( 'textbox', { name: 'Untitled' } )
+		).toHaveText( 'Welcome' );
+		await expect( sidebarLink( page, 'Welcome' ) ).toBeVisible();
+		await expect(
+			editor.canvas.locator( '.wp-block-liber-page-link' )
+		).toContainText( 'Getting started' );
+		await expect( wizard ).toBeHidden();
+
+		const settings = await requestUtils.rest< {
+			title: string;
+			default_role: string;
+			liber_settings: { setup_done: boolean };
+		} >( { path: '/wp/v2/settings' } );
+		expect( settings.title ).toBe( 'Acme' );
+		expect( settings.default_role ).toBe( 'liber_member' );
+		expect( settings.liber_settings.setup_done ).toBe( true );
+	} );
+
+	test( 'can be skipped', async ( { admin, page, requestUtils } ) => {
+		await admin.visitAdminPage( 'admin.php', 'page=liber' );
+		await page.getByRole( 'button', { name: 'Skip for now' } ).click();
+
+		await expect
+			.poll(
+				async () =>
+					(
+						await requestUtils.rest< {
+							liber_settings: { setup_done: boolean };
+						} >( { path: '/wp/v2/settings' } )
+					).liber_settings.setup_done
+			)
+			.toBe( true );
+		await page.reload();
+		await expect(
+			page.getByRole( 'button', { name: 'Create the first page' } )
+		).toBeVisible();
+		await expect(
+			page.getByRole( 'dialog', { name: 'Set up your workspace' } )
+		).toHaveCount( 0 );
+	} );
+} );
+
 test.describe( 'Locks and roles', () => {
 	test.beforeEach( async ( { requestUtils } ) => {
 		await deleteAllPages( requestUtils );
@@ -1086,4 +1178,18 @@ async function deleteAllPages( requestUtils: RequestUtils ) {
 			} )
 		)
 	);
+}
+
+/**
+ * Marks the setup wizard as done, or not yet done.
+ *
+ * @param requestUtils REST helpers.
+ * @param done         Whether setup is done.
+ */
+async function setSetupDone( requestUtils: RequestUtils, done: boolean ) {
+	await requestUtils.rest( {
+		method: 'POST',
+		path: '/wp/v2/settings',
+		data: { liber_settings: { setup_done: done } },
+	} );
 }

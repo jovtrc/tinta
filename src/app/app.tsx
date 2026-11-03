@@ -30,7 +30,7 @@ export function App() {
 	const sidebar = useSidebar();
 	useTreeRefresh();
 	const { visitPage } = useDispatch( prefsStore );
-	const { setDrawerOpen } = useDispatch( uiStore );
+	const { openDialog, setDrawerOpen } = useDispatch( uiStore );
 	const closeDrawer = useCallback(
 		() => setDrawerOpen( false ),
 		[ setDrawerOpen ]
@@ -43,6 +43,12 @@ export function App() {
 		},
 		[ closeDrawer, navigate ]
 	);
+
+	useEffect( () => {
+		if ( config.setup && ! config.setup.done ) {
+			openDialog( 'setup' );
+		}
+	}, [ openDialog ] );
 
 	useEffect( () => {
 		closeDrawer();

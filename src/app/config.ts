@@ -5,11 +5,23 @@ export interface WorkspaceConfig {
 	pageId: number;
 	url: string;
 	siteName: string;
+	siteIcon: string;
 	canCreate: boolean;
 	canManage: boolean;
+	roles: Record< string, string >;
+	setup: {
+		done: boolean;
+		conflicts: Array< { name: string; reason: string } >;
+	} | null;
 	userId: number;
 	user: { name: string; avatar: string };
-	links: { profile: string; admin: string; invite: string; logout: string };
+	links: {
+		profile: string;
+		admin: string;
+		invite: string;
+		plugins: string;
+		logout: string;
+	};
 	settings: Record< string, unknown > & { styles?: object[] };
 }
 

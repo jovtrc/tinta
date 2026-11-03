@@ -48,6 +48,19 @@ export function Sidebar( { currentId, onOpen }: SidebarProps ) {
 			aria-label={ __( 'Workspace', 'liber' ) }
 		>
 			<div className="liber-sidebar__header">
+				{ config.siteIcon ? (
+					<img
+						className="liber-sidebar__icon"
+						src={ config.siteIcon }
+						alt=""
+						width={ 22 }
+						height={ 22 }
+					/>
+				) : (
+					<span className="liber-sidebar__icon" aria-hidden="true">
+						{ config.siteName.trim().charAt( 0 ).toUpperCase() }
+					</span>
+				) }
 				<span className="liber-sidebar__name">{ config.siteName }</span>
 				<Button
 					icon={ isMobile ? closeSmall : drawerLeft }

@@ -12,10 +12,13 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
+import { useDispatch } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 import { config } from '../config';
+import { roleOptions } from '../roles';
+import { store as uiStore } from '../store/ui';
 
 interface WorkspaceSettings {
 	title: string;
@@ -37,6 +40,7 @@ export function SettingsDialog( { onClose }: { onClose: () => void } ) {
 	);
 	const [ isSaving, setSaving ] = useState( false );
 	const [ error, setError ] = useState( '' );
+	const { openDialog } = useDispatch( uiStore );
 
 	useEffect( () => {
 		apiFetch< WorkspaceSettings >( {
@@ -101,26 +105,7 @@ export function SettingsDialog( { onClose }: { onClose: () => void } ) {
 						__nextHasNoMarginBottom
 						label={ __( 'New people join as', 'liber' ) }
 						value={ settings.default_role }
-						options={ [
-							{
-								value: 'liber_member',
-								label: __( 'Member', 'liber' ),
-							},
-							{
-								value: 'liber_viewer',
-								label: __( 'Viewer', 'liber' ),
-							},
-							...( [ 'liber_member', 'liber_viewer' ].includes(
-								settings.default_role
-							)
-								? []
-								: [
-										{
-											value: settings.default_role,
-											label: settings.default_role,
-										},
-									] ),
-						] }
+						options={ roleOptions( settings.default_role ) }
 						onChange={ ( defaultRole ) =>
 							change( { default_role: defaultRole } )
 						}
@@ -151,6 +136,13 @@ export function SettingsDialog( { onClose }: { onClose: () => void } ) {
 						<p className="liber-settings__error">{ error }</p>
 					) }
 					<div className="liber-dialog__actions">
+						<Button
+							variant="link"
+							className="liber-settings__setup"
+							onClick={ () => openDialog( 'setup' ) }
+						>
+							{ __( 'Run setup again', 'liber' ) }
+						</Button>
 						<Button variant="tertiary" onClick={ onClose }>
 							{ __( 'Cancel', 'liber' ) }
 						</Button>

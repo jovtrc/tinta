@@ -39,10 +39,13 @@ final class Workspace_Mode_Test extends WP_UnitTestCase {
 			)
 		);
 
+		$this->update_settings( array( 'liber_settings' => array( 'setup_done' => true ) ) );
+
 		$this->assertSame(
 			array(
 				'workspace_mode' => true,
 				'revisions'      => 25,
+				'setup_done'     => true,
 			),
 			get_option( 'liber_settings' )
 		);

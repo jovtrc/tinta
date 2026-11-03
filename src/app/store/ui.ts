@@ -6,7 +6,7 @@
 import { createReduxStore, register } from '@wordpress/data';
 
 export type DialogName =
-	'move' | 'move-to-trash' | 'rename' | 'settings' | 'trash';
+	'move' | 'move-to-trash' | 'rename' | 'settings' | 'setup' | 'trash';
 
 export interface Dialog {
 	name: DialogName;

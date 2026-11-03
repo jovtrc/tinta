@@ -4,6 +4,7 @@
  */
 import { useDispatch, useSelect } from '@wordpress/data';
 
+import { SetupWizard } from './setup/setup-wizard';
 import { MoveDialog } from './sidebar/move-dialog';
 import { RenameDialog } from './sidebar/rename-dialog';
 import { SettingsDialog } from './sidebar/settings-dialog';
@@ -38,6 +39,8 @@ export function Dialogs( { currentId, onOpen }: DialogsProps ) {
 	switch ( dialog?.name ) {
 		case 'settings':
 			return <SettingsDialog onClose={ closeDialog } />;
+		case 'setup':
+			return <SetupWizard onClose={ closeDialog } />;
 		case 'trash':
 			return <TrashDialog onClose={ closeDialog } />;
 	}

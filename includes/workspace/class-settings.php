@@ -21,6 +21,7 @@ final class Settings {
 	public const DEFAULTS = array(
 		'workspace_mode' => false,
 		'revisions'      => 10,
+		'setup_done'     => false,
 	);
 
 	/**
@@ -52,6 +53,7 @@ final class Settings {
 								'minimum' => 0,
 								'maximum' => 100,
 							),
+							'setup_done'     => array( 'type' => 'boolean' ),
 						),
 					),
 				),
@@ -74,7 +76,7 @@ final class Settings {
 	/**
 	 * Current settings, every key present.
 	 *
-	 * @return array{workspace_mode: bool, revisions: int}
+	 * @return array{workspace_mode: bool, revisions: int, setup_done: bool}
 	 */
 	public static function get(): array {
 		$stored = get_option( self::OPTION, array() );
@@ -93,7 +95,7 @@ final class Settings {
 	 * Merges a partial update into the stored settings and normalizes them.
 	 *
 	 * @param mixed $value Settings sent.
-	 * @return array{workspace_mode: bool, revisions: int}
+	 * @return array{workspace_mode: bool, revisions: int, setup_done: bool}
 	 */
 	public function sanitize( $value ): array {
 		$settings = array_merge( self::get(), is_array( $value ) ? $value : array() );
@@ -101,6 +103,7 @@ final class Settings {
 		return array(
 			'workspace_mode' => (bool) $settings['workspace_mode'],
 			'revisions'      => max( 0, min( 100, (int) $settings['revisions'] ) ),
+			'setup_done'     => (bool) $settings['setup_done'],
 		);
 	}
 }
