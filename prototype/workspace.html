@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Liber Workspace Prototype</title>
+<title>Tinta Workspace Prototype</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
-/* Layout: one wp-admin screen in Liber's workspace mode, framed like a browser window.
+/* Layout: one wp-admin screen in Tinta's workspace mode, framed like a browser window.
    CSS-only switches above it (radio buttons + :has) change the screen, color scheme and viewport. No JavaScript. */
 :root {
   --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
@@ -24,8 +24,8 @@
   --st-shadow: rgba(16, 20, 24, 0.12);
   --tag-core: #1d2327;
   --tag-core-fg: #ffffff;
-  --tag-liber: #f2b705;
-  --tag-liber-fg: #1d1400;
+  --tag-tinta: #f2b705;
+  --tag-tinta-fg: #1d1400;
   --tag-ring: #ffffff;
 }
 @media (prefers-color-scheme: dark) {
@@ -100,7 +100,7 @@ input:focus-visible + .chip, input:focus-visible + .swatch { outline: 2px solid 
 }
 input:checked + .swatch { box-shadow: 0 0 0 2px var(--st-bg), 0 0 0 4px var(--st-fg); }
 .scheme-name { min-width: 84px; font-weight: 500; }
-.scheme-name::after { content: "Liber Light"; }
+.scheme-name::after { content: "Tinta Light"; }
 
 .viewport { flex: 1; min-height: 520px; display: flex; justify-content: center; }
 .frame {
@@ -127,7 +127,7 @@ input:checked + .swatch { box-shadow: 0 0 0 2px var(--st-bg), 0 0 0 4px var(--st
 .stage:has(#vp-phone:checked) .urlbar,
 .stage:has(#vp-menu:checked) .urlbar { display: none; }
 
-/* ── App tokens: Liber Light by default ──────────────────── */
+/* ── App tokens: Tinta Light by default ──────────────────── */
 .app {
   --bg: #ffffff; --fg: #1d2327; --muted: #646970; --line: #e2e4e7; --soft: #f6f7f7; --code-bg: #f6f7f7;
   --accent: #3858e9; --accent-ink: #3858e9; --on-accent: #ffffff; --tint: #eef1fd;
@@ -166,7 +166,7 @@ input:checked + .swatch { box-shadow: 0 0 0 2px var(--st-bg), 0 0 0 4px var(--st
   --scrim: rgba(0, 0, 0, 0.6);
   --shadow: 0 14px 36px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4);
 }
-.stage:has(#sc-dark:checked) .scheme-name::after { content: "Liber Dark"; }
+.stage:has(#sc-dark:checked) .scheme-name::after { content: "Tinta Dark"; }
 .stage:has(#sc-fresh:checked) .scheme-name::after { content: "Default"; }
 .stage:has(#sc-modern:checked) .scheme-name::after { content: "Modern"; }
 .stage:has(#sc-light:checked) .scheme-name::after { content: "Light"; }
@@ -404,14 +404,14 @@ details p { margin: 6px 0 0; }
   .status-text { display: none; }
 }
 
-/* ── Labels: core vs Liber ───────────────────────────────── */
+/* ── Labels: core vs Tinta ───────────────────────────────── */
 .tag {
   display: none; position: absolute; z-index: 60; width: 20px; height: 20px; place-items: center; border-radius: 50%;
   font: 700 11px/1 var(--font-ui); pointer-events: none;
   box-shadow: 0 0 0 2px var(--tag-ring), 0 1px 5px rgba(0, 0, 0, 0.35);
 }
 .tag.core { background: var(--tag-core); color: var(--tag-core-fg); }
-.tag.liber { background: var(--tag-liber); color: var(--tag-liber-fg); }
+.tag.tinta { background: var(--tag-tinta); color: var(--tag-tinta-fg); }
 .stage:has(#labels:checked) .tag { display: grid; }
 .legend {
   display: none; position: fixed; z-index: 70;
@@ -470,7 +470,7 @@ details p { margin: 6px 0 0; }
 
 <div class="stage">
   <header class="controls">
-    <div class="brand"><b>Liber</b><span>Workspace prototype · static layout</span></div>
+    <div class="brand"><b>Tinta</b><span>Workspace prototype · static layout</span></div>
 
     <div class="ctl" role="radiogroup" aria-labelledby="lbl-screen">
       <span class="ctl-label" id="lbl-screen">Screen</span>
@@ -487,8 +487,8 @@ details p { margin: 6px 0 0; }
     <div class="ctl" role="radiogroup" aria-labelledby="lbl-scheme">
       <span class="ctl-label" id="lbl-scheme">Color scheme</span>
       <div class="swatches">
-        <input class="sr" type="radio" name="scheme" id="sc-liber" checked><label class="swatch" for="sc-liber" style="--a:#f6f7f7;--b:#3858e9" title="Liber Light"><span class="sr">Liber Light</span></label>
-        <input class="sr" type="radio" name="scheme" id="sc-dark"><label class="swatch" for="sc-dark" style="--a:#161616;--b:#7b90ff" title="Liber Dark"><span class="sr">Liber Dark</span></label>
+        <input class="sr" type="radio" name="scheme" id="sc-tinta" checked><label class="swatch" for="sc-tinta" style="--a:#f6f7f7;--b:#3858e9" title="Tinta Light"><span class="sr">Tinta Light</span></label>
+        <input class="sr" type="radio" name="scheme" id="sc-dark"><label class="swatch" for="sc-dark" style="--a:#161616;--b:#7b90ff" title="Tinta Dark"><span class="sr">Tinta Dark</span></label>
         <input class="sr" type="radio" name="scheme" id="sc-fresh"><label class="swatch" for="sc-fresh" style="--a:#1d2327;--b:#2271b1" title="Default"><span class="sr">Default</span></label>
         <input class="sr" type="radio" name="scheme" id="sc-modern"><label class="swatch" for="sc-modern" style="--a:#1e1e1e;--b:#3858e9" title="Modern"><span class="sr">Modern</span></label>
         <input class="sr" type="radio" name="scheme" id="sc-light"><label class="swatch" for="sc-light" style="--a:#e5e5e5;--b:#6d6d6d" title="Light"><span class="sr">Light</span></label>
@@ -512,7 +512,7 @@ details p { margin: 6px 0 0; }
     </div>
 
     <div class="ctl">
-      <input class="sr" type="checkbox" id="labels"><label class="chip" for="labels">Show core vs Liber</label>
+      <input class="sr" type="checkbox" id="labels"><label class="chip" for="labels">Show core vs Tinta</label>
     </div>
   </header>
 
@@ -520,8 +520,8 @@ details p { margin: 6px 0 0; }
     <div class="frame">
       <div class="urlbar">
         <svg class="i sm" aria-hidden="true"><use href="#i-lock"/></svg>
-        <div class="url"><span>docs.acme.example<b>/wp-admin/admin.php?page=liber&amp;doc=42</b></span></div>
-        <span class="tag liber" style="top:9px;right:16px">1</span>
+        <div class="url"><span>docs.acme.example<b>/wp-admin/admin.php?page=tinta&amp;doc=42</b></span></div>
+        <span class="tag tinta" style="top:9px;right:16px">1</span>
       </div>
 
       <div class="app">
@@ -539,7 +539,7 @@ details p { margin: 6px 0 0; }
 
           <div class="sb-scroll">
             <section aria-labelledby="sec-pinned">
-              <h2 class="sb-sec-h" id="sec-pinned">Pinned<span class="tag liber" style="top:2px;right:4px">4</span></h2>
+              <h2 class="sb-sec-h" id="sec-pinned">Pinned<span class="tag tinta" style="top:2px;right:4px">4</span></h2>
               <ul class="tree">
                 <li><button class="row" type="button"><span class="tw"></span><span class="emo">🚀</span><span class="lbl">Onboarding</span></button></li>
                 <li><button class="row" type="button"><span class="tw"></span><span class="emo">📅</span><span class="lbl">Weekly sync</span></button></li>
@@ -556,7 +556,7 @@ details p { margin: 6px 0 0; }
             </section>
 
             <section aria-labelledby="sec-pages">
-              <h2 class="sb-sec-h" id="sec-pages"><span>Pages</span><button class="ibtn" type="button" aria-label="New page"><svg class="i sm" aria-hidden="true"><use href="#i-plus"/></svg></button><span class="tag liber" style="top:2px;right:30px">5</span></h2>
+              <h2 class="sb-sec-h" id="sec-pages"><span>Pages</span><button class="ibtn" type="button" aria-label="New page"><svg class="i sm" aria-hidden="true"><use href="#i-plus"/></svg></button><span class="tag tinta" style="top:2px;right:30px">5</span></h2>
               <ul class="tree">
                 <li><button class="row" type="button" style="--d:0"><span class="tw"></span><span class="emo">👋</span><span class="lbl">Welcome</span></button></li>
                 <li><button class="row open" type="button" style="--d:0" aria-expanded="true"><span class="tw"><svg class="i" aria-hidden="true"><use href="#i-chev-right"/></svg></span><span class="emo">📘</span><span class="lbl">Engineering</span></button></li>
@@ -583,7 +583,7 @@ details p { margin: 6px 0 0; }
               <span class="av" style="--av:#2e6f5e" aria-hidden="true">JC</span>
               <span class="me-txt"><span class="me-name">João Carvalho</span><span class="me-role">Administrator</span></span>
               <svg class="i sm" aria-hidden="true"><use href="#i-more"/></svg>
-              <span class="tag liber" style="top:2px;right:30px">7</span>
+              <span class="tag tinta" style="top:2px;right:30px">7</span>
             </button>
           </div>
         </aside>
@@ -597,7 +597,7 @@ details p { margin: 6px 0 0; }
               <span class="c"><span aria-hidden="true">🚀</span>Onboarding</span><span class="sep" aria-hidden="true">/</span>
               <span class="c here" aria-current="page"><span aria-hidden="true">💻</span>Local setup</span>
             </nav>
-            <span class="tag liber" style="top:4px;left:6px">8</span>
+            <span class="tag tinta" style="top:4px;left:6px">8</span>
             <span class="status st-saved"><svg class="i sm" aria-hidden="true"><use href="#i-check"/></svg><span class="status-text">Saved</span></span>
             <span class="status st-locked"><svg class="i sm" aria-hidden="true"><use href="#i-lock"/></svg><span class="status-text">Read only</span></span>
             <div class="tb-btns">
@@ -622,7 +622,7 @@ details p { margin: 6px 0 0; }
                 <div class="doc-head">
                   <div class="doc-icon-wrap">
                     <button class="doc-icon" type="button" aria-label="Change page icon">💻</button>
-                    <span class="tag liber" style="top:0;left:58px">10</span>
+                    <span class="tag tinta" style="top:0;left:58px">10</span>
                     <div class="pop icon-pop" role="dialog" aria-label="Page icon">
                       <div class="ep-search"><svg class="i sm" aria-hidden="true"><use href="#i-search"/></svg><span>Filter emojis</span></div>
                       <div class="ep-tabs" aria-hidden="true"><span class="on">🕘</span><span>😀</span><span>🐻</span><span>🍎</span><span>⚽</span><span>✈️</span><span>💡</span><span>🔣</span><span>🏁</span></div>
@@ -648,7 +648,7 @@ details p { margin: 6px 0 0; }
                   <div class="callout">
                     <span class="emo-lg" aria-hidden="true">💡</span>
                     <p>You need Docker Desktop and Node 24 before you start. If a step here is out of date, add a note so the next person doesn't get stuck.</p>
-                    <span class="tag liber" style="top:-9px;right:-9px">12</span>
+                    <span class="tag tinta" style="top:-9px;right:-9px">12</span>
                   </div>
 
                   <div class="slash-line">/<span class="caret"></span>
@@ -788,22 +788,22 @@ cd app &amp;&amp; pnpm install</code></pre>
     </div>
   </div>
 
-  <aside class="legend" aria-label="What is core and what is Liber">
+  <aside class="legend" aria-label="What is core and what is Tinta">
     <h2>What you're looking at</h2>
-    <div class="key"><span><span class="tag core">#</span>WordPress core</span><span><span class="tag liber">#</span>Liber</span></div>
+    <div class="key"><span><span class="tag core">#</span>WordPress core</span><span><span class="tag tinta">#</span>Tinta</span></div>
     <ol>
-      <li><span class="tag liber">1</span><span><b>Workspace mode.</b> A normal wp-admin page with the WordPress menu and toolbar hidden. With option C the address is <code>post.php?post=42&amp;action=edit</code>.</span></li>
+      <li><span class="tag tinta">1</span><span><b>Workspace mode.</b> A normal wp-admin page with the WordPress menu and toolbar hidden. With option C the address is <code>post.php?post=42&amp;action=edit</code>.</span></li>
       <li><span class="tag core">2</span><span><b>Workspace name and icon</b> are the site's Title and Site Icon.</span></li>
-      <li><span class="tag core">3</span><span><b>Search</b> opens WordPress's command palette. Liber adds page search and its own commands.</span></li>
-      <li><span class="tag liber">4</span><span><b>Pinned and Recent,</b> saved per person.</span></li>
-      <li><span class="tag liber">5</span><span><b>Page tree.</b> Drag to reorder or move a page. Hover shows ⋯ and + for a subpage.</span></li>
+      <li><span class="tag core">3</span><span><b>Search</b> opens WordPress's command palette. Tinta adds page search and its own commands.</span></li>
+      <li><span class="tag tinta">4</span><span><b>Pinned and Recent,</b> saved per person.</span></li>
+      <li><span class="tag tinta">5</span><span><b>Page tree.</b> Drag to reorder or move a page. Hover shows ⋯ and + for a subpage.</span></li>
       <li><span class="tag core">6</span><span><b>Trash</b> is WordPress's trash. Subpages go with their parent; trash empties after 30 days.</span></li>
-      <li><span class="tag liber">7</span><span><b>Account menu:</b> profile and color scheme, Admin tools (admins), log out.</span></li>
-      <li><span class="tag liber">8</span><span><b>Breadcrumb and save status.</b> With option C, core's editor header is restyled to look like this.</span></li>
+      <li><span class="tag tinta">7</span><span><b>Account menu:</b> profile and color scheme, Admin tools (admins), log out.</span></li>
+      <li><span class="tag tinta">8</span><span><b>Breadcrumb and save status.</b> With option C, core's editor header is restyled to look like this.</span></li>
       <li><span class="tag core">9</span><span><b>Notes and History:</b> WordPress Notes (on blocks and selected text, with @mentions) and visual revisions.</span></li>
-      <li><span class="tag liber">10</span><span><b>Page icon:</b> Liber's small emoji picker.</span></li>
+      <li><span class="tag tinta">10</span><span><b>Page icon:</b> Tinta's small emoji picker.</span></li>
       <li><span class="tag core">11</span><span><b>The block editor:</b> title, blocks, block toolbar and the / menu, limited to the allowed blocks.</span></li>
-      <li><span class="tag liber">12</span><span><b>Callout and Page link</b> are Liber's only two blocks.</span></li>
+      <li><span class="tag tinta">12</span><span><b>Callout and Page link</b> are Tinta's only two blocks.</span></li>
       <li><span class="tag core">13</span><span><b>Colors</b> come from each person's admin color scheme (Users → Profile).</span></li>
     </ol>
   </aside>

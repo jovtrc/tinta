@@ -2,12 +2,12 @@
 /**
  * REST route for the page tree.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Rest;
+namespace Tinta\Rest;
 
-use Liber\Docs\Tree;
+use Tinta\Docs\Tree;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Server;
@@ -15,7 +15,7 @@ use WP_REST_Server;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * `GET liber/v1/tree`: every page's skeleton and the tree generation.
+ * `GET tinta/v1/tree`: every page's skeleton and the tree generation.
  */
 final class Tree_Controller extends WP_REST_Controller {
 
@@ -25,7 +25,7 @@ final class Tree_Controller extends WP_REST_Controller {
 	 * @param Tree $tree Page tree.
 	 */
 	public function __construct( private Tree $tree ) {
-		$this->namespace = 'liber/v1';
+		$this->namespace = 'tinta/v1';
 		$this->rest_base = 'tree';
 	}
 
@@ -61,13 +61,13 @@ final class Tree_Controller extends WP_REST_Controller {
 	 * @return true|WP_Error
 	 */
 	public function get_items_permissions_check( $request ) {
-		if ( current_user_can( 'liber_access' ) ) {
+		if ( current_user_can( 'tinta_access' ) ) {
 			return true;
 		}
 
 		return new WP_Error(
 			'rest_forbidden',
-			__( 'Sorry, you are not allowed to see this workspace.', 'liber' ),
+			__( 'Sorry, you are not allowed to see this workspace.', 'tinta' ),
 			array( 'status' => rest_authorization_required_code() )
 		);
 	}
@@ -96,16 +96,16 @@ final class Tree_Controller extends WP_REST_Controller {
 		if ( ! $this->schema ) {
 			$this->schema = array(
 				'$schema'    => 'http://json-schema.org/draft-04/schema#',
-				'title'      => 'liber-tree',
+				'title'      => 'tinta-tree',
 				'type'       => 'object',
 				'properties' => array(
 					'generation' => array(
-						'description' => __( 'Bumped on every tree change.', 'liber' ),
+						'description' => __( 'Bumped on every tree change.', 'tinta' ),
 						'type'        => 'integer',
 						'readonly'    => true,
 					),
 					'pages'      => array(
-						'description' => __( 'Private pages in tree order.', 'liber' ),
+						'description' => __( 'Private pages in tree order.', 'tinta' ),
 						'type'        => 'array',
 						'readonly'    => true,
 						'items'       => array(

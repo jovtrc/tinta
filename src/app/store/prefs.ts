@@ -1,5 +1,5 @@
 /**
- * `liber/prefs` store: the user's workspace preferences (the `liber_prefs`
+ * `tinta/prefs` store: the user's workspace preferences (the `tinta_prefs`
  * field on `wp/v2/users/me`). Changes wait for the stored preferences, apply
  * at once, and save in the background.
  */
@@ -25,7 +25,7 @@ const RECENT_DELAY = 2000;
 /**
  * The same path the workspace screen preloads.
  */
-const PREFS_PATH = '/wp/v2/users/me?_fields=liber_prefs&context=edit';
+const PREFS_PATH = '/wp/v2/users/me?_fields=tinta_prefs&context=edit';
 
 interface Action {
 	type: 'RECEIVE_PREFS';
@@ -61,7 +61,7 @@ function send( prefs: Prefs ) {
 	return apiFetch( {
 		path: '/wp/v2/users/me',
 		method: 'POST',
-		data: { liber_prefs: prefs },
+		data: { tinta_prefs: prefs },
 		keepalive: true,
 	} ).catch( () => undefined );
 }
@@ -255,14 +255,14 @@ const resolvers = {
 	getPrefs:
 		() =>
 		async ( { dispatch }: ThunkArgs ) => {
-			const user = await apiFetch< { liber_prefs?: Prefs } >( {
+			const user = await apiFetch< { tinta_prefs?: Prefs } >( {
 				path: PREFS_PATH,
 			} );
-			dispatch( actions.receivePrefs( user.liber_prefs ?? EMPTY ) );
+			dispatch( actions.receivePrefs( user.tinta_prefs ?? EMPTY ) );
 		},
 };
 
-export const store = createReduxStore( 'liber/prefs', {
+export const store = createReduxStore( 'tinta/prefs', {
 	reducer,
 	actions,
 	selectors,

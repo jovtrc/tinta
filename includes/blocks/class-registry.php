@@ -1,11 +1,11 @@
 <?php
 /**
- * Liber's blocks.
+ * Tinta's blocks.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Blocks;
+namespace Tinta\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -25,7 +25,7 @@ final class Registry {
 	 * Registers the blocks.
 	 */
 	public function register_blocks(): void {
-		$build = plugin_dir_path( LIBER_FILE ) . 'build';
+		$build = plugin_dir_path( TINTA_FILE ) . 'build';
 
 		if ( is_readable( "{$build}/blocks-manifest.php" ) ) {
 			wp_register_block_types_from_metadata_collection( "{$build}/blocks", "{$build}/blocks-manifest.php" );

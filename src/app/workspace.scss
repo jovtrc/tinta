@@ -3,7 +3,7 @@
 
 @use "sidebar/colors";
 
-body.liber-workspace-screen {
+body.tinta-workspace-screen {
 
 	#wpbody-content {
 		padding-bottom: 0;
@@ -15,23 +15,23 @@ body.liber-workspace-screen {
 }
 
 // Workspace mode: the workspace fills the window; admin menu and toolbar hide.
-html.wp-toolbar:has(body.liber-workspace-mode.liber-workspace-screen) {
+html.wp-toolbar:has(body.tinta-workspace-mode.tinta-workspace-screen) {
 	padding-top: 0;
 }
 
-body.liber-workspace-mode.liber-workspace-screen {
+body.tinta-workspace-mode.tinta-workspace-screen {
 
 	#adminmenumain,
 	#wpadminbar {
 		display: none;
 	}
 
-	.liber-workspace {
+	.tinta-workspace {
 		inset: 0;
 	}
 }
 
-.liber-workspace {
+.tinta-workspace {
 	position: fixed;
 	inset-block: var(--wp-admin--admin-bar--height, 32px) 0;
 	inset-inline: 160px 0;
@@ -58,7 +58,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-workspace__layout {
+.tinta-workspace__layout {
 	display: grid;
 	grid-template-columns: 264px minmax(0, 1fr);
 	height: 100%;
@@ -72,12 +72,12 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-workspace__main {
+.tinta-workspace__main {
 	min-width: 0;
 	min-height: 0;
 }
 
-.liber-workspace__snackbar {
+.tinta-workspace__snackbar {
 	position: fixed;
 	right: 0;
 	bottom: 24px;
@@ -93,7 +93,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-workspace__empty {
+.tinta-workspace__empty {
 	display: flex;
 	flex-direction: column;
 	flex: 1;
@@ -114,15 +114,15 @@ body.liber-workspace-mode.liber-workspace-screen {
 
 // Mobile drawer
 
-.liber-drawer__backdrop {
+.tinta-drawer__backdrop {
 	position: absolute;
 	inset: 0;
 	z-index: 20;
 	background: rgba(0, 0, 0, 0.35);
-	animation: liber-fade-in 0.2s ease-out;
+	animation: tinta-fade-in 0.2s ease-out;
 }
 
-.liber-drawer {
+.tinta-drawer {
 	position: absolute;
 	inset-block: 0;
 	inset-inline: 0 auto;
@@ -130,9 +130,9 @@ body.liber-workspace-mode.liber-workspace-screen {
 	display: flex;
 	width: min(85vw, 320px);
 	box-shadow: 0 0 24px rgba(0, 0, 0, 0.2);
-	animation: liber-slide-in 0.2s ease-out;
+	animation: tinta-slide-in 0.2s ease-out;
 
-	.liber-sidebar {
+	.tinta-sidebar {
 		flex: 1;
 		border-right: 0;
 	}
@@ -140,20 +140,20 @@ body.liber-workspace-mode.liber-workspace-screen {
 
 @media (prefers-reduced-motion: reduce) {
 
-	.liber-drawer,
-	.liber-drawer__backdrop {
+	.tinta-drawer,
+	.tinta-drawer__backdrop {
 		animation: none;
 	}
 }
 
-@keyframes liber-fade-in {
+@keyframes tinta-fade-in {
 
 	from {
 		opacity: 0;
 	}
 }
 
-@keyframes liber-slide-in {
+@keyframes tinta-slide-in {
 
 	from {
 		transform: translateX(-100%);
@@ -162,24 +162,24 @@ body.liber-workspace-mode.liber-workspace-screen {
 
 // Sidebar
 
-.liber-sidebar {
+.tinta-sidebar {
 	display: flex;
 	flex-direction: column;
 	gap: 2px;
 	padding: 12px 8px;
 	overflow-y: auto;
-	color: var(--liber-sidebar-text);
-	background: var(--liber-sidebar-bg);
-	border-right: 1px solid var(--liber-sidebar-border);
-	--wp-components-color-foreground: var(--liber-sidebar-text);
-	--wp-components-color-accent: var(--liber-sidebar-text);
+	color: var(--tinta-sidebar-text);
+	background: var(--tinta-sidebar-bg);
+	border-right: 1px solid var(--tinta-sidebar-border);
+	--wp-components-color-foreground: var(--tinta-sidebar-text);
+	--wp-components-color-accent: var(--tinta-sidebar-text);
 
 	.components-button:hover:not(:disabled, [aria-disabled="true"]) {
-		background: var(--liber-sidebar-hover);
+		background: var(--tinta-sidebar-hover);
 	}
 }
 
-.liber-sidebar__header {
+.tinta-sidebar__header {
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -189,7 +189,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	font-weight: 600;
 }
 
-.liber-sidebar__icon {
+.tinta-sidebar__icon {
 	display: inline-flex;
 	flex: none;
 	align-items: center;
@@ -204,7 +204,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	object-fit: cover;
 }
 
-.liber-sidebar__name {
+.tinta-sidebar__name {
 	flex: 1;
 	min-width: 0;
 	overflow: hidden;
@@ -212,16 +212,16 @@ body.liber-workspace-mode.liber-workspace-screen {
 	white-space: nowrap;
 }
 
-.liber-sidebar__action.components-button {
+.tinta-sidebar__action.components-button {
 	justify-content: flex-start;
 	width: 100%;
 }
 
-.liber-sidebar__shortcut {
+.tinta-sidebar__shortcut {
 	margin-inline-start: auto;
 	font-family: inherit;
 	font-size: 12px;
-	color: var(--liber-sidebar-muted);
+	color: var(--tinta-sidebar-muted);
 	background: none;
 
 	@media (max-width: 782px) {
@@ -229,19 +229,19 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-sidebar__action.liber-sidebar__trash {
+.tinta-sidebar__action.tinta-sidebar__trash {
 	margin-top: auto;
 }
 
-.liber-sidebar__footer {
+.tinta-sidebar__footer {
 	display: flex;
 	gap: 4px;
 	align-items: center;
 	padding-top: 8px;
-	border-top: 1px solid var(--liber-sidebar-border);
+	border-top: 1px solid var(--tinta-sidebar-border);
 }
 
-.liber-user-menu {
+.tinta-user-menu {
 	flex: 1;
 	min-width: 0;
 
@@ -253,47 +253,47 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-user-menu .components-button {
+.tinta-user-menu .components-button {
 	justify-content: flex-start;
 	height: auto;
 	min-height: 36px;
 	padding-block: 4px;
 }
 
-.liber-user-menu__text {
+.tinta-user-menu__text {
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
 	text-align: start;
 }
 
-.liber-user-menu__name {
+.tinta-user-menu__name {
 	overflow: hidden;
 	font-weight: 500;
 	text-overflow: ellipsis;
 }
 
-.liber-user-menu__role {
+.tinta-user-menu__role {
 	font-size: 11px;
-	color: var(--liber-sidebar-muted);
+	color: var(--tinta-sidebar-muted);
 }
 
-.liber-sidebar__heading-row {
+.tinta-sidebar__heading-row {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	margin: 16px 0 4px;
 	padding-inline-end: 4px;
 
-	.liber-sidebar__heading {
+	.tinta-sidebar__heading {
 		margin-block: 0;
 	}
 }
 
-.liber-sidebar__heading-action.components-button {
+.tinta-sidebar__heading-action.components-button {
 	opacity: 0;
 
-	.liber-sidebar__heading-row:hover &,
+	.tinta-sidebar__heading-row:hover &,
 	&:focus-visible {
 		opacity: 1;
 	}
@@ -303,35 +303,35 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-user-menu__avatar {
+.tinta-user-menu__avatar {
 	flex: none;
 	border-radius: 50%;
 }
 
-.liber-settings {
+.tinta-settings {
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
 }
 
-.liber-settings p {
+.tinta-settings p {
 	margin: 0;
 }
 
-.liber-settings__error {
+.tinta-settings__error {
 	color: #cc1818;
 }
 
-.liber-settings__setup.components-button {
+.tinta-settings__setup.components-button {
 	margin-inline-end: auto;
 }
 
-.liber-setup__lead {
+.tinta-setup__lead {
 	margin-top: 0;
 	font-size: 15px;
 }
 
-.liber-setup__icon {
+.tinta-setup__icon {
 	display: flex;
 	gap: 12px;
 	align-items: center;
@@ -342,7 +342,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-setup__icon-empty {
+.tinta-setup__icon-empty {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -355,7 +355,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	border-radius: 8px;
 }
 
-.liber-setup__conflicts {
+.tinta-setup__conflicts {
 	margin: 0;
 	padding-inline-start: 18px;
 
@@ -364,28 +364,28 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-setup__actions {
+.tinta-setup__actions {
 	align-items: center;
 }
 
-.liber-setup__progress {
+.tinta-setup__progress {
 	margin-inline-end: auto;
 	font-size: 12px;
 	color: #757575;
 }
 
-.liber-sidebar__heading {
+.tinta-sidebar__heading {
 	margin: 16px 8px 4px;
 	font-size: 11px;
 	font-weight: 500;
-	color: var(--liber-sidebar-muted);
+	color: var(--tinta-sidebar-muted);
 	text-transform: uppercase;
 	letter-spacing: 0.04em;
 }
 
 // Page tree
 
-.liber-tree {
+.tinta-tree {
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -395,7 +395,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-tree__row {
+.tinta-tree__row {
 	display: flex;
 	align-items: center;
 	gap: 2px;
@@ -403,35 +403,35 @@ body.liber-workspace-mode.liber-workspace-screen {
 
 	&:hover,
 	&.is-menu-open {
-		background: var(--liber-sidebar-hover);
+		background: var(--tinta-sidebar-hover);
 	}
 
 	&:has([aria-current="page"]) {
-		color: var(--liber-sidebar-current-text);
-		background: var(--liber-sidebar-current-bg);
-		--wp-components-color-foreground: var(--liber-sidebar-current-text);
-		--wp-components-color-accent: var(--liber-sidebar-current-text);
+		color: var(--tinta-sidebar-current-text);
+		background: var(--tinta-sidebar-current-bg);
+		--wp-components-color-foreground: var(--tinta-sidebar-current-text);
+		--wp-components-color-accent: var(--tinta-sidebar-current-text);
 	}
 }
 
-.liber-tree__row.is-dragging,
-.liber-tree .is-dragging {
+.tinta-tree__row.is-dragging,
+.tinta-tree .is-dragging {
 	opacity: 0.4;
 }
 
-.liber-tree__row.is-drop-inside {
+.tinta-tree__row.is-drop-inside {
 	box-shadow: inset 0 0 0 2px var(--wp-admin-theme-color, #3858e9);
 }
 
-.liber-tree__row.is-drop-before {
+.tinta-tree__row.is-drop-before {
 	box-shadow: inset 0 2px 0 var(--wp-admin-theme-color, #3858e9);
 }
 
-.liber-tree__row.is-drop-after {
+.tinta-tree__row.is-drop-after {
 	box-shadow: inset 0 -2px 0 var(--wp-admin-theme-color, #3858e9);
 }
 
-.liber-tree__drag-preview {
+.tinta-tree__drag-preview {
 	display: inline-block;
 	padding: 4px 10px;
 	color: #1e1e1e;
@@ -441,13 +441,13 @@ body.liber-workspace-mode.liber-workspace-screen {
 	cursor: grabbing;
 }
 
-.liber-tree__actions {
+.tinta-tree__actions {
 	display: flex;
 	flex: none;
 	opacity: 0;
 
-	.liber-tree__row:hover &,
-	.liber-tree__row:focus-within &,
+	.tinta-tree__row:hover &,
+	.tinta-tree__row:focus-within &,
 	&:has([aria-expanded="true"]) {
 		opacity: 1;
 	}
@@ -457,13 +457,13 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-tree__toggle {
+.tinta-tree__toggle {
 	flex: none;
 	width: 24px;
 	height: 24px;
 }
 
-.liber-tree__link {
+.tinta-tree__link {
 	display: flex;
 	flex: 1;
 	align-items: center;
@@ -490,7 +490,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-tree__icon {
+.tinta-tree__icon {
 	display: inline-flex;
 	flex: none;
 	justify-content: center;
@@ -499,7 +499,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	fill: currentcolor;
 }
 
-.liber-tree__title {
+.tinta-tree__title {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -507,7 +507,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 
 // Emoji picker
 
-.liber-emoji-picker {
+.tinta-emoji-picker {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
@@ -518,7 +518,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	overflow-y: auto;
 }
 
-.liber-emoji-picker__group {
+.tinta-emoji-picker__group {
 	margin: 8px 0 4px;
 	font-size: 11px;
 	font-weight: 500;
@@ -527,19 +527,19 @@ body.liber-workspace-mode.liber-workspace-screen {
 	letter-spacing: 0.04em;
 }
 
-.liber-emoji-picker__grid {
+.tinta-emoji-picker__grid {
 	display: grid;
 	grid-template-columns: repeat(8, 1fr);
 }
 
-.liber-emoji-picker__emoji.components-button {
+.tinta-emoji-picker__emoji.components-button {
 	justify-content: center;
 	height: 34px;
 	padding: 0;
 	font-size: 22px;
 }
 
-.liber-emoji-picker__hint {
+.tinta-emoji-picker__hint {
 	margin: 4px 0 0;
 	font-size: 12px;
 	color: #757575;
@@ -547,17 +547,17 @@ body.liber-workspace-mode.liber-workspace-screen {
 
 // Notes
 
-.liber-notes-toggle.components-button.has-text {
+.tinta-notes-toggle.components-button.has-text {
 	gap: 2px;
 	padding-inline-end: 8px;
 }
 
-.liber-notes-toggle__count {
+.tinta-notes-toggle__count {
 	font-size: 12px;
 	font-weight: 500;
 }
 
-.liber-notes {
+.tinta-notes {
 	display: flex;
 	flex: none;
 	flex-direction: column;
@@ -578,17 +578,17 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-notes__header {
+.tinta-notes__header {
 	display: flex;
 	gap: 4px;
 	align-items: center;
 }
 
-.liber-notes__empty {
+.tinta-notes__empty {
 	color: #757575;
 }
 
-.liber-thread {
+.tinta-thread {
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
@@ -606,30 +606,30 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-thread__actions {
+.tinta-thread__actions {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 4px;
 	justify-content: flex-end;
 }
 
-.liber-note__meta {
+.tinta-note__meta {
 	display: flex;
 	gap: 6px;
 	align-items: center;
 }
 
-.liber-note__avatar {
+.tinta-note__avatar {
 	border-radius: 50%;
 }
 
-.liber-note__time {
+.tinta-note__time {
 	flex: 1;
 	font-size: 12px;
 	color: #757575;
 }
 
-.liber-note__content {
+.tinta-note__content {
 	margin-top: 4px;
 	overflow-wrap: anywhere;
 
@@ -643,14 +643,14 @@ body.liber-workspace-mode.liber-workspace-screen {
 	color: var(--wp-admin-theme-color, #3858e9);
 }
 
-.liber-note-composer {
+.tinta-note-composer {
 	position: relative;
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
 }
 
-.liber-note-composer__text {
+.tinta-note-composer__text {
 	box-sizing: border-box;
 	width: 100%;
 	padding: 8px;
@@ -660,7 +660,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	border-radius: 4px;
 }
 
-.liber-note-composer__mentions {
+.tinta-note-composer__mentions {
 	position: absolute;
 	top: 100%;
 	left: 0;
@@ -697,7 +697,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-note-composer__actions {
+.tinta-note-composer__actions {
 	display: flex;
 	gap: 4px;
 	justify-content: flex-end;
@@ -705,25 +705,25 @@ body.liber-workspace-mode.liber-workspace-screen {
 
 // Dialogs
 
-.liber-dialog__actions {
+.tinta-dialog__actions {
 	display: flex;
 	justify-content: flex-end;
 	gap: 8px;
 	margin-top: 24px;
 }
 
-.liber-dialog__note {
+.tinta-dialog__note {
 	margin-top: 0;
 	color: #757575;
 }
 
-.liber-trash {
+.tinta-trash {
 	margin: 0;
 	padding: 0;
 	list-style: none;
 }
 
-.liber-trash__item {
+.tinta-trash__item {
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -731,7 +731,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	border-top: 1px solid #f0f0f0;
 }
 
-.liber-trash__title {
+.tinta-trash__title {
 	flex: 1;
 	min-width: 0;
 	overflow: hidden;
@@ -741,13 +741,13 @@ body.liber-workspace-mode.liber-workspace-screen {
 
 // Editor
 
-.liber-editor {
+.tinta-editor {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
 }
 
-.liber-editor__header {
+.tinta-editor__header {
 	display: flex;
 	flex: none;
 	align-items: center;
@@ -757,13 +757,13 @@ body.liber-workspace-mode.liber-workspace-screen {
 	border-bottom: 1px solid #e0e0e0;
 }
 
-.liber-editor__spacer {
+.tinta-editor__spacer {
 	flex: 1;
 }
 
 // Breadcrumbs
 
-.liber-breadcrumbs {
+.tinta-breadcrumbs {
 	min-width: 0;
 
 	ol {
@@ -828,43 +828,43 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-breadcrumbs__icon {
+.tinta-breadcrumbs__icon {
 	display: inline-flex;
 	flex: none;
 	font-size: 14px;
 }
 
-.liber-breadcrumbs__title {
+.tinta-breadcrumbs__title {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-.liber-editor__status {
+.tinta-editor__status {
 	padding: 0 8px;
 	font-size: 13px;
 	color: #757575;
 }
 
-.liber-editor__body {
+.tinta-editor__body {
 	position: relative;
 	display: flex;
 	flex: 1;
 	min-height: 0;
 }
 
-.liber-editor__canvas {
+.tinta-editor__canvas {
 	flex: 1;
 	min-width: 0;
 }
 
-.liber-reader {
+.tinta-reader {
 	flex: 1;
 	min-height: 0;
 	overflow-y: auto;
 }
 
-.liber-reader__page {
+.tinta-reader__page {
 	box-sizing: border-box;
 	max-width: 768px;
 	margin-inline: auto;
@@ -877,12 +877,12 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-reader__icon {
+.tinta-reader__icon {
 	font-size: 64px;
 	line-height: 1.1;
 }
 
-.liber-page-meta {
+.tinta-page-meta {
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -891,18 +891,18 @@ body.liber-workspace-mode.liber-workspace-screen {
 	color: #757575;
 }
 
-.liber-page-meta__avatar {
+.tinta-page-meta__avatar {
 	border-radius: 50%;
 }
 
-.liber-reader__title {
+.tinta-reader__title {
 	margin: 0 0 24px;
 	font-weight: 700;
 	font-size: 2.5em;
 	line-height: 1.2;
 }
 
-.liber-editor__inspector {
+.tinta-editor__inspector {
 	flex: none;
 	width: 280px;
 	overflow-y: auto;
@@ -920,7 +920,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 
 // Blocks panel
 
-.liber-blocks {
+.tinta-blocks {
 	display: flex;
 	flex: none;
 	flex-direction: column;
@@ -941,7 +941,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-blocks__header {
+.tinta-blocks__header {
 	display: flex;
 	gap: 4px;
 	align-items: center;
@@ -952,7 +952,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-blocks__group {
+.tinta-blocks__group {
 	margin: 12px 8px 4px;
 	font-size: 11px;
 	font-weight: 500;
@@ -961,7 +961,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	letter-spacing: 0.04em;
 }
 
-.liber-blocks__list {
+.tinta-blocks__list {
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -971,7 +971,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
-.liber-blocks__item.components-button {
+.tinta-blocks__item.components-button {
 	gap: 10px;
 	width: 100%;
 	height: auto;
@@ -979,17 +979,17 @@ body.liber-workspace-mode.liber-workspace-screen {
 	text-align: start;
 }
 
-.liber-blocks__text {
+.tinta-blocks__text {
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
 }
 
-.liber-blocks__title {
+.tinta-blocks__title {
 	font-weight: 500;
 }
 
-.liber-blocks__description {
+.tinta-blocks__description {
 	overflow: hidden;
 	font-size: 12px;
 	color: #757575;
@@ -997,12 +997,12 @@ body.liber-workspace-mode.liber-workspace-screen {
 	white-space: nowrap;
 }
 
-.liber-blocks__empty {
+.tinta-blocks__empty {
 	margin: 8px;
 	color: #757575;
 }
 
-.liber-editor__message {
+.tinta-editor__message {
 	display: flex;
 	justify-content: center;
 	padding: 48px 24px;

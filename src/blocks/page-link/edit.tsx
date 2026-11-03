@@ -18,7 +18,7 @@ import { __ } from '@wordpress/i18n';
 interface LinkedPage {
 	id: number;
 	title: { raw: string };
-	meta?: { _liber_icon?: string };
+	meta?: { _tinta_icon?: string };
 }
 
 interface EditProps {
@@ -41,7 +41,7 @@ export function Edit( { attributes, setAttributes }: EditProps ) {
 			pageId
 				? ( select( coreStore ).getEntityRecord(
 						'postType',
-						'liber_doc',
+						'tinta_doc',
 						pageId
 					) as LinkedPage | undefined )
 				: undefined,
@@ -63,26 +63,26 @@ export function Edit( { attributes, setAttributes }: EditProps ) {
 			<BlockControls>
 				<ToolbarGroup>
 					<ToolbarButton onClick={ () => openPage( pageId ) }>
-						{ __( 'Open', 'liber' ) }
+						{ __( 'Open', 'tinta' ) }
 					</ToolbarButton>
 					<ToolbarButton
 						onClick={ () => setAttributes( { pageId: 0 } ) }
 					>
-						{ __( 'Link another page', 'liber' ) }
+						{ __( 'Link another page', 'tinta' ) }
 					</ToolbarButton>
 				</ToolbarGroup>
 			</BlockControls>
 			<p { ...blockProps }>
-				<span className="wp-block-liber-page-link__link">
+				<span className="wp-block-tinta-page-link__link">
 					<span
-						className="wp-block-liber-page-link__icon"
+						className="wp-block-tinta-page-link__icon"
 						aria-hidden="true"
 					>
-						{ page?.meta?._liber_icon || '📄' }
+						{ page?.meta?._tinta_icon || '📄' }
 					</span>
-					<span className="wp-block-liber-page-link__title">
+					<span className="wp-block-tinta-page-link__title">
 						{ decodeEntities( page?.title.raw ?? '' ) ||
-							__( 'Untitled', 'liber' ) }
+							__( 'Untitled', 'tinta' ) }
 					</span>
 				</span>
 			</p>
@@ -100,7 +100,7 @@ function PagePicker( { onPick }: { onPick: ( pageId: number ) => void } ) {
 	const [ search, setSearch ] = useState( '' );
 	const pages = useSelect(
 		( select ) =>
-			select( coreStore ).getEntityRecords( 'postType', 'liber_doc', {
+			select( coreStore ).getEntityRecords( 'postType', 'tinta_doc', {
 				search,
 				status: 'private',
 				per_page: 20,
@@ -112,19 +112,19 @@ function PagePicker( { onPick }: { onPick: ( pageId: number ) => void } ) {
 
 	return (
 		<Placeholder
-			label={ __( 'Page link', 'liber' ) }
-			instructions={ __( 'Choose the page to link to.', 'liber' ) }
+			label={ __( 'Page link', 'tinta' ) }
+			instructions={ __( 'Choose the page to link to.', 'tinta' ) }
 		>
 			<ComboboxControl
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
-				label={ __( 'Page', 'liber' ) }
+				label={ __( 'Page', 'tinta' ) }
 				value={ null }
 				options={ ( pages ?? [] ).map( ( page ) => ( {
 					value: String( page.id ),
 					label:
 						decodeEntities( page.title.raw ) ||
-						__( 'Untitled', 'liber' ),
+						__( 'Untitled', 'tinta' ),
 				} ) ) }
 				onFilterValueChange={ setSearch }
 				onChange={ ( value ) => value && onPick( Number( value ) ) }

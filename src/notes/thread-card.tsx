@@ -52,7 +52,7 @@ export function ThreadCard( { thread, actions }: ThreadCardProps ) {
 		<article
 			ref={ ref }
 			className={ [
-				'liber-thread',
+				'tinta-thread',
 				thread.isResolved && 'is-resolved',
 				isActive && 'is-active',
 			]
@@ -74,8 +74,8 @@ export function ThreadCard( { thread, actions }: ThreadCardProps ) {
 			) ) }
 			{ isReplying ? (
 				<NoteComposer
-					label={ __( 'Reply', 'liber' ) }
-					submitLabel={ __( 'Reply', 'liber' ) }
+					label={ __( 'Reply', 'tinta' ) }
+					submitLabel={ __( 'Reply', 'tinta' ) }
 					onCancel={ () => setReplying( false ) }
 					onSubmit={ async ( html ) => {
 						await actions.reply( thread.root.id, html );
@@ -83,14 +83,14 @@ export function ThreadCard( { thread, actions }: ThreadCardProps ) {
 					} }
 				/>
 			) : (
-				<div className="liber-thread__actions">
+				<div className="tinta-thread__actions">
 					{ thread.clientId && (
 						<Button
 							variant="tertiary"
 							size="compact"
 							onClick={ () => selectBlock( thread.clientId! ) }
 						>
-							{ __( 'Show block', 'liber' ) }
+							{ __( 'Show block', 'tinta' ) }
 						</Button>
 					) }
 					{ ! thread.isResolved && (
@@ -99,7 +99,7 @@ export function ThreadCard( { thread, actions }: ThreadCardProps ) {
 							size="compact"
 							onClick={ () => setReplying( true ) }
 						>
-							{ __( 'Reply', 'liber' ) }
+							{ __( 'Reply', 'tinta' ) }
 						</Button>
 					) }
 					<Button
@@ -113,8 +113,8 @@ export function ThreadCard( { thread, actions }: ThreadCardProps ) {
 						}
 					>
 						{ thread.isResolved
-							? __( 'Reopen', 'liber' )
-							: __( 'Resolve', 'liber' ) }
+							? __( 'Reopen', 'tinta' )
+							: __( 'Resolve', 'tinta' ) }
 					</Button>
 				</div>
 			) }
@@ -133,11 +133,11 @@ function NoteItem( { note, onDelete }: { note: Note; onDelete: () => void } ) {
 	const canDelete = note.author === config.userId || config.canManage;
 
 	return (
-		<div className="liber-note">
-			<div className="liber-note__meta">
+		<div className="tinta-note">
+			<div className="tinta-note__meta">
 				{ note.author_avatar_urls?.[ '48' ] && (
 					<img
-						className="liber-note__avatar"
+						className="tinta-note__avatar"
 						src={ note.author_avatar_urls[ '48' ] }
 						alt=""
 						width={ 24 }
@@ -145,19 +145,19 @@ function NoteItem( { note, onDelete }: { note: Note; onDelete: () => void } ) {
 					/>
 				) }
 				<strong>{ note.author_name }</strong>
-				<span className="liber-note__time">
+				<span className="tinta-note__time">
 					{ humanTimeDiff( `${ note.date_gmt }Z` ) }
 				</span>
 				{ canDelete && (
 					<Button
 						size="small"
 						icon={ trash }
-						label={ __( 'Delete note', 'liber' ) }
+						label={ __( 'Delete note', 'tinta' ) }
 						onClick={ onDelete }
 					/>
 				) }
 			</div>
-			<RawHTML className="liber-note__content">
+			<RawHTML className="tinta-note__content">
 				{ note.content.rendered }
 			</RawHTML>
 		</div>

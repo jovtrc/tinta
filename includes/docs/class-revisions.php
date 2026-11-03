@@ -2,12 +2,12 @@
 /**
  * Page revisions.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Docs;
+namespace Tinta\Docs;
 
-use Liber\Workspace\Settings;
+use Tinta\Workspace\Settings;
 use WP_Post;
 
 defined( 'ABSPATH' ) || exit;

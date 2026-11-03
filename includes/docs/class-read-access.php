@@ -1,20 +1,20 @@
 <?php
 /**
- * Reading a page takes a Liber role.
+ * Reading a page takes a Tinta role.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Docs;
+namespace Tinta\Docs;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Core lets authors read their own private posts with just `read`. For pages
- * that would let people keep reading what they wrote after losing their Liber
+ * that would let people keep reading what they wrote after losing their Tinta
  * role, or read a page someone made them the author of, and get its note
  * emails. Reading a page, or one of its revisions, also takes
- * `read_private_liber_docs`.
+ * `read_private_tinta_docs`.
  */
 final class Read_Access {
 
@@ -26,7 +26,7 @@ final class Read_Access {
 	}
 
 	/**
-	 * Adds `read_private_liber_docs` to reading a page.
+	 * Adds `read_private_tinta_docs` to reading a page.
 	 *
 	 * @param string[] $caps    Capabilities core requires.
 	 * @param string   $cap     Capability checked.
@@ -46,7 +46,7 @@ final class Read_Access {
 		}
 
 		if ( $post && Post_Type::NAME === $post->post_type ) {
-			$caps[] = 'read_private_liber_docs';
+			$caps[] = 'read_private_tinta_docs';
 		}
 
 		return $caps;

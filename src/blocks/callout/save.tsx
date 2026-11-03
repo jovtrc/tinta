@@ -18,12 +18,12 @@ export function save( { attributes }: SaveProps ) {
 
 	return (
 		<div { ...useBlockProps.save() }>
-			<span className="wp-block-liber-callout__emoji" aria-hidden="true">
+			<span className="wp-block-tinta-callout__emoji" aria-hidden="true">
 				{ emoji }
 			</span>
 			<div
 				{ ...useInnerBlocksProps.save( {
-					className: 'wp-block-liber-callout__content',
+					className: 'wp-block-tinta-callout__content',
 				} ) }
 			/>
 		</div>

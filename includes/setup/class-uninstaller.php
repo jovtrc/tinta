@@ -2,26 +2,26 @@
 /**
  * Cleanup when the plugin is deleted.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Setup;
+namespace Tinta\Setup;
 
-use Liber\Cache\Cache;
-use Liber\Docs\Tree;
-use Liber\Rest\User_Prefs_Field;
-use Liber\Roles\Roles;
-use Liber\Workspace\Settings;
+use Tinta\Cache\Cache;
+use Tinta\Docs\Tree;
+use Tinta\Rest\User_Prefs_Field;
+use Tinta\Roles\Roles;
+use Tinta\Workspace\Settings;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Removes Liber's roles, capabilities, settings, cache and people's
+ * Removes Tinta's roles, capabilities, settings, cache and people's
  * preferences from every site.
  *
  * Pages stay: they are the team's content, not plugin settings. People who
  * were Members or Viewers keep that role name, with no capabilities, until
- * Liber comes back.
+ * Tinta comes back.
  */
 final class Uninstaller {
 

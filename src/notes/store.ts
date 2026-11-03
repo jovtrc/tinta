@@ -1,5 +1,5 @@
 /**
- * `liber/notes` store: whether the Notes panel is open, and which block a new
+ * `tinta/notes` store: whether the Notes panel is open, and which block a new
  * note is being written for.
  */
 import { createReduxStore, register } from '@wordpress/data';
@@ -58,7 +58,7 @@ const selectors = {
 	getComposingFor: ( state: State ) => state.composingFor,
 };
 
-export const store = createReduxStore( 'liber/notes', {
+export const store = createReduxStore( 'tinta/notes', {
 	reducer,
 	actions,
 	selectors,

@@ -36,38 +36,38 @@ export function NotesPanel() {
 	);
 
 	return (
-		<aside className="liber-notes" aria-label={ __( 'Notes', 'liber' ) }>
-			<div className="liber-notes__header">
+		<aside className="tinta-notes" aria-label={ __( 'Notes', 'tinta' ) }>
+			<div className="tinta-notes__header">
 				<Button
 					size="compact"
 					isPressed={ ! showResolved }
 					onClick={ () => setShowResolved( false ) }
 				>
-					{ __( 'Open', 'liber' ) }
+					{ __( 'Open', 'tinta' ) }
 				</Button>
 				<Button
 					size="compact"
 					isPressed={ showResolved }
 					onClick={ () => setShowResolved( true ) }
 				>
-					{ __( 'Resolved', 'liber' ) }
+					{ __( 'Resolved', 'tinta' ) }
 				</Button>
-				<div className="liber-editor__spacer" />
+				<div className="tinta-editor__spacer" />
 				<Button
 					size="compact"
 					icon={ closeSmall }
-					label={ __( 'Close notes', 'liber' ) }
+					label={ __( 'Close notes', 'tinta' ) }
 					onClick={ () => setOpen( false ) }
 				/>
 			</div>
 			{ composingFor && (
-				<div className="liber-thread is-new">
+				<div className="tinta-thread is-new">
 					<NoteComposer
 						label={ __(
 							'Add a note. Type @ to mention someone.',
-							'liber'
+							'tinta'
 						) }
-						submitLabel={ __( 'Add note', 'liber' ) }
+						submitLabel={ __( 'Add note', 'tinta' ) }
 						onCancel={ () => startNote( null ) }
 						onSubmit={ async ( html ) => {
 							await actions.startThread( composingFor, html );
@@ -86,12 +86,12 @@ export function NotesPanel() {
 					/>
 				) ) }
 			{ ! isLoading && ! shown.length && ! composingFor && (
-				<p className="liber-notes__empty">
+				<p className="tinta-notes__empty">
 					{ showResolved
-						? __( 'No resolved notes.', 'liber' )
+						? __( 'No resolved notes.', 'tinta' )
 						: __(
 								'No open notes. Select a block and choose Add note.',
-								'liber'
+								'tinta'
 							) }
 				</p>
 			) }
@@ -114,7 +114,7 @@ export function NotesToggle() {
 
 	return (
 		<Button
-			className="liber-notes-toggle"
+			className="tinta-notes-toggle"
 			icon={ comment }
 			label={
 				open
@@ -124,18 +124,18 @@ export function NotesToggle() {
 								'Notes, %d open',
 								'Notes, %d open',
 								open,
-								'liber'
+								'tinta'
 							),
 							open
 						)
-					: __( 'Notes', 'liber' )
+					: __( 'Notes', 'tinta' )
 			}
 			size="compact"
 			isPressed={ isOpen }
 			onClick={ () => setOpen( ! isOpen ) }
 		>
 			{ open > 0 && (
-				<span className="liber-notes-toggle__count" aria-hidden="true">
+				<span className="tinta-notes-toggle__count" aria-hidden="true">
 					{ open }
 				</span>
 			) }

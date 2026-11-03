@@ -41,8 +41,8 @@ export function Breadcrumbs( { pageId }: { pageId: number } ) {
 
 	return (
 		<nav
-			className="liber-breadcrumbs"
-			aria-label={ __( 'Breadcrumbs', 'liber' ) }
+			className="tinta-breadcrumbs"
+			aria-label={ __( 'Breadcrumbs', 'tinta' ) }
 		>
 			<ol>
 				{ trail.map( ( page ) =>
@@ -77,11 +77,11 @@ export function Breadcrumbs( { pageId }: { pageId: number } ) {
 function Crumb( { page }: { page: TreePage } ) {
 	return (
 		<>
-			<span className="liber-breadcrumbs__icon" aria-hidden="true">
+			<span className="tinta-breadcrumbs__icon" aria-hidden="true">
 				{ page.icon || <Icon icon={ pageIcon } size={ 16 } /> }
 			</span>
-			<span className="liber-breadcrumbs__title">
-				{ decodeEntities( page.title ) || __( 'Untitled', 'liber' ) }
+			<span className="tinta-breadcrumbs__title">
+				{ decodeEntities( page.title ) || __( 'Untitled', 'tinta' ) }
 			</span>
 		</>
 	);

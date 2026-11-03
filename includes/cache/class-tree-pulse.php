@@ -2,13 +2,13 @@
 /**
  * Tree freshness over Heartbeat.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Cache;
+namespace Tinta\Cache;
 
-use Liber\Docs\Tree;
-use Liber\Workspace\Screen;
+use Tinta\Docs\Tree;
+use Tinta\Workspace\Screen;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -43,8 +43,8 @@ final class Tree_Pulse {
 	 * @return array<string, mixed>
 	 */
 	public function send_generation( array $response, array $data ): array {
-		if ( isset( $data['liber_tree'] ) && current_user_can( 'liber_access' ) ) {
-			$response['liber_tree'] = $this->tree->generation();
+		if ( isset( $data['tinta_tree'] ) && current_user_can( 'tinta_access' ) ) {
+			$response['tinta_tree'] = $this->tree->generation();
 		}
 
 		return $response;

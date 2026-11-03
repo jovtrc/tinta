@@ -29,7 +29,7 @@ const withNoteButton = createHigherOrderComponent(
 						<BlockControls group="other">
 							<ToolbarButton
 								icon={ comment }
-								label={ __( 'Add note', 'liber' ) }
+								label={ __( 'Add note', 'tinta' ) }
 								onClick={ () => startNote( props.clientId ) }
 							/>
 						</BlockControls>
@@ -44,5 +44,5 @@ const withNoteButton = createHigherOrderComponent(
  * Adds the button to block toolbars.
  */
 export function registerNoteButton() {
-	addFilter( 'editor.BlockEdit', 'liber/note-button', withNoteButton );
+	addFilter( 'editor.BlockEdit', 'tinta/note-button', withNoteButton );
 }

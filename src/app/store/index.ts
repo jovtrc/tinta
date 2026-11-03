@@ -1,5 +1,5 @@
 /**
- * `liber/workspace` store: the page tree (from `liber/v1/tree`, with its
+ * `tinta/workspace` store: the page tree (from `tinta/v1/tree`, with its
  * generation) and the actions that change it.
  */
 import apiFetch from '@wordpress/api-fetch';
@@ -126,7 +126,7 @@ const actions = {
 			dispatch( { type: 'MOVE_PAGE', id, parent, position } );
 			try {
 				await apiFetch( {
-					path: `/liber/v1/docs/${ id }/move`,
+					path: `/tinta/v1/docs/${ id }/move`,
 					method: 'POST',
 					data: { parent, position },
 				} );
@@ -234,13 +234,13 @@ const resolvers = {
 			const tree = await apiFetch< {
 				pages: TreePage[];
 				generation: number;
-			} >( { path: '/liber/v1/tree' } );
+			} >( { path: '/tinta/v1/tree' } );
 
 			dispatch( actions.receivePages( tree.pages, tree.generation ) );
 		},
 };
 
-export const store = createReduxStore( 'liber/workspace', {
+export const store = createReduxStore( 'tinta/workspace', {
 	reducer,
 	actions,
 	selectors,

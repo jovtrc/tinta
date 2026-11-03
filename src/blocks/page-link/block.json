@@ -1,12 +1,12 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "liber/page-link",
+	"name": "tinta/page-link",
 	"title": "Page link",
 	"category": "text",
 	"description": "Links to another page, showing its current icon and title.",
 	"keywords": [ "link", "page", "mention" ],
-	"textdomain": "liber",
+	"textdomain": "tinta",
 	"attributes": {
 		"pageId": {
 			"type": "integer",

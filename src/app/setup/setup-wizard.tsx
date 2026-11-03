@@ -22,7 +22,7 @@ import { __, sprintf } from '@wordpress/i18n';
 
 import { config, pageUrl } from '../config';
 import { RegistrationNotice } from '../registration-notice';
-import { LIBER_ROLES, roleOptions } from '../roles';
+import { TINTA_ROLES, roleOptions } from '../roles';
 import { store as workspaceStore } from '../store';
 import { createSamplePages } from './sample-pages';
 
@@ -41,7 +41,7 @@ interface StoredSettings {
 	title: string;
 	site_icon: number;
 	default_role?: string;
-	liber_settings: { workspace_mode: boolean };
+	tinta_settings: { workspace_mode: boolean };
 }
 
 /**
@@ -51,7 +51,7 @@ function markDone() {
 	return apiFetch( {
 		path: '/wp/v2/settings',
 		method: 'POST',
-		data: { liber_settings: { setup_done: true } },
+		data: { tinta_settings: { setup_done: true } },
 	} );
 }
 
@@ -83,14 +83,14 @@ export function SetupWizard( { onClose }: { onClose: () => void } ) {
 
 	useEffect( () => {
 		apiFetch< StoredSettings >( {
-			path: '/wp/v2/settings?_fields=title,site_icon,default_role,liber_settings',
+			path: '/wp/v2/settings?_fields=title,site_icon,default_role,tinta_settings',
 		} ).then( ( stored ) =>
 			setChoices( {
 				title: stored.title,
 				siteIcon: stored.site_icon,
 				iconUrl: config.siteIcon,
 				defaultRole: suggestedRole( stored.default_role ),
-				workspaceMode: stored.liber_settings.workspace_mode,
+				workspaceMode: stored.tinta_settings.workspace_mode,
 				sample: ! hasPages,
 			} )
 		);
@@ -118,7 +118,7 @@ export function SetupWizard( { onClose }: { onClose: () => void } ) {
 					title: choices.title,
 					site_icon: choices.siteIcon,
 					default_role: choices.defaultRole,
-					liber_settings: {
+					tinta_settings: {
 						workspace_mode: choices.workspaceMode,
 						setup_done: true,
 					},
@@ -127,21 +127,21 @@ export function SetupWizard( { onClose }: { onClose: () => void } ) {
 			const welcome = choices.sample ? await createSamplePages() : 0;
 			window.location.assign( pageUrl( welcome || config.pageId ) );
 		} catch {
-			setError( __( 'Setup could not be saved.', 'liber' ) );
+			setError( __( 'Setup could not be saved.', 'tinta' ) );
 			setSaving( false );
 		}
 	};
 
 	return (
 		<Modal
-			title={ __( 'Set up your workspace', 'liber' ) }
+			title={ __( 'Set up your workspace', 'tinta' ) }
 			onRequestClose={ close }
 			size="medium"
 		>
 			{ ! choices ? (
 				<Spinner />
 			) : (
-				<div className="liber-settings">
+				<div className="tinta-settings">
 					{ step === 'welcome' && <Welcome /> }
 					{ step === 'name' && (
 						<NameStep choices={ choices } onChange={ change } />
@@ -155,10 +155,10 @@ export function SetupWizard( { onClose }: { onClose: () => void } ) {
 					{ step === 'sample' && (
 						<ToggleControl
 							__nextHasNoMarginBottom
-							label={ __( 'Add sample pages', 'liber' ) }
+							label={ __( 'Add sample pages', 'tinta' ) }
 							help={ __(
 								'A Welcome page with tips, and a Getting started page inside it. Delete them whenever you like.',
-								'liber'
+								'tinta'
 							) }
 							checked={ choices.sample }
 							onChange={ ( sample ) => change( { sample } ) }
@@ -167,10 +167,10 @@ export function SetupWizard( { onClose }: { onClose: () => void } ) {
 					{ step === 'mode' && (
 						<ToggleControl
 							__nextHasNoMarginBottom
-							label={ __( 'Workspace mode', 'liber' ) }
+							label={ __( 'Workspace mode', 'tinta' ) }
 							help={ __(
 								'Everyone lands in the workspace after logging in, the site is private, and Members and Viewers only see the workspace and their profile. You can turn it off later in Workspace settings.',
-								'liber'
+								'tinta'
 							) }
 							checked={ choices.workspaceMode }
 							onChange={ ( workspaceMode ) =>
@@ -179,27 +179,27 @@ export function SetupWizard( { onClose }: { onClose: () => void } ) {
 						/>
 					) }
 					{ error && (
-						<p className="liber-settings__error">{ error }</p>
+						<p className="tinta-settings__error">{ error }</p>
 					) }
-					<div className="liber-dialog__actions liber-setup__actions">
-						<span className="liber-setup__progress">
+					<div className="tinta-dialog__actions tinta-setup__actions">
+						<span className="tinta-setup__progress">
 							{ sprintf(
 								/* translators: 1: current step, 2: number of steps. */
-								__( 'Step %1$d of %2$d', 'liber' ),
+								__( 'Step %1$d of %2$d', 'tinta' ),
 								index + 1,
 								steps.length
 							) }
 						</span>
 						{ index === 0 ? (
 							<Button variant="tertiary" onClick={ close }>
-								{ __( 'Skip for now', 'liber' ) }
+								{ __( 'Skip for now', 'tinta' ) }
 							</Button>
 						) : (
 							<Button
 								variant="tertiary"
 								onClick={ () => setIndex( index - 1 ) }
 							>
-								{ __( 'Back', 'liber' ) }
+								{ __( 'Back', 'tinta' ) }
 							</Button>
 						) }
 						{ index < steps.length - 1 ? (
@@ -208,8 +208,8 @@ export function SetupWizard( { onClose }: { onClose: () => void } ) {
 								onClick={ () => setIndex( index + 1 ) }
 							>
 								{ index === 0
-									? __( 'Get started', 'liber' )
-									: __( 'Continue', 'liber' ) }
+									? __( 'Get started', 'tinta' )
+									: __( 'Continue', 'tinta' ) }
 							</Button>
 						) : (
 							<Button
@@ -218,7 +218,7 @@ export function SetupWizard( { onClose }: { onClose: () => void } ) {
 								disabled={ isSaving }
 								onClick={ finish }
 							>
-								{ __( 'Finish', 'liber' ) }
+								{ __( 'Finish', 'tinta' ) }
 							</Button>
 						) }
 					</div>
@@ -234,21 +234,21 @@ interface StepProps {
 }
 
 /**
- * What Liber is, and what setup covers.
+ * What Tinta is, and what setup covers.
  */
 function Welcome() {
 	return (
 		<>
-			<p className="liber-setup__lead">
+			<p className="tinta-setup__lead">
 				{ __(
-					'Liber turns this site into a private wiki for your team: pages inside pages, written in the block editor.',
-					'liber'
+					'Tinta turns this site into a private wiki for your team: pages inside pages, written in the block editor.',
+					'tinta'
 				) }
 			</p>
 			<p>
 				{ __(
 					'Setup takes a minute: name the workspace, choose who new people are, and add sample pages if you like. Everything can be changed later in Workspace settings.',
-					'liber'
+					'tinta'
 				) }
 			</p>
 		</>
@@ -268,11 +268,11 @@ function NameStep( { choices, onChange }: StepProps ) {
 			<TextControl
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
-				label={ __( 'Workspace name', 'liber' ) }
+				label={ __( 'Workspace name', 'tinta' ) }
 				value={ choices.title }
 				onChange={ ( title ) => onChange( { title } ) }
 			/>
-			<div className="liber-setup__icon">
+			<div className="tinta-setup__icon">
 				{ choices.iconUrl ? (
 					<img
 						src={ choices.iconUrl }
@@ -282,7 +282,7 @@ function NameStep( { choices, onChange }: StepProps ) {
 					/>
 				) : (
 					<span
-						className="liber-setup__icon-empty"
+						className="tinta-setup__icon-empty"
 						aria-hidden="true"
 					>
 						{ choices.title.trim().charAt( 0 ).toUpperCase() }
@@ -297,8 +297,8 @@ function NameStep( { choices, onChange }: StepProps ) {
 					render={ ( { open }: { open: () => void } ) => (
 						<Button variant="secondary" onClick={ open }>
 							{ choices.siteIcon
-								? __( 'Change icon', 'liber' )
-								: __( 'Choose an icon', 'liber' ) }
+								? __( 'Change icon', 'tinta' )
+								: __( 'Choose an icon', 'tinta' ) }
 						</Button>
 					) }
 				/>
@@ -309,14 +309,14 @@ function NameStep( { choices, onChange }: StepProps ) {
 							onChange( { siteIcon: 0, iconUrl: '' } )
 						}
 					>
-						{ __( 'Remove', 'liber' ) }
+						{ __( 'Remove', 'tinta' ) }
 					</Button>
 				) }
 			</div>
-			<p className="liber-dialog__note">
+			<p className="tinta-dialog__note">
 				{ __(
 					'The icon shows in the sidebar and the browser tab. A square image works best.',
-					'liber'
+					'tinta'
 				) }
 			</p>
 		</>
@@ -338,11 +338,11 @@ function PluginsStep( {
 		<>
 			<p>
 				{ __(
-					'These active plugins can get in the workspace’s way. Liber won’t change them; you decide.',
-					'liber'
+					'These active plugins can get in the workspace’s way. Tinta won’t change them; you decide.',
+					'tinta'
 				) }
 			</p>
-			<ul className="liber-setup__conflicts">
+			<ul className="tinta-setup__conflicts">
 				{ conflicts.map( ( plugin ) => (
 					<li key={ plugin.name }>
 						<strong>{ plugin.name }</strong> { plugin.reason }
@@ -350,7 +350,7 @@ function PluginsStep( {
 				) ) }
 			</ul>
 			<ExternalLink href={ config.links.plugins }>
-				{ __( 'Open Plugins', 'liber' ) }
+				{ __( 'Open Plugins', 'tinta' ) }
 			</ExternalLink>
 		</>
 	);
@@ -373,7 +373,7 @@ function PeopleStep( { choices, onChange }: StepProps ) {
 					<SelectControl
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
-						label={ __( 'New people join as', 'liber' ) }
+						label={ __( 'New people join as', 'tinta' ) }
 						value={ defaultRole }
 						options={ roleOptions( defaultRole ) }
 						onChange={ ( role ) =>
@@ -381,14 +381,14 @@ function PeopleStep( { choices, onChange }: StepProps ) {
 						}
 						help={ __(
 							'Members read and write every page. Viewers only read.',
-							'liber'
+							'tinta'
 						) }
 					/>
 					<RegistrationNotice role={ defaultRole } />
 				</>
 			) }
 			<ExternalLink href={ config.links.invite }>
-				{ __( 'Invite people', 'liber' ) }
+				{ __( 'Invite people', 'tinta' ) }
 			</ExternalLink>
 		</>
 	);
@@ -396,7 +396,7 @@ function PeopleStep( { choices, onChange }: StepProps ) {
 
 /**
  * The role the wizard suggests: Member, unless anyone can sign up (then the
- * current role stays) or a Liber role is already chosen. Undefined where the
+ * current role stays) or a Tinta role is already chosen. Undefined where the
  * site can't change it (multisite).
  *
  * @param current The current default role.
@@ -404,11 +404,11 @@ function PeopleStep( { choices, onChange }: StepProps ) {
 function suggestedRole( current?: string ): string | undefined {
 	if (
 		current === undefined ||
-		LIBER_ROLES.includes( current ) ||
+		TINTA_ROLES.includes( current ) ||
 		config.setup?.openRegistration
 	) {
 		return current;
 	}
 
-	return 'liber_member';
+	return 'tinta_member';
 }

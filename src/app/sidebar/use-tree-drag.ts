@@ -70,7 +70,7 @@ export function useTreeDrag(
 		try {
 			await movePage( pageId, parent, position );
 		} catch {
-			createErrorNotice( __( 'The page could not be moved.', 'liber' ), {
+			createErrorNotice( __( 'The page could not be moved.', 'tinta' ), {
 				type: 'snackbar',
 			} );
 		}

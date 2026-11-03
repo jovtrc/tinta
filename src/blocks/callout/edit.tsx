@@ -11,7 +11,7 @@ import { __ } from '@wordpress/i18n';
 import { EmojiPicker } from '../../editor/emoji-picker';
 
 const TEMPLATE = [
-	[ 'core/paragraph', { placeholder: __( 'Write a note…', 'liber' ) } ],
+	[ 'core/paragraph', { placeholder: __( 'Write a note…', 'tinta' ) } ],
 ];
 
 interface EditProps {
@@ -30,7 +30,7 @@ export function Edit( { attributes, setAttributes }: EditProps ) {
 	const { emoji } = attributes;
 	const blockProps = useBlockProps();
 	const innerBlocksProps = useInnerBlocksProps(
-		{ className: 'wp-block-liber-callout__content' },
+		{ className: 'wp-block-tinta-callout__content' },
 		{ template: TEMPLATE, templateInsertUpdatesSelection: true }
 	);
 
@@ -38,13 +38,13 @@ export function Edit( { attributes, setAttributes }: EditProps ) {
 		<div { ...blockProps }>
 			<div { ...innerBlocksProps } />
 			<Dropdown
-				className="wp-block-liber-callout__emoji-dropdown"
+				className="wp-block-tinta-callout__emoji-dropdown"
 				popoverProps={ { placement: 'bottom-start' } }
 				renderToggle={ ( { isOpen, onToggle } ) => (
 					<button
 						type="button"
-						className="wp-block-liber-callout__emoji"
-						aria-label={ __( 'Change emoji', 'liber' ) }
+						className="wp-block-tinta-callout__emoji"
+						aria-label={ __( 'Change emoji', 'tinta' ) }
 						aria-expanded={ isOpen }
 						onClick={ onToggle }
 					>

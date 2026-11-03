@@ -2,10 +2,10 @@
 /**
  * Trash for whole subtrees.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Docs;
+namespace Tinta\Docs;
 
 use WP_Post;
 
@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Subtree_Trash {
 
-	public const TRASHED_WITH_META = '_liber_trashed_with';
+	public const TRASHED_WITH_META = '_tinta_trashed_with';
 
 	private const BATCH = 100;
 
@@ -128,7 +128,7 @@ final class Subtree_Trash {
 	public function allow_delete( ?bool $delete, WP_Post $post ): ?bool {
 		$is_refused = Post_Type::NAME === $post->post_type
 			&& is_user_logged_in()
-			&& ! current_user_can( 'liber_manage' );
+			&& ! current_user_can( 'tinta_manage' );
 
 		return $is_refused ? false : $delete;
 	}

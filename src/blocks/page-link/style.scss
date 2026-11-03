@@ -1,4 +1,4 @@
-.wp-block-liber-page-link__link {
+.wp-block-tinta-page-link__link {
 	display: inline-flex;
 	gap: 6px;
 	align-items: baseline;
@@ -15,14 +15,14 @@
 	}
 }
 
-.wp-block-liber-page-link__title {
+.wp-block-tinta-page-link__title {
 	border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
-.wp-block-liber-page-link__link:hover .wp-block-liber-page-link__title {
+.wp-block-tinta-page-link__link:hover .wp-block-tinta-page-link__title {
 	border-bottom-color: currentcolor;
 }
 
-.wp-block-liber-page-link__private {
+.wp-block-tinta-page-link__private {
 	color: #757575;
 }

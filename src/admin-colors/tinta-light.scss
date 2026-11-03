@@ -1,5 +1,5 @@
 /**
- * Liber Light: a neutral admin color scheme. A light menu with dark text,
+ * Tinta Light: a neutral admin color scheme. A light menu with dark text,
  * WordPress blue for actions, and a blue tint on the current item. Built on
  * core's scheme partials, copied unchanged from WordPress 7.1 into `core/`.
  */
@@ -9,7 +9,7 @@ $accent: #3858e9;
 $ink: #1d2327;
 
 @use "core/admin" with (
-	$scheme-name: "liber-light",
+	$scheme-name: "tinta-light",
 	$base-color: #f6f7f7,
 	$text-color: $ink,
 	$icon-color: #646970,
@@ -34,7 +34,7 @@ $ink: #1d2327;
 
 // The editor and components read the scheme's accent from these, as core's
 // `admin-schemes.css` sets them for its own schemes.
-body.admin-color-liber-light {
+body.admin-color-tinta-light {
 	--wp-admin-theme-color: #{$accent};
 	--wp-admin-theme-color--rgb: #{color.channel($accent, "red")}, #{color.channel($accent, "green")}, #{color.channel($accent, "blue")};
 	--wp-admin-theme-color-darker-10: #{color.adjust($accent, $lightness: -5%)};

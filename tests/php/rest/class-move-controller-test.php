@@ -2,14 +2,14 @@
 /**
  * Tests for Move_Controller and Mover.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Rest;
+namespace Tinta\Tests\Rest;
 
-use Liber\Cache\Cache;
-use Liber\Docs\Tree;
-use Liber\Roles\Roles;
+use Tinta\Cache\Cache;
+use Tinta\Docs\Tree;
+use Tinta\Roles\Roles;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_UnitTestCase;
@@ -17,8 +17,8 @@ use WP_UnitTestCase;
 /**
  * Pages move between parents and positions; cycles and too-deep moves are refused.
  *
- * @covers \Liber\Rest\Move_Controller
- * @covers \Liber\Docs\Mover
+ * @covers \Tinta\Rest\Move_Controller
+ * @covers \Tinta\Docs\Mover
  */
 final class Move_Controller_Test extends WP_UnitTestCase {
 
@@ -76,7 +76,7 @@ final class Move_Controller_Test extends WP_UnitTestCase {
 		$handbook   = $this->create_page( 'Handbook' );
 		$onboarding = $this->create_page( 'Onboarding', $handbook );
 
-		$this->assertSame( 'liber_move_cycle', $this->move( $handbook, $onboarding, 0 )->get_data()['code'] );
+		$this->assertSame( 'tinta_move_cycle', $this->move( $handbook, $onboarding, 0 )->get_data()['code'] );
 	}
 
 	/**
@@ -90,7 +90,7 @@ final class Move_Controller_Test extends WP_UnitTestCase {
 		$branch = $this->create_page( 'Branch' );
 		$this->create_page( 'Leaf', $branch );
 
-		$this->assertSame( 'liber_too_deep', $this->move( $branch, $parent_id, 0 )->get_data()['code'] );
+		$this->assertSame( 'tinta_too_deep', $this->move( $branch, $parent_id, 0 )->get_data()['code'] );
 	}
 
 	/**
@@ -113,7 +113,7 @@ final class Move_Controller_Test extends WP_UnitTestCase {
 	private function create_page( string $title, int $parent_id = 0, int $order = 0 ): int {
 		return self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 				'post_title'  => $title,
 				'post_parent' => $parent_id,
@@ -130,7 +130,7 @@ final class Move_Controller_Test extends WP_UnitTestCase {
 	 * @param int $position  Position among the new siblings.
 	 */
 	private function move( int $page_id, int $parent_id, int $position ): WP_REST_Response {
-		$request = new WP_REST_Request( 'POST', "/liber/v1/docs/{$page_id}/move" );
+		$request = new WP_REST_Request( 'POST', "/tinta/v1/docs/{$page_id}/move" );
 		$request->set_body_params(
 			array(
 				'parent'   => $parent_id,

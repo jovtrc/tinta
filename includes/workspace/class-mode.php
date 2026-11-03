@@ -2,10 +2,10 @@
 /**
  * Workspace mode.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Workspace;
+namespace Tinta\Workspace;
 
 use WP_User;
 
@@ -37,7 +37,7 @@ final class Mode {
 	public function login_redirect( string $redirect_to, string $requested, $user ): string {
 		$goes_to_dashboard = '' === $requested || admin_url() === $requested;
 
-		if ( Settings::is_workspace_mode() && $user instanceof WP_User && user_can( $user, 'liber_access' ) && $goes_to_dashboard ) {
+		if ( Settings::is_workspace_mode() && $user instanceof WP_User && user_can( $user, 'tinta_access' ) && $goes_to_dashboard ) {
 			return Screen::url();
 		}
 
@@ -57,7 +57,7 @@ final class Mode {
 		$url = self::redirect_for(
 			(string) $pagenow,
 			wp_unslash( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only navigation.
-			current_user_can( 'liber_access' ) && ! current_user_can( 'liber_manage' )
+			current_user_can( 'tinta_access' ) && ! current_user_can( 'tinta_manage' )
 		);
 
 		if ( $url ) {
@@ -88,6 +88,6 @@ final class Mode {
 	 * @param string $classes Admin body classes.
 	 */
 	public function body_class( string $classes ): string {
-		return Settings::is_workspace_mode() ? $classes . ' liber-workspace-mode' : $classes;
+		return Settings::is_workspace_mode() ? $classes . ' tinta-workspace-mode' : $classes;
 	}
 }

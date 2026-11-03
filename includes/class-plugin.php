@@ -2,10 +2,10 @@
 /**
  * Plugin bootstrap.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber;
+namespace Tinta;
 
 defined( 'ABSPATH' ) || exit;
 

@@ -8,7 +8,7 @@
 		convertDeprecationsToExceptions="true"
 		beStrictAboutOutputDuringTests="true">
 	<testsuites>
-		<testsuite name="liber">
+		<testsuite name="tinta">
 			<directory suffix="-test.php">tests/php</directory>
 		</testsuite>
 	</testsuites>

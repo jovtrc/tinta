@@ -2,25 +2,25 @@
 /**
  * The page post type.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Docs;
+namespace Tinta\Docs;
 
 use WP_Error;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Registers `liber_doc`, the workspace page, and its icon meta. Pages nest up
+ * Registers `tinta_doc`, the workspace page, and its icon meta. Pages nest up
  * to 5 levels, under other pages in the tree only, never inside themselves:
  * REST says why it refuses a parent, and other writes keep the current one.
  */
 final class Post_Type {
 
-	public const NAME = 'liber_doc';
+	public const NAME = 'tinta_doc';
 
-	public const ICON_META = '_liber_icon';
+	public const ICON_META = '_tinta_icon';
 
 	public const MAX_DEPTH = 5;
 
@@ -89,18 +89,18 @@ final class Post_Type {
 	 */
 	private function parent_error( int $page_id, int $parent_id ): ?WP_Error {
 		if ( self::NAME !== get_post_type( $parent_id ) || 'private' !== get_post_status( $parent_id ) ) {
-			return new WP_Error( 'liber_invalid_parent', __( 'A page can only go under another page.', 'liber' ), array( 'status' => 400 ) );
+			return new WP_Error( 'tinta_invalid_parent', __( 'A page can only go under another page.', 'tinta' ), array( 'status' => 400 ) );
 		}
 
 		if ( $page_id && ( $page_id === $parent_id || in_array( $page_id, get_post_ancestors( $parent_id ), true ) ) ) {
-			return new WP_Error( 'liber_move_cycle', __( 'A page can’t go inside itself.', 'liber' ), array( 'status' => 400 ) );
+			return new WP_Error( 'tinta_move_cycle', __( 'A page can’t go inside itself.', 'tinta' ), array( 'status' => 400 ) );
 		}
 
 		if ( self::level( $parent_id ) + $this->tree->height( $page_id ) > self::MAX_DEPTH ) {
 			return new WP_Error(
-				'liber_too_deep',
+				'tinta_too_deep',
 				/* translators: %d: maximum number of levels. */
-				sprintf( __( 'Pages can be nested up to %d levels.', 'liber' ), self::MAX_DEPTH ),
+				sprintf( __( 'Pages can be nested up to %d levels.', 'tinta' ), self::MAX_DEPTH ),
 				array( 'status' => 400 )
 			);
 		}
@@ -112,21 +112,21 @@ final class Post_Type {
 	 * Registers the post type and its meta.
 	 */
 	public function register_post_type(): void {
-		// phpcs:ignore WordPress.NamingConventions.ValidPostTypeSlug.NotStringLiteral -- self::NAME is "liber_doc", a valid slug.
+		// phpcs:ignore WordPress.NamingConventions.ValidPostTypeSlug.NotStringLiteral -- self::NAME is "tinta_doc", a valid slug.
 		register_post_type(
 			self::NAME,
 			array(
 				'labels'           => array(
-					'name'          => __( 'Pages', 'liber' ),
-					'singular_name' => __( 'Page', 'liber' ),
+					'name'          => __( 'Pages', 'tinta' ),
+					'singular_name' => __( 'Page', 'tinta' ),
 				),
 				'public'           => false,
 				'show_ui'          => true,
 				'show_in_menu'     => false,
 				'show_in_rest'     => true,
-				'rest_base'        => 'liber-docs',
+				'rest_base'        => 'tinta-docs',
 				'hierarchical'     => true,
-				'capability_type'  => array( 'liber_doc', 'liber_docs' ),
+				'capability_type'  => array( 'tinta_doc', 'tinta_docs' ),
 				'map_meta_cap'     => true,
 				'supports'         => array(
 					'title',

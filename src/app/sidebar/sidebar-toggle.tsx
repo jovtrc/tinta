@@ -24,7 +24,7 @@ export function SidebarToggle() {
 	return (
 		<Button
 			icon={ isMobile ? menu : drawerLeft }
-			label={ __( 'Open sidebar', 'liber' ) }
+			label={ __( 'Open sidebar', 'tinta' ) }
 			aria-expanded={ isOpen }
 			size="compact"
 			onClick={ () => {
@@ -42,7 +42,7 @@ export function SidebarBar() {
 	const { isMobile, isOpen } = useSidebar();
 
 	return isOpen && ! isMobile ? null : (
-		<div className="liber-editor__header">
+		<div className="tinta-editor__header">
 			<SidebarToggle />
 		</div>
 	);

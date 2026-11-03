@@ -2,13 +2,13 @@
 /**
  * REST route for moving pages.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Rest;
+namespace Tinta\Rest;
 
-use Liber\Docs\Mover;
-use Liber\Docs\Post_Type;
+use Tinta\Docs\Mover;
+use Tinta\Docs\Post_Type;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Server;
@@ -16,7 +16,7 @@ use WP_REST_Server;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * `POST liber/v1/docs/{id}/move`: a new parent and a position among its children.
+ * `POST tinta/v1/docs/{id}/move`: a new parent and a position among its children.
  */
 final class Move_Controller extends WP_REST_Controller {
 
@@ -26,7 +26,7 @@ final class Move_Controller extends WP_REST_Controller {
 	 * @param Mover $mover Moves pages.
 	 */
 	public function __construct( private Mover $mover ) {
-		$this->namespace = 'liber/v1';
+		$this->namespace = 'tinta/v1';
 		$this->rest_base = 'docs/(?P<id>[\d]+)/move';
 	}
 
@@ -47,7 +47,7 @@ final class Move_Controller extends WP_REST_Controller {
 			array(
 				'args'   => array(
 					'id' => array(
-						'description' => __( 'Page ID.', 'liber' ),
+						'description' => __( 'Page ID.', 'tinta' ),
 						'type'        => 'integer',
 					),
 				),
@@ -57,13 +57,13 @@ final class Move_Controller extends WP_REST_Controller {
 					'permission_callback' => array( $this, 'create_item_permissions_check' ),
 					'args'                => array(
 						'parent'   => array(
-							'description' => __( 'New parent page ID, or 0 for the top level.', 'liber' ),
+							'description' => __( 'New parent page ID, or 0 for the top level.', 'tinta' ),
 							'type'        => 'integer',
 							'minimum'     => 0,
 							'required'    => true,
 						),
 						'position' => array(
-							'description' => __( 'Position among the new siblings, from 0.', 'liber' ),
+							'description' => __( 'Position among the new siblings, from 0.', 'tinta' ),
 							'type'        => 'integer',
 							'minimum'     => 0,
 							'required'    => true,
@@ -86,16 +86,16 @@ final class Move_Controller extends WP_REST_Controller {
 		$parent_id = (int) $request['parent'];
 
 		if ( Post_Type::NAME !== get_post_type( $page_id ) ) {
-			return new WP_Error( 'rest_post_invalid_id', __( 'Invalid page ID.', 'liber' ), array( 'status' => 404 ) );
+			return new WP_Error( 'rest_post_invalid_id', __( 'Invalid page ID.', 'tinta' ), array( 'status' => 404 ) );
 		}
 
 		$can_move = current_user_can( 'edit_post', $page_id )
-			&& ( $parent_id ? current_user_can( 'edit_post', $parent_id ) : current_user_can( 'edit_liber_docs' ) );
+			&& ( $parent_id ? current_user_can( 'edit_post', $parent_id ) : current_user_can( 'edit_tinta_docs' ) );
 
 		if ( ! $can_move ) {
 			return new WP_Error(
 				'rest_forbidden',
-				__( 'Sorry, you are not allowed to move this page there.', 'liber' ),
+				__( 'Sorry, you are not allowed to move this page there.', 'tinta' ),
 				array( 'status' => rest_authorization_required_code() )
 			);
 		}
@@ -135,7 +135,7 @@ final class Move_Controller extends WP_REST_Controller {
 		if ( ! $this->schema ) {
 			$this->schema = array(
 				'$schema'    => 'http://json-schema.org/draft-04/schema#',
-				'title'      => 'liber-moved-page',
+				'title'      => 'tinta-moved-page',
 				'type'       => 'object',
 				'properties' => array(
 					'id'     => array( 'type' => 'integer' ),

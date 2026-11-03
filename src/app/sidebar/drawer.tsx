@@ -51,16 +51,16 @@ export function Drawer( { children, onClose }: DrawerProps ) {
 	return (
 		<>
 			<div
-				className="liber-drawer__backdrop"
+				className="tinta-drawer__backdrop"
 				aria-hidden="true"
 				onClick={ onClose }
 			/>
 			<div
 				ref={ ref }
-				className="liber-drawer"
+				className="tinta-drawer"
 				role="dialog"
 				aria-modal="true"
-				aria-label={ __( 'Sidebar', 'liber' ) }
+				aria-label={ __( 'Sidebar', 'tinta' ) }
 			>
 				{ children }
 			</div>

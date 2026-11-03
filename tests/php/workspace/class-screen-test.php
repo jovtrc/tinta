@@ -2,18 +2,18 @@
 /**
  * Tests for Screen.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Workspace;
+namespace Tinta\Tests\Workspace;
 
-use Liber\Workspace\Screen;
+use Tinta\Workspace\Screen;
 use WP_UnitTestCase;
 
 /**
  * Core's edit links for pages lead into the workspace.
  *
- * @covers \Liber\Workspace\Screen
+ * @covers \Tinta\Workspace\Screen
  */
 final class Screen_Test extends WP_UnitTestCase {
 
@@ -32,13 +32,13 @@ final class Screen_Test extends WP_UnitTestCase {
 	public function test_page_edit_links_open_the_workspace(): void {
 		$page_id = self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 			)
 		);
 
-		$this->assertSame( admin_url( 'admin.php?page=liber&doc=' . $page_id ), get_edit_post_link( $page_id, 'raw' ) );
-		$this->assertSame( admin_url( 'admin.php?page=liber&#038;doc=' . $page_id ), get_edit_post_link( $page_id ) );
+		$this->assertSame( admin_url( 'admin.php?page=tinta&doc=' . $page_id ), get_edit_post_link( $page_id, 'raw' ) );
+		$this->assertSame( admin_url( 'admin.php?page=tinta&#038;doc=' . $page_id ), get_edit_post_link( $page_id ) );
 	}
 
 	/**
@@ -47,14 +47,14 @@ final class Screen_Test extends WP_UnitTestCase {
 	public function test_core_page_screens_redirect_to_the_workspace(): void {
 		$page_id = self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 			)
 		);
 		$post_id = self::factory()->post->create();
 
-		$this->assertSame( Screen::url(), Screen::core_screen_redirect( 'edit.php', array( 'post_type' => 'liber_doc' ) ) );
-		$this->assertSame( Screen::url(), Screen::core_screen_redirect( 'post-new.php', array( 'post_type' => 'liber_doc' ) ) );
+		$this->assertSame( Screen::url(), Screen::core_screen_redirect( 'edit.php', array( 'post_type' => 'tinta_doc' ) ) );
+		$this->assertSame( Screen::url(), Screen::core_screen_redirect( 'post-new.php', array( 'post_type' => 'tinta_doc' ) ) );
 		$this->assertSame(
 			Screen::url( $page_id ),
 			Screen::core_screen_redirect(
@@ -90,7 +90,7 @@ final class Screen_Test extends WP_UnitTestCase {
 	public function test_page_previews_open_the_workspace(): void {
 		$page_id = self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 			)
 		);

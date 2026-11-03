@@ -11,7 +11,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Pages' REST route (PHP: `Post_Type`'s `rest_base`).
  */
-const PAGES_PATH = '/wp/v2/liber-docs';
+const PAGES_PATH = '/wp/v2/tinta-docs';
 
 type Block = ReturnType< typeof createBlock >;
 
@@ -53,7 +53,7 @@ async function createPage(
 			parent,
 			status: 'private',
 			content: serialize( blocks ),
-			meta: { _liber_icon: icon },
+			meta: { _tinta_icon: icon },
 		},
 	} );
 
@@ -70,60 +70,60 @@ export async function createSamplePages(): Promise< number > {
 		paragraph(
 			__(
 				'This is your team’s workspace: docs, notes and plans, private to the people you invite.',
-				'liber'
+				'tinta'
 			)
 		),
-		createBlock( 'liber/callout', { emoji: '💡' }, [
+		createBlock( 'tinta/callout', { emoji: '💡' }, [
 			paragraph(
 				__(
 					'Pages live in the sidebar. Put pages inside pages to keep things organized, and drag them to move them around.',
-					'liber'
+					'tinta'
 				)
 			),
 		] ),
-		heading( __( 'Writing', 'liber' ) ),
+		heading( __( 'Writing', 'tinta' ) ),
 		list( [
 			__(
 				'Type / to add a block: headings, lists, tables, code, callouts and more.',
-				'liber'
+				'tinta'
 			),
-			__( 'Drag the handle at a block’s left to move it.', 'liber' ),
-			__( 'Everything saves as you type.', 'liber' ),
+			__( 'Drag the handle at a block’s left to move it.', 'tinta' ),
+			__( 'Everything saves as you type.', 'tinta' ),
 		] ),
-		heading( __( 'Working together', 'liber' ) ),
+		heading( __( 'Working together', 'tinta' ) ),
 		list( [
 			__(
 				'Select a block and choose Add note to leave a note. Type @ to mention someone.',
-				'liber'
+				'tinta'
 			),
 			__(
 				'Pin the pages you use most; they stay at the top of the sidebar.',
-				'liber'
+				'tinta'
 			),
-			__( 'Press ⌘K (Ctrl+K on Windows) to find any page.', 'liber' ),
+			__( 'Press ⌘K (Ctrl+K on Windows) to find any page.', 'tinta' ),
 		] ),
 	];
 
 	const welcomeId = await createPage(
-		__( 'Welcome', 'liber' ),
+		__( 'Welcome', 'tinta' ),
 		'👋',
 		welcome
 	);
 	const startedId = await createPage(
-		__( 'Getting started', 'liber' ),
+		__( 'Getting started', 'tinta' ),
 		'🚀',
 		[
-			paragraph( __( 'A few things to try first:', 'liber' ) ),
+			paragraph( __( 'A few things to try first:', 'tinta' ) ),
 			list(
 				[
 					__(
 						'Create a page with New page, or with + next to a page to add one inside it.',
-						'liber'
+						'tinta'
 					),
-					__( 'Pick an emoji for it above the title.', 'liber' ),
+					__( 'Pick an emoji for it above the title.', 'tinta' ),
 					__(
 						'Invite your team from Workspace settings → Invite people.',
-						'liber'
+						'tinta'
 					),
 				],
 				true
@@ -138,8 +138,8 @@ export async function createSamplePages(): Promise< number > {
 		data: {
 			content: serialize( [
 				...welcome,
-				heading( __( 'Next', 'liber' ) ),
-				createBlock( 'liber/page-link', { pageId: startedId } ),
+				heading( __( 'Next', 'tinta' ) ),
+				createBlock( 'tinta/page-link', { pageId: startedId } ),
 			] ),
 		},
 	} );

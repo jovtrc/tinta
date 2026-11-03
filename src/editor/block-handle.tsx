@@ -17,7 +17,7 @@ const HANDLE_WIDTH = 24;
 /**
  * A callout's text is its own blocks, but people move the callout as one.
  */
-const CALLOUT = '[data-type="liber/callout"]';
+const CALLOUT = '[data-type="tinta/callout"]';
 
 interface Hovered {
 	clientId: string;
@@ -57,7 +57,7 @@ export function BlockHandle() {
 			const onMouseMove = ( event: MouseEvent ) => {
 				const target = event.target as Element;
 
-				if ( target.closest?.( '.liber-block-handle' ) ) {
+				if ( target.closest?.( '.tinta-block-handle' ) ) {
 					return;
 				}
 
@@ -125,18 +125,18 @@ export function BlockHandle() {
 	};
 
 	return (
-		<div ref={ ref } className="liber-block-handles">
+		<div ref={ ref } className="tinta-block-handles">
 			{ hovered && ! isTyping && (
 				<button
 					type="button"
 					draggable
 					tabIndex={ -1 }
-					className="liber-block-handle"
+					className="tinta-block-handle"
 					style={ {
 						top: hovered.top,
 						insetInlineStart: hovered.start,
 					} }
-					aria-label={ __( 'Drag to move', 'liber' ) }
+					aria-label={ __( 'Drag to move', 'tinta' ) }
 					onClick={ () => selectBlock( hovered.clientId ) }
 					onDragStart={ ( event ) =>
 						startDrag( event, hovered.clientId )

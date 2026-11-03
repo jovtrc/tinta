@@ -48,26 +48,26 @@ const CANVAS_STYLES = [
 	{
 		css: `.editor-styles-wrapper { padding: 48px 24px 160px; }
 		@media (max-width: 600px) { .editor-styles-wrapper { padding: 24px 16px 120px; } }
-		.editor-styles-wrapper .liber-page-header,
+		.editor-styles-wrapper .tinta-page-header,
 		.editor-styles-wrapper .is-root-container { max-width: 720px; margin-inline: auto; }
-		.liber-page-icon, .liber-page-icon__add { display: block; border: 0; background: none; cursor: pointer; font-family: inherit; }
-		.liber-page-icon { margin-inline-start: -6px; padding: 4px 6px; border-radius: 8px; font-size: 64px; line-height: 1.1; }
-		.liber-page-icon:hover { background: rgba(0, 0, 0, 0.05); }
-		.liber-page-icon__add { margin-inline-start: -6px; padding: 4px 6px; border-radius: 4px; font-size: 14px; color: #757575; opacity: 0; }
-		.liber-page-header:hover .liber-page-icon__add, .liber-page-icon__add:focus-visible, .liber-page-icon__add[aria-expanded="true"] { opacity: 1; }
-		.liber-page-icon__add:hover { background: rgba(0, 0, 0, 0.05); }
-		.liber-page-meta { display: flex; align-items: center; gap: 8px; margin: 0 0 24px; font-size: 13px; color: #757575; }
-		.liber-page-meta__avatar { border-radius: 50%; }
+		.tinta-page-icon, .tinta-page-icon__add { display: block; border: 0; background: none; cursor: pointer; font-family: inherit; }
+		.tinta-page-icon { margin-inline-start: -6px; padding: 4px 6px; border-radius: 8px; font-size: 64px; line-height: 1.1; }
+		.tinta-page-icon:hover { background: rgba(0, 0, 0, 0.05); }
+		.tinta-page-icon__add { margin-inline-start: -6px; padding: 4px 6px; border-radius: 4px; font-size: 14px; color: #757575; opacity: 0; }
+		.tinta-page-header:hover .tinta-page-icon__add, .tinta-page-icon__add:focus-visible, .tinta-page-icon__add[aria-expanded="true"] { opacity: 1; }
+		.tinta-page-icon__add:hover { background: rgba(0, 0, 0, 0.05); }
+		.tinta-page-meta { display: flex; align-items: center; gap: 8px; margin: 0 0 24px; font-size: 13px; color: #757575; }
+		.tinta-page-meta__avatar { border-radius: 50%; }
 		.editor-post-title { font-weight: 700; }
 		.editor-styles-wrapper { position: relative; }
-		.liber-note-markers { position: absolute; inset: 0; pointer-events: none; }
-		.liber-note-marker { position: absolute; display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 8px; font: 500 12px/1 inherit; color: #1e1e1e; background: #fff; border: 1px solid #e0e0e0; border-radius: 13px; cursor: pointer; pointer-events: auto; }
-		.liber-note-marker:hover { border-color: #949494; }
-		.liber-note-marker svg { fill: currentColor; }
-		.liber-block-handles { position: absolute; inset: 0; pointer-events: none; }
-		.liber-block-handle { position: absolute; display: flex; align-items: center; justify-content: center; width: 24px; height: 28px; padding: 0; color: #949494; background: none; border: 0; border-radius: 4px; cursor: grab; pointer-events: auto; }
-		.liber-block-handle:hover { color: #1e1e1e; background: rgba(0, 0, 0, 0.05); }
-		.liber-block-handle svg { fill: currentColor; }`,
+		.tinta-note-markers { position: absolute; inset: 0; pointer-events: none; }
+		.tinta-note-marker { position: absolute; display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 8px; font: 500 12px/1 inherit; color: #1e1e1e; background: #fff; border: 1px solid #e0e0e0; border-radius: 13px; cursor: pointer; pointer-events: auto; }
+		.tinta-note-marker:hover { border-color: #949494; }
+		.tinta-note-marker svg { fill: currentColor; }
+		.tinta-block-handles { position: absolute; inset: 0; pointer-events: none; }
+		.tinta-block-handle { position: absolute; display: flex; align-items: center; justify-content: center; width: 24px; height: 28px; padding: 0; color: #949494; background: none; border: 0; border-radius: 4px; cursor: grab; pointer-events: auto; }
+		.tinta-block-handle:hover { color: #1e1e1e; background: rgba(0, 0, 0, 0.05); }
+		.tinta-block-handle svg { fill: currentColor; }`,
 	},
 ];
 
@@ -142,7 +142,7 @@ function EditorLayout() {
 	}, [ isNotesOpen, setIsInserterOpened ] );
 
 	return (
-		<div className="liber-editor">
+		<div className="tinta-editor">
 			<EditorHeader
 				isInspectorOpen={ isInspectorOpen && ! isNotesOpen }
 				onToggleInspector={ () => {
@@ -152,8 +152,8 @@ function EditorLayout() {
 				} }
 			/>
 			<InlineNotices />
-			<div className="liber-editor__body">
-				<div className="liber-editor__canvas">
+			<div className="tinta-editor__body">
+				<div className="tinta-editor__canvas">
 					<BlockCanvas height="100%" styles={ CANVAS_STYLES }>
 						<PageHeader />
 						<BlockList />
@@ -166,8 +166,8 @@ function EditorLayout() {
 				{ isNotesOpen && <NotesPanel /> }
 				{ isInspectorOpen && ! isNotesOpen && ! isBlocksOpen && (
 					<aside
-						className="liber-editor__inspector"
-						aria-label={ __( 'Block settings', 'liber' ) }
+						className="tinta-editor__inspector"
+						aria-label={ __( 'Block settings', 'tinta' ) }
 					>
 						<BlockInspector />
 					</aside>

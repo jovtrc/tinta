@@ -2,10 +2,10 @@
 /**
  * Shared cache.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Cache;
+namespace Tinta\Cache;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Cache {
 
-	private const GROUP = 'liber';
+	private const GROUP = 'tinta';
 
 	/**
 	 * Returns a cached value, or null on a miss.

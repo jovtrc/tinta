@@ -26,7 +26,7 @@ export function usePageAccess( pageId: number ): PageAccess {
 	const [ access, setAccess ] = useState< PageAccess >( { mode: 'loading' } );
 
 	useEffect( () => {
-		const path = `/liber/v1/docs/${ pageId }/lock`;
+		const path = `/tinta/v1/docs/${ pageId }/lock`;
 		let isOpen = true;
 
 		apiFetch< PageLock >( { path, method: 'POST' } )

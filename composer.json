@@ -1,5 +1,5 @@
 {
-	"name": "liber/liber",
+	"name": "tinta/tinta",
 	"description": "A private team wiki for WordPress: pages in a tree, written in the block editor.",
 	"type": "wordpress-plugin",
 	"license": "GPL-2.0-or-later",

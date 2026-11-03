@@ -2,18 +2,18 @@
 /**
  * Tests for Revisions.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Docs;
+namespace Tinta\Tests\Docs;
 
-use Liber\Roles\Roles;
+use Tinta\Roles\Roles;
 use WP_UnitTestCase;
 
 /**
  * Continuous saves make one revision per author every few minutes.
  *
- * @covers \Liber\Docs\Revisions
+ * @covers \Tinta\Docs\Revisions
  */
 final class Revisions_Test extends WP_UnitTestCase {
 
@@ -33,7 +33,7 @@ final class Revisions_Test extends WP_UnitTestCase {
 		wp_set_current_user( self::factory()->user->create( array( 'role' => Roles::MEMBER ) ) );
 		$this->page_id = self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 				'post_author' => get_current_user_id(),
 			)

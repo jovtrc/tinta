@@ -2,12 +2,12 @@
 /**
  * Per-site install and upgrades.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Setup;
+namespace Tinta\Setup;
 
-use Liber\Roles\Roles;
+use Tinta\Roles\Roles;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Installer {
 
-	public const VERSION_OPTION = 'liber_version';
+	public const VERSION_OPTION = 'tinta_version';
 
 	/**
 	 * Hooks the version check.
@@ -32,7 +32,7 @@ final class Installer {
 	 * Installs when this site runs an older version, or none.
 	 */
 	public function maybe_install(): void {
-		if ( LIBER_VERSION !== get_option( self::VERSION_OPTION ) ) {
+		if ( TINTA_VERSION !== get_option( self::VERSION_OPTION ) ) {
 			self::install();
 		}
 	}
@@ -42,6 +42,6 @@ final class Installer {
 	 */
 	public static function install(): void {
 		Roles::install();
-		update_option( self::VERSION_OPTION, LIBER_VERSION, true );
+		update_option( self::VERSION_OPTION, TINTA_VERSION, true );
 	}
 }

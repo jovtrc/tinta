@@ -1,5 +1,5 @@
 /**
- * `liber/ui` store: the open workspace dialog, the page menu opened with a
+ * `tinta/ui` store: the open workspace dialog, the page menu opened with a
  * right click, and whether the sidebar shows (hidden on wide screens, open as
  * a drawer on small ones).
  */
@@ -110,7 +110,7 @@ const selectors = {
 	isDrawerOpen: ( state: State ) => state.isDrawerOpen,
 };
 
-export const store = createReduxStore( 'liber/ui', {
+export const store = createReduxStore( 'tinta/ui', {
 	reducer,
 	actions,
 	selectors,

@@ -94,15 +94,15 @@ async function savePage(
 			.saveEditedEntityRecord( 'postType', POST_TYPE, pageId, {
 				throwOnError: true,
 			} );
-		registry.dispatch( noticesStore ).removeNotice( 'liber-save-error' );
+		registry.dispatch( noticesStore ).removeNotice( 'tinta-save-error' );
 
 		return true;
 	} catch {
 		registry
 			.dispatch( noticesStore )
 			.createErrorNotice(
-				__( 'Your changes aren’t saved yet. Retrying…', 'liber' ),
-				{ id: 'liber-save-error', type: 'snackbar' }
+				__( 'Your changes aren’t saved yet. Retrying…', 'tinta' ),
+				{ id: 'tinta-save-error', type: 'snackbar' }
 			);
 
 		return false;

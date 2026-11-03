@@ -2,10 +2,10 @@
 /**
  * A private site, with workspace mode on.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Workspace;
+namespace Tinta\Workspace;
 
 use WP_Error;
 
@@ -50,7 +50,7 @@ final class Private_Site {
 
 		return new WP_Error(
 			'rest_not_logged_in',
-			__( 'This workspace is private. Please log in.', 'liber' ),
+			__( 'This workspace is private. Please log in.', 'tinta' ),
 			array( 'status' => 401 )
 		);
 	}

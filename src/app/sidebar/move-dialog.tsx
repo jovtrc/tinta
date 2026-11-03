@@ -40,7 +40,7 @@ export function MoveDialog( { page, onClose }: MoveDialogProps ) {
 	const height = heightOf( page.id, pages );
 
 	const options = [
-		{ value: TOP_LEVEL, label: __( 'Top level', 'liber' ) },
+		{ value: TOP_LEVEL, label: __( 'Top level', 'tinta' ) },
 		...pages
 			.filter(
 				( item ) =>
@@ -64,7 +64,7 @@ export function MoveDialog( { page, onClose }: MoveDialogProps ) {
 		try {
 			await movePage( page.id, parentId, position );
 		} catch {
-			createErrorNotice( __( 'The page could not be moved.', 'liber' ), {
+			createErrorNotice( __( 'The page could not be moved.', 'tinta' ), {
 				type: 'snackbar',
 			} );
 		}
@@ -74,7 +74,7 @@ export function MoveDialog( { page, onClose }: MoveDialogProps ) {
 		<Modal
 			title={ sprintf(
 				/* translators: %s: page title. */
-				__( 'Move “%s”', 'liber' ),
+				__( 'Move “%s”', 'tinta' ),
 				titleOf( page )
 			) }
 			onRequestClose={ onClose }
@@ -83,21 +83,21 @@ export function MoveDialog( { page, onClose }: MoveDialogProps ) {
 			<ComboboxControl
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
-				label={ __( 'Move inside', 'liber' ) }
+				label={ __( 'Move inside', 'tinta' ) }
 				value={ parent }
 				options={ options }
 				onChange={ ( value ) => setParent( value ?? null ) }
 			/>
-			<div className="liber-dialog__actions">
+			<div className="tinta-dialog__actions">
 				<Button variant="tertiary" onClick={ onClose }>
-					{ __( 'Cancel', 'liber' ) }
+					{ __( 'Cancel', 'tinta' ) }
 				</Button>
 				<Button
 					variant="primary"
 					disabled={ parent === null }
 					onClick={ move }
 				>
-					{ __( 'Move', 'liber' ) }
+					{ __( 'Move', 'tinta' ) }
 				</Button>
 			</div>
 		</Modal>
@@ -110,7 +110,7 @@ export function MoveDialog( { page, onClose }: MoveDialogProps ) {
  * @param page Page.
  */
 function titleOf( page: TreePage ): string {
-	return decodeEntities( page.title ) || __( 'Untitled', 'liber' );
+	return decodeEntities( page.title ) || __( 'Untitled', 'tinta' );
 }
 
 /**

@@ -2,10 +2,10 @@
 /**
  * Notes for page editors.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Docs;
+namespace Tinta\Docs;
 
 use WP_REST_Request;
 
@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Lets people who can edit a page list its notes. Core's comments route also
  * asks for `edit_posts` to filter by note type and status, which Members don't
- * have (they don't write blog posts), so Liber grants it for that one request.
+ * have (they don't write blog posts), so Tinta grants it for that one request.
  */
 final class Notes_Access {
 

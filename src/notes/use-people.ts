@@ -1,5 +1,5 @@
 /**
- * People who can be mentioned in notes (`liber/v1/people`), loaded once per screen.
+ * People who can be mentioned in notes (`tinta/v1/people`), loaded once per screen.
  */
 import apiFetch from '@wordpress/api-fetch';
 import { useEffect, useState } from '@wordpress/element';
@@ -15,7 +15,7 @@ export function usePeople(): Person[] {
 	const [ people, setPeople ] = useState< Person[] >( [] );
 
 	useEffect( () => {
-		request ??= apiFetch< Person[] >( { path: '/liber/v1/people' } ).catch(
+		request ??= apiFetch< Person[] >( { path: '/tinta/v1/people' } ).catch(
 			() => []
 		);
 		request.then( setPeople );

@@ -29,18 +29,18 @@ export interface WorkspaceConfig {
 
 declare global {
 	interface Window {
-		liberWorkspace: WorkspaceConfig;
+		tintaWorkspace: WorkspaceConfig;
 	}
 }
 
-export const POST_TYPE = 'liber_doc';
+export const POST_TYPE = 'tinta_doc';
 
 /**
  * Deepest level a page can have (PHP: `Post_Type::MAX_DEPTH`).
  */
 export const MAX_DEPTH = 5;
 
-export const config = window.liberWorkspace;
+export const config = window.tintaWorkspace;
 
 /**
  * Workspace URL for a page.

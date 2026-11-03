@@ -2,37 +2,37 @@
 /**
  * Tests for Color_Scheme.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Workspace;
+namespace Tinta\Tests\Workspace;
 
-use Liber\Workspace\Color_Scheme;
-use Liber\Workspace\Settings;
+use Tinta\Workspace\Color_Scheme;
+use Tinta\Workspace\Settings;
 use WP_UnitTestCase;
 
 /**
- * Liber Light is offered to everyone, and given to people who join in
+ * Tinta Light is offered to everyone, and given to people who join in
  * workspace mode.
  *
- * @covers \Liber\Workspace\Color_Scheme
+ * @covers \Tinta\Workspace\Color_Scheme
  */
 final class Color_Scheme_Test extends WP_UnitTestCase {
 
 	/**
 	 * The scheme is registered with its stylesheet.
 	 */
-	public function test_registers_liber_light(): void {
+	public function test_registers_tinta_light(): void {
 		global $_wp_admin_css_colors;
 
 		( new Color_Scheme() )->add_scheme();
 
 		$this->assertArrayHasKey( Color_Scheme::NAME, $_wp_admin_css_colors );
-		$this->assertStringEndsWith( 'build/admin-colors/liber-light.css', $_wp_admin_css_colors[ Color_Scheme::NAME ]->url );
+		$this->assertStringEndsWith( 'build/admin-colors/tinta-light.css', $_wp_admin_css_colors[ Color_Scheme::NAME ]->url );
 	}
 
 	/**
-	 * People who join in workspace mode get Liber Light.
+	 * People who join in workspace mode get Tinta Light.
 	 */
 	public function test_new_people_get_it_in_workspace_mode(): void {
 		update_option( Settings::OPTION, array( 'workspace_mode' => true ) );

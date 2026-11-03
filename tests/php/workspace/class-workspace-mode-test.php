@@ -2,15 +2,15 @@
 /**
  * Tests for Settings, Mode and Private_Site.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Workspace;
+namespace Tinta\Tests\Workspace;
 
-use Liber\Roles\Roles;
-use Liber\Workspace\Mode;
-use Liber\Workspace\Screen;
-use Liber\Workspace\Settings;
+use Tinta\Roles\Roles;
+use Tinta\Workspace\Mode;
+use Tinta\Workspace\Screen;
+use Tinta\Workspace\Settings;
 use WP_REST_Request;
 use WP_UnitTestCase;
 
@@ -20,9 +20,9 @@ use WP_UnitTestCase;
  * Settings save through core's settings API; workspace mode keeps people in the
  * workspace and makes the site private; off, nothing changes.
  *
- * @covers \Liber\Workspace\Settings
- * @covers \Liber\Workspace\Mode
- * @covers \Liber\Workspace\Private_Site
+ * @covers \Tinta\Workspace\Settings
+ * @covers \Tinta\Workspace\Mode
+ * @covers \Tinta\Workspace\Private_Site
  */
 final class Workspace_Mode_Test extends WP_UnitTestCase {
 
@@ -32,15 +32,15 @@ final class Workspace_Mode_Test extends WP_UnitTestCase {
 	public function test_saves_settings_through_core(): void {
 		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
 
-		$this->update_settings( array( 'liber_settings' => array( 'revisions' => 25 ) ) );
+		$this->update_settings( array( 'tinta_settings' => array( 'revisions' => 25 ) ) );
 		$this->update_settings(
 			array(
-				'liber_settings' => array( 'workspace_mode' => true ),
+				'tinta_settings' => array( 'workspace_mode' => true ),
 				'default_role'   => Roles::MEMBER,
 			)
 		);
 
-		$this->update_settings( array( 'liber_settings' => array( 'setup_done' => true ) ) );
+		$this->update_settings( array( 'tinta_settings' => array( 'setup_done' => true ) ) );
 
 		$this->assertSame(
 			array(
@@ -48,14 +48,14 @@ final class Workspace_Mode_Test extends WP_UnitTestCase {
 				'revisions'      => 25,
 				'setup_done'     => true,
 			),
-			get_option( 'liber_settings' )
+			get_option( 'tinta_settings' )
 		);
 		$this->assertSame( is_multisite() ? 'subscriber' : Roles::MEMBER, get_option( 'default_role' ) );
-		$this->assertSame( 25, wp_revisions_to_keep( get_post( self::factory()->post->create( array( 'post_type' => 'liber_doc' ) ) ) ) );
+		$this->assertSame( 25, wp_revisions_to_keep( get_post( self::factory()->post->create( array( 'post_type' => 'tinta_doc' ) ) ) ) );
 	}
 
 	/**
-	 * New people can't be made Administrators or Editors through Liber, as in
+	 * New people can't be made Administrators or Editors through Tinta, as in
 	 * core's own setting.
 	 */
 	public function test_default_role_leaves_out_administrators(): void {
@@ -103,7 +103,7 @@ final class Workspace_Mode_Test extends WP_UnitTestCase {
 		$this->assertSame( Screen::url(), Mode::redirect_for( 'index.php', array(), true ) );
 		$this->assertSame( Screen::url(), Mode::redirect_for( 'edit.php', array(), true ) );
 		$this->assertNull( Mode::redirect_for( 'profile.php', array(), true ) );
-		$this->assertNull( Mode::redirect_for( 'admin.php', array( 'page' => 'liber' ), true ) );
+		$this->assertNull( Mode::redirect_for( 'admin.php', array( 'page' => 'tinta' ), true ) );
 		$this->assertNull( Mode::redirect_for( 'post.php', array( 'get-post-lock' => '1' ), true ) );
 		$this->assertNull( Mode::redirect_for( 'index.php', array(), false ) );
 	}
@@ -116,7 +116,7 @@ final class Workspace_Mode_Test extends WP_UnitTestCase {
 
 		$this->assertSame( admin_url(), apply_filters( 'login_redirect', admin_url(), '', $member ) );
 
-		update_option( 'liber_settings', array( 'workspace_mode' => true ) );
+		update_option( 'tinta_settings', array( 'workspace_mode' => true ) );
 
 		$this->assertSame( Screen::url(), apply_filters( 'login_redirect', admin_url(), '', $member ) );
 		$this->assertSame( home_url( '/x' ), apply_filters( 'login_redirect', home_url( '/x' ), home_url( '/x' ), $member ) );
@@ -131,7 +131,7 @@ final class Workspace_Mode_Test extends WP_UnitTestCase {
 		$this->assertNotWPError( apply_filters( 'rest_authentication_errors', null ) );
 		$this->assertTrue( apply_filters( 'wp_sitemaps_enabled', true ) );
 
-		update_option( 'liber_settings', array( 'workspace_mode' => true ) );
+		update_option( 'tinta_settings', array( 'workspace_mode' => true ) );
 
 		$this->assertWPError( apply_filters( 'rest_authentication_errors', null ) );
 		$this->assertFalse( apply_filters( 'wp_sitemaps_enabled', true ) );

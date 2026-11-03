@@ -21,7 +21,7 @@ export function useCreatePage( onOpen: ( pageId: number ) => void ) {
 			onOpen( await createPage( parent ) );
 		} catch {
 			createErrorNotice(
-				__( 'The page could not be created.', 'liber' ),
+				__( 'The page could not be created.', 'tinta' ),
 				{
 					type: 'snackbar',
 				}

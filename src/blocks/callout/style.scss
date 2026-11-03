@@ -1,4 +1,4 @@
-.wp-block-liber-callout {
+.wp-block-tinta-callout {
 	display: flex;
 	gap: 12px;
 	padding: 16px;
@@ -9,7 +9,7 @@
 	}
 }
 
-.wp-block-liber-callout__emoji {
+.wp-block-tinta-callout__emoji {
 	flex: none;
 	padding: 0;
 	font-size: 1.4em;
@@ -18,15 +18,15 @@
 	border: 0;
 }
 
-button.wp-block-liber-callout__emoji {
+button.wp-block-tinta-callout__emoji {
 	cursor: pointer;
 }
 
-.wp-block-liber-callout__emoji-dropdown {
+.wp-block-tinta-callout__emoji-dropdown {
 	order: -1;
 }
 
-.wp-block-liber-callout__content {
+.wp-block-tinta-callout__content {
 	flex: 1;
 	min-width: 0;
 

@@ -2,12 +2,12 @@
 /**
  * Tests for Lock_Controller.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Rest;
+namespace Tinta\Tests\Rest;
 
-use Liber\Roles\Roles;
+use Tinta\Roles\Roles;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_UnitTestCase;
@@ -15,7 +15,7 @@ use WP_UnitTestCase;
 /**
  * Editors take a page's lock, see who holds it, and release it.
  *
- * @covers \Liber\Rest\Lock_Controller
+ * @covers \Tinta\Rest\Lock_Controller
  */
 final class Lock_Controller_Test extends WP_UnitTestCase {
 
@@ -36,7 +36,7 @@ final class Lock_Controller_Test extends WP_UnitTestCase {
 
 		$this->page_id = self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 			)
 		);
@@ -134,6 +134,6 @@ final class Lock_Controller_Test extends WP_UnitTestCase {
 	 * @param string $method HTTP method.
 	 */
 	private function request( string $method ): WP_REST_Response {
-		return rest_get_server()->dispatch( new WP_REST_Request( $method, "/liber/v1/docs/{$this->page_id}/lock" ) );
+		return rest_get_server()->dispatch( new WP_REST_Request( $method, "/tinta/v1/docs/{$this->page_id}/lock" ) );
 	}
 }

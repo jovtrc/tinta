@@ -1,21 +1,21 @@
 <?php
 /**
- * The Liber Light admin color scheme.
+ * The Tinta Light admin color scheme.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Workspace;
+namespace Tinta\Workspace;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Adds Liber Light to the color schemes in Users → Profile, and gives it to
+ * Adds Tinta Light to the color schemes in Users → Profile, and gives it to
  * people who join while workspace mode is on. Everyone can still pick another.
  */
 final class Color_Scheme {
 
-	public const NAME = 'liber-light';
+	public const NAME = 'tinta-light';
 
 	/**
 	 * Hooks the scheme and the default for new people.
@@ -31,8 +31,8 @@ final class Color_Scheme {
 	public function add_scheme(): void {
 		wp_admin_css_color(
 			self::NAME,
-			__( 'Liber Light', 'liber' ),
-			plugins_url( 'build/admin-colors/liber-light.css', LIBER_FILE ),
+			__( 'Tinta Light', 'tinta' ),
+			plugins_url( 'build/admin-colors/tinta-light.css', TINTA_FILE ),
 			array( '#f6f7f7', '#e1e7fc', '#3858e9', '#1d2327' ),
 			array(
 				'base'    => '#646970',
@@ -43,7 +43,7 @@ final class Color_Scheme {
 	}
 
 	/**
-	 * New people get Liber Light while workspace mode is on.
+	 * New people get Tinta Light while workspace mode is on.
 	 *
 	 * @param int $user_id New user's ID.
 	 */

@@ -30,37 +30,37 @@ export function PageView( { pageId }: { pageId: number } ) {
 	}
 
 	return (
-		<div className="liber-editor">
-			<div className="liber-editor__header">
+		<div className="tinta-editor">
+			<div className="tinta-editor__header">
 				<SidebarToggle />
 				<Breadcrumbs pageId={ pageId } />
-				<div className="liber-editor__spacer" />
-				<span className="liber-editor__status">
-					{ __( 'View only', 'liber' ) }
+				<div className="tinta-editor__spacer" />
+				<span className="tinta-editor__status">
+					{ __( 'View only', 'tinta' ) }
 				</span>
 				<PageMenu
 					pageId={ pageId }
-					label={ __( 'Page actions', 'liber' ) }
+					label={ __( 'Page actions', 'tinta' ) }
 					size="compact"
 				/>
 			</div>
-			<div className="liber-reader">
-				<article className="liber-reader__page">
+			<div className="tinta-reader">
+				<article className="tinta-reader__page">
 					{ page.meta?.[ ICON_META ] && (
-						<div className="liber-reader__icon" aria-hidden="true">
+						<div className="tinta-reader__icon" aria-hidden="true">
 							{ page.meta[ ICON_META ] }
 						</div>
 					) }
-					<h1 className="liber-reader__title">
+					<h1 className="tinta-reader__title">
 						{ decodeEntities( page.title.rendered ) ||
-							__( 'Untitled', 'liber' ) }
+							__( 'Untitled', 'tinta' ) }
 					</h1>
 					<EditedByLine
 						name={ page.last_editor?.name }
 						avatar={ page.last_editor?.avatar }
 						modifiedGmt={ page.modified_gmt }
 					/>
-					<RawHTML className="liber-reader__content">
+					<RawHTML className="tinta-reader__content">
 						{ page.content.rendered }
 					</RawHTML>
 				</article>

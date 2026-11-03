@@ -2,20 +2,20 @@
 /**
  * Tests for Tree.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Docs;
+namespace Tinta\Tests\Docs;
 
-use Liber\Cache\Cache;
-use Liber\Docs\Tree;
+use Tinta\Cache\Cache;
+use Tinta\Docs\Tree;
 use WP_UnitTestCase;
 
 /**
  * The tree lists private pages, is cached, and clears only when the tree changes.
  *
- * @covers \Liber\Docs\Tree
- * @covers \Liber\Cache\Cache
+ * @covers \Tinta\Docs\Tree
+ * @covers \Tinta\Cache\Cache
  */
 final class Tree_Test extends WP_UnitTestCase {
 
@@ -43,7 +43,7 @@ final class Tree_Test extends WP_UnitTestCase {
 		$first  = $this->create_page( 'Handbook' );
 		$child  = $this->create_page( 'Onboarding', array( 'post_parent' => $first ) );
 		$this->create_page( 'Old notes', array( 'post_status' => 'trash' ) );
-		update_post_meta( $first, '_liber_icon', '📘' );
+		update_post_meta( $first, '_tinta_icon', '📘' );
 
 		$this->assertSame(
 			array(
@@ -92,7 +92,7 @@ final class Tree_Test extends WP_UnitTestCase {
 				)
 			)
 		);
-		$this->assert_generation_bumps( fn() => update_post_meta( $page_id, '_liber_icon', '🚀' ) );
+		$this->assert_generation_bumps( fn() => update_post_meta( $page_id, '_tinta_icon', '🚀' ) );
 		$this->assert_generation_bumps( fn() => wp_trash_post( $page_id ) );
 		$this->assert_generation_bumps( fn() => wp_delete_post( $page_id, true ) );
 	}
@@ -135,7 +135,7 @@ final class Tree_Test extends WP_UnitTestCase {
 		return self::factory()->post->create(
 			array_merge(
 				array(
-					'post_type'   => 'liber_doc',
+					'post_type'   => 'tinta_doc',
 					'post_status' => 'private',
 					'post_title'  => $title,
 				),

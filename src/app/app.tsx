@@ -59,7 +59,7 @@ export function App() {
 	}, [ pageId, visitPage, closeDrawer ] );
 
 	const layoutClass = [
-		'liber-workspace__layout',
+		'tinta-workspace__layout',
 		! sidebar.isOpen && ! sidebar.isMobile && 'is-sidebar-hidden',
 	]
 		.filter( Boolean )
@@ -72,7 +72,7 @@ export function App() {
 				{ sidebar.isOpen && ! sidebar.isMobile && (
 					<Sidebar currentId={ pageId } onOpen={ openPage } />
 				) }
-				<main className="liber-workspace__main">
+				<main className="tinta-workspace__main">
 					{ pageId ? (
 						<OpenPage key={ pageId } pageId={ pageId } />
 					) : (
@@ -86,7 +86,7 @@ export function App() {
 				</Drawer>
 			) }
 			<Dialogs currentId={ pageId } onOpen={ openPage } />
-			<SnackbarNotices className="liber-workspace__snackbar" />
+			<SnackbarNotices className="tinta-workspace__snackbar" />
 			<Popover.Slot />
 		</SlotFillProvider>
 	);
@@ -102,13 +102,13 @@ function EmptyWorkspace( { onOpen }: { onOpen: ( pageId: number ) => void } ) {
 	const createPage = useCreatePage( onOpen );
 
 	return (
-		<div className="liber-editor">
+		<div className="tinta-editor">
 			<SidebarBar />
-			<div className="liber-workspace__empty">
-				<p>{ __( 'No pages yet.', 'liber' ) }</p>
+			<div className="tinta-workspace__empty">
+				<p>{ __( 'No pages yet.', 'tinta' ) }</p>
 				{ config.canCreate && (
 					<Button variant="primary" onClick={ () => createPage() }>
-						{ __( 'Create the first page', 'liber' ) }
+						{ __( 'Create the first page', 'tinta' ) }
 					</Button>
 				) }
 			</div>

@@ -2,16 +2,16 @@
 /**
  * Keeps every page private.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Docs;
+namespace Tinta\Docs;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Every page is `private`, so WordPress itself hides pages from anyone without
- * `read_private_liber_docs`: logged-out visitors, the REST API, queries, feeds and search.
+ * `read_private_tinta_docs`: logged-out visitors, the REST API, queries, feeds and search.
  */
 final class Private_Status {
 

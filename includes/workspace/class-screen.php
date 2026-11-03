@@ -2,27 +2,27 @@
 /**
  * The workspace admin screen.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Workspace;
+namespace Tinta\Workspace;
 
-use Liber\Docs\Post_Type;
-use Liber\Docs\Tree;
+use Tinta\Docs\Post_Type;
+use Tinta\Docs\Tree;
 use WP_Block_Editor_Context;
 use WP_Post;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * One admin screen with the page tree and the block editor (`admin.php?page=liber&doc=ID`).
+ * One admin screen with the page tree and the block editor (`admin.php?page=tinta&doc=ID`).
  * Opening another page swaps the editor in place, without a reload.
  */
 final class Screen {
 
-	public const SLUG = 'liber';
+	public const SLUG = 'tinta';
 
-	private const HANDLE = 'liber-workspace';
+	private const HANDLE = 'tinta-workspace';
 
 	/**
 	 * Sets the tree used to pick the first page.
@@ -60,9 +60,9 @@ final class Screen {
 	 */
 	public function add_menu_page(): void {
 		$hook = add_menu_page(
-			__( 'Workspace', 'liber' ),
-			__( 'Workspace', 'liber' ),
-			'liber_access',
+			__( 'Workspace', 'tinta' ),
+			__( 'Workspace', 'tinta' ),
+			'tinta_access',
 			self::SLUG,
 			array( $this, 'render' ),
 			'dashicons-book-alt',
@@ -90,7 +90,7 @@ final class Screen {
 		$page    = $this->opened_page();
 		$context = new WP_Block_Editor_Context(
 			array(
-				'name' => 'liber/workspace',
+				'name' => 'tinta/workspace',
 				'post' => $page,
 			)
 		);
@@ -107,15 +107,15 @@ final class Screen {
 
 		do_action( 'enqueue_block_editor_assets' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, fired like core's editor does.
 
-		$asset = require plugin_dir_path( LIBER_FILE ) . 'build/workspace.asset.php';
+		$asset = require plugin_dir_path( TINTA_FILE ) . 'build/workspace.asset.php';
 
-		wp_enqueue_script( self::HANDLE, plugins_url( 'build/workspace.js', LIBER_FILE ), $asset['dependencies'], $asset['version'], true );
-		wp_enqueue_style( self::HANDLE, plugins_url( 'build/workspace.css', LIBER_FILE ), array( 'wp-components', 'wp-block-editor', 'wp-editor', 'wp-format-library', 'wp-commands', 'wp-block-library', 'liber-page-link-style', 'liber-callout-style' ), $asset['version'] );
+		wp_enqueue_script( self::HANDLE, plugins_url( 'build/workspace.js', TINTA_FILE ), $asset['dependencies'], $asset['version'], true );
+		wp_enqueue_style( self::HANDLE, plugins_url( 'build/workspace.css', TINTA_FILE ), array( 'wp-components', 'wp-block-editor', 'wp-editor', 'wp-format-library', 'wp-commands', 'wp-block-library', 'tinta-page-link-style', 'tinta-callout-style' ), $asset['version'] );
 		wp_style_add_data( self::HANDLE, 'rtl', 'replace' );
-		wp_set_script_translations( self::HANDLE, 'liber' );
+		wp_set_script_translations( self::HANDLE, 'tinta' );
 		wp_add_inline_script(
 			self::HANDLE,
-			'window.liberWorkspace = ' . wp_json_encode( $this->app_data( $page, $context ) ) . ';',
+			'window.tintaWorkspace = ' . wp_json_encode( $this->app_data( $page, $context ) ) . ';',
 			'before'
 		);
 	}
@@ -124,7 +124,7 @@ final class Screen {
 	 * Prints the app's mount point. The `block-editor` class keeps core's editor CSS from hiding it.
 	 */
 	public function render(): void {
-		echo '<div id="liber-workspace" class="liber-workspace block-editor"></div>';
+		echo '<div id="tinta-workspace" class="tinta-workspace block-editor"></div>';
 	}
 
 	/**
@@ -133,7 +133,7 @@ final class Screen {
 	 * @param string $classes Admin body classes.
 	 */
 	public function body_class( string $classes ): string {
-		return $classes . ' liber-workspace-screen';
+		return $classes . ' tinta-workspace-screen';
 	}
 
 	/**
@@ -220,20 +220,20 @@ final class Screen {
 			'/wp/v2/types?context=view',
 			'/wp/v2/types/' . Post_Type::NAME . '?context=edit',
 			'/wp/v2/users/me',
-			'/liber/v1/tree',
-			'/wp/v2/users/me?_fields=liber_prefs&context=edit',
+			'/tinta/v1/tree',
+			'/wp/v2/users/me?_fields=tinta_prefs&context=edit',
 		);
 
 		if ( $page ) {
-			$paths[] = '/wp/v2/liber-docs/' . $page->ID . '?context=edit';
-			$paths[] = array( '/wp/v2/liber-docs/' . $page->ID, 'OPTIONS' );
+			$paths[] = '/wp/v2/tinta-docs/' . $page->ID . '?context=edit';
+			$paths[] = array( '/wp/v2/tinta-docs/' . $page->ID, 'OPTIONS' );
 		}
 
 		return $paths;
 	}
 
 	/**
-	 * Data the app reads from `window.liberWorkspace`.
+	 * Data the app reads from `window.tintaWorkspace`.
 	 *
 	 * @param WP_Post|null            $page    Opened page.
 	 * @param WP_Block_Editor_Context $context Editor context.
@@ -245,10 +245,10 @@ final class Screen {
 			'url'       => self::url(),
 			'siteName'  => get_bloginfo( 'name' ),
 			'siteIcon'  => get_site_icon_url( 64 ),
-			'canCreate' => current_user_can( 'edit_liber_docs' ),
-			'canManage' => current_user_can( 'liber_manage' ),
-			'roles'     => current_user_can( 'liber_manage' ) ? array_map( 'translate_user_role', wp_roles()->get_names() ) : array(),
-			'setup'     => current_user_can( 'liber_manage' ) ? array(
+			'canCreate' => current_user_can( 'edit_tinta_docs' ),
+			'canManage' => current_user_can( 'tinta_manage' ),
+			'roles'     => current_user_can( 'tinta_manage' ) ? array_map( 'translate_user_role', wp_roles()->get_names() ) : array(),
+			'setup'     => current_user_can( 'tinta_manage' ) ? array(
 				'done'             => Settings::get()['setup_done'],
 				'conflicts'        => Conflicts::active(),
 				'openRegistration' => Settings::is_registration_open(),
@@ -269,8 +269,8 @@ final class Screen {
 			),
 			'settings'  => get_block_editor_settings(
 				array(
-					'titlePlaceholder' => __( 'Untitled', 'liber' ),
-					'bodyPlaceholder'  => __( 'Type / for commands', 'liber' ),
+					'titlePlaceholder' => __( 'Untitled', 'tinta' ),
+					'bodyPlaceholder'  => __( 'Type / for commands', 'tinta' ),
 					'autosaveInterval' => AUTOSAVE_INTERVAL,
 				),
 				$context

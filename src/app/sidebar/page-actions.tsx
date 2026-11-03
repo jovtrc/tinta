@@ -32,12 +32,12 @@ export function PageActions( {
 	onAddSubpage,
 }: PageActionsProps ) {
 	return (
-		<div className="liber-tree__actions">
+		<div className="tinta-tree__actions">
 			<PageMenu
 				pageId={ pageId }
 				label={ sprintf(
 					/* translators: %s: page title. */
-					__( 'Actions for “%s”', 'liber' ),
+					__( 'Actions for “%s”', 'tinta' ),
 					title
 				) }
 			/>
@@ -47,7 +47,7 @@ export function PageActions( {
 					icon={ plus }
 					label={ sprintf(
 						/* translators: %s: page title. */
-						__( 'Add a page inside “%s”', 'liber' ),
+						__( 'Add a page inside “%s”', 'tinta' ),
 						title
 					) }
 					onClick={ onAddSubpage }

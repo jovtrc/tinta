@@ -2,18 +2,18 @@
 /**
  * Tests for Subtree_Trash.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Docs;
+namespace Tinta\Tests\Docs;
 
-use Liber\Roles\Roles;
+use Tinta\Roles\Roles;
 use WP_UnitTestCase;
 
 /**
  * Pages go to the trash, come back and get deleted with their subpages.
  *
- * @covers \Liber\Docs\Subtree_Trash
+ * @covers \Tinta\Docs\Subtree_Trash
  */
 final class Subtree_Trash_Test extends WP_UnitTestCase {
 
@@ -50,7 +50,7 @@ final class Subtree_Trash_Test extends WP_UnitTestCase {
 		foreach ( $this->pages as $page_id ) {
 			$this->assertSame( 'trash', get_post_status( $page_id ) );
 		}
-		$this->assertSame( (string) $this->pages['handbook'], get_post_meta( $this->pages['setup'], '_liber_trashed_with', true ) );
+		$this->assertSame( (string) $this->pages['handbook'], get_post_meta( $this->pages['setup'], '_tinta_trashed_with', true ) );
 	}
 
 	/**
@@ -62,7 +62,7 @@ final class Subtree_Trash_Test extends WP_UnitTestCase {
 
 		foreach ( $this->pages as $page_id ) {
 			$this->assertSame( 'private', get_post_status( $page_id ) );
-			$this->assertSame( '', get_post_meta( $page_id, '_liber_trashed_with', true ) );
+			$this->assertSame( '', get_post_meta( $page_id, '_tinta_trashed_with', true ) );
 		}
 		$this->assertSame( $this->pages['onboarding'], wp_get_post_parent_id( $this->pages['setup'] ) );
 	}
@@ -140,7 +140,7 @@ final class Subtree_Trash_Test extends WP_UnitTestCase {
 	private function create_page( int $parent_id = 0 ): int {
 		return self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 				'post_parent' => $parent_id,
 			)

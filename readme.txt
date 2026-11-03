@@ -1,4 +1,4 @@
-=== Liber ===
+=== Tinta – Team Wiki ===
 Contributors: jcarvalho
 Tags: wiki, knowledge base, documentation, team, intranet
 Requires at least: 7.1
@@ -12,12 +12,12 @@ A private team wiki in WordPress: pages inside pages, written in the block edito
 
 == Description ==
 
-Liber turns a WordPress site into a private wiki for your team. Write docs, notes and plans in the block editor, keep them in a tree of pages, and share them only with the people you invite.
+Tinta turns a WordPress site into a private wiki for your team. Write docs, notes and plans in the block editor, keep them in a tree of pages, and share them only with the people you invite.
 
 = Features =
 
 * Pages inside pages, up to five levels deep, in a sidebar tree you can drag to reorganize.
-* The block editor, with a focused set of blocks plus two of Liber's own: Callout and Page link.
+* The block editor, with a focused set of blocks plus two of Tinta's own: Callout and Page link.
 * Saves as you type. One person edits a page at a time; others see who is editing.
 * Notes on blocks, with replies, @mentions and resolve.
 * Pinned and recent pages, emoji page icons, and ⌘K to find any page.
@@ -27,17 +27,17 @@ Liber turns a WordPress site into a private wiki for your team. Write docs, note
 
 = Privacy =
 
-Every page is private: only people with a Liber role (and administrators) can read them, and nothing is ever public. Liber stores everything in your own WordPress database and sends no data anywhere.
+Every page is private: only people with a Tinta role (and administrators) can read them, and nothing is ever public. Tinta stores everything in your own WordPress database and sends no data anywhere.
 
-Images and files you add to pages go to the media library, like any WordPress upload. Liber keeps them out of the media library for people without a Liber role, but, as with all WordPress uploads, anyone who has a file's link can open it.
+Images and files you add to pages go to the media library, like any WordPress upload. Tinta keeps them out of the media library for people without a Tinta role, but, as with all WordPress uploads, anyone who has a file's link can open it.
 
 = Source code =
 
-The JavaScript in `build/` is compiled from the TypeScript sources at https://github.com/jovtrc/liber, where you can also report issues and contribute.
+The JavaScript in `build/` is compiled from the TypeScript sources at https://github.com/jovtrc/tinta, where you can also report issues and contribute.
 
 == Installation ==
 
-1. Install and activate Liber.
+1. Install and activate Tinta.
 2. Open **Workspace** in the admin menu. The setup wizard walks you through naming the workspace, choosing who new people are, and adding sample pages.
 3. Invite your team from **Users → Add New**, as Members or Viewers.
 
@@ -51,7 +51,7 @@ Administrators, Members and Viewers. Other roles, and logged-out visitors, can't
 
 No. Workspace mode is optional. Without it, the rest of the site works as usual and the workspace lives in the admin.
 
-= What happens to the pages if I delete Liber? =
+= What happens to the pages if I delete Tinta? =
 
 They stay in your database. Deleting the plugin removes its roles, settings and preferences, but never your team's pages.
 

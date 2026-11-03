@@ -2,19 +2,19 @@
 /**
  * Tests for Last_Editor.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Docs;
+namespace Tinta\Tests\Docs;
 
-use Liber\Roles\Roles;
+use Tinta\Roles\Roles;
 use WP_REST_Request;
 use WP_UnitTestCase;
 
 /**
  * `last_editor` names the author, then whoever last changed the title or content.
  *
- * @covers \Liber\Docs\Last_Editor
+ * @covers \Tinta\Docs\Last_Editor
  */
 final class Last_Editor_Test extends WP_UnitTestCase {
 
@@ -26,7 +26,7 @@ final class Last_Editor_Test extends WP_UnitTestCase {
 		$ana     = $this->member( 'Ana' );
 		$page_id = self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 				'post_author' => $maria,
 			)
@@ -52,7 +52,7 @@ final class Last_Editor_Test extends WP_UnitTestCase {
 		$this->assertSame( 'Ana', $this->last_editor( $page_id )['name'] );
 
 		wp_set_current_user( $maria );
-		update_post_meta( $page_id, '_liber_icon', '🚀' );
+		update_post_meta( $page_id, '_tinta_icon', '🚀' );
 		$this->assertSame( 'Maria', $this->last_editor( $page_id )['name'] );
 	}
 
@@ -77,7 +77,7 @@ final class Last_Editor_Test extends WP_UnitTestCase {
 	 * @return array{id: int, name: string}
 	 */
 	private function last_editor( int $page_id ): array {
-		$response = rest_get_server()->dispatch( new WP_REST_Request( 'GET', "/wp/v2/liber-docs/{$page_id}" ) );
+		$response = rest_get_server()->dispatch( new WP_REST_Request( 'GET', "/wp/v2/tinta-docs/{$page_id}" ) );
 
 		return $response->get_data()['last_editor'];
 	}

@@ -1,10 +1,10 @@
 <?php
 /**
- * Constants PHPStan can't see: liber.php and WordPress define them at runtime.
+ * Constants PHPStan can't see: tinta.php and WordPress define them at runtime.
  *
- * @package Liber
+ * @package Tinta
  */
 
-define( 'LIBER_VERSION', '0.0.0' );
-define( 'LIBER_FILE', dirname( __DIR__ ) . '/liber.php' );
+define( 'TINTA_VERSION', '0.0.0' );
+define( 'TINTA_FILE', dirname( __DIR__ ) . '/tinta.php' );
 define( 'AUTOSAVE_INTERVAL', 60 );

@@ -2,18 +2,18 @@
 /**
  * Blocks allowed in pages.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Blocks;
+namespace Tinta\Blocks;
 
-use Liber\Docs\Post_Type;
+use Tinta\Docs\Post_Type;
 use WP_Block_Editor_Context;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * The blocks a page's editor offers: writing essentials, media, and Liber's two blocks.
+ * The blocks a page's editor offers: writing essentials, media, and Tinta's two blocks.
  */
 final class Allowlist {
 
@@ -35,8 +35,8 @@ final class Allowlist {
 		'core/details',
 		'core/columns',
 		'core/column',
-		'liber/page-link',
-		'liber/callout',
+		'tinta/page-link',
+		'tinta/callout',
 	);
 
 	/**

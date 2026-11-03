@@ -2,19 +2,19 @@
 /**
  * Tests for People_Controller.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Rest;
+namespace Tinta\Tests\Rest;
 
-use Liber\Roles\Roles;
+use Tinta\Roles\Roles;
 use WP_REST_Request;
 use WP_UnitTestCase;
 
 /**
  * Editors see who else can edit pages; nobody else sees the list.
  *
- * @covers \Liber\Rest\People_Controller
+ * @covers \Tinta\Rest\People_Controller
  */
 final class People_Controller_Test extends WP_UnitTestCase {
 
@@ -27,7 +27,7 @@ final class People_Controller_Test extends WP_UnitTestCase {
 		$this->user( 'editor', 'Eddie' );
 		wp_set_current_user( $maria );
 
-		$response = rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/liber/v1/people' ) );
+		$response = rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/tinta/v1/people' ) );
 		$names    = array_column( $response->get_data(), 'name' );
 
 		$this->assertContains( 'Maria', $names );
@@ -41,7 +41,7 @@ final class People_Controller_Test extends WP_UnitTestCase {
 	public function test_viewers_are_refused(): void {
 		wp_set_current_user( $this->user( Roles::VIEWER, 'Vera' ) );
 
-		$response = rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/liber/v1/people' ) );
+		$response = rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/tinta/v1/people' ) );
 
 		$this->assertSame( 403, $response->get_status() );
 	}

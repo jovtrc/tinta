@@ -2,12 +2,12 @@
 /**
  * REST route for page locks.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Rest;
+namespace Tinta\Rest;
 
-use Liber\Docs\Post_Type;
+use Tinta\Docs\Post_Type;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Server;
@@ -15,7 +15,7 @@ use WP_REST_Server;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * `POST liber/v1/docs/{id}/lock` takes a page's lock, or reports who holds it;
+ * `POST tinta/v1/docs/{id}/lock` takes a page's lock, or reports who holds it;
  * `DELETE` releases it. Core's post locks, fed per page to the editor's lock modal.
  */
 final class Lock_Controller extends WP_REST_Controller {
@@ -24,7 +24,7 @@ final class Lock_Controller extends WP_REST_Controller {
 	 * Sets the route.
 	 */
 	public function __construct() {
-		$this->namespace = 'liber/v1';
+		$this->namespace = 'tinta/v1';
 		$this->rest_base = 'docs/(?P<id>[\d]+)/lock';
 	}
 
@@ -45,7 +45,7 @@ final class Lock_Controller extends WP_REST_Controller {
 			array(
 				'args'   => array(
 					'id' => array(
-						'description' => __( 'Page ID.', 'liber' ),
+						'description' => __( 'Page ID.', 'tinta' ),
 						'type'        => 'integer',
 					),
 				),
@@ -74,13 +74,13 @@ final class Lock_Controller extends WP_REST_Controller {
 		$page_id = (int) $request['id'];
 
 		if ( Post_Type::NAME !== get_post_type( $page_id ) ) {
-			return new WP_Error( 'rest_post_invalid_id', __( 'Invalid page ID.', 'liber' ), array( 'status' => 404 ) );
+			return new WP_Error( 'rest_post_invalid_id', __( 'Invalid page ID.', 'tinta' ), array( 'status' => 404 ) );
 		}
 
 		if ( ! current_user_can( 'edit_post', $page_id ) ) {
 			return new WP_Error(
 				'rest_forbidden',
-				__( 'Sorry, you are not allowed to edit this page.', 'liber' ),
+				__( 'Sorry, you are not allowed to edit this page.', 'tinta' ),
 				array( 'status' => rest_authorization_required_code() )
 			);
 		}
@@ -152,27 +152,27 @@ final class Lock_Controller extends WP_REST_Controller {
 		if ( ! $this->schema ) {
 			$this->schema = array(
 				'$schema'    => 'http://json-schema.org/draft-04/schema#',
-				'title'      => 'liber-page-lock',
+				'title'      => 'tinta-page-lock',
 				'type'       => 'object',
 				'properties' => array(
 					'isLocked'       => array(
-						'description' => __( 'Whether someone else holds the lock.', 'liber' ),
+						'description' => __( 'Whether someone else holds the lock.', 'tinta' ),
 						'type'        => 'boolean',
 					),
 					'user'           => array(
-						'description' => __( 'Who holds the lock.', 'liber' ),
+						'description' => __( 'Who holds the lock.', 'tinta' ),
 						'type'        => array( 'object', 'null' ),
 					),
 					'activePostLock' => array(
-						'description' => __( 'The lock taken, as "time:user".', 'liber' ),
+						'description' => __( 'The lock taken, as "time:user".', 'tinta' ),
 						'type'        => array( 'string', 'null' ),
 					),
 					'postLockUtils'  => array(
-						'description' => __( 'Nonces and URL the editor uses to refresh, take over and release the lock.', 'liber' ),
+						'description' => __( 'Nonces and URL the editor uses to refresh, take over and release the lock.', 'tinta' ),
 						'type'        => 'object',
 					),
 					'released'       => array(
-						'description' => __( 'Whether the lock was released.', 'liber' ),
+						'description' => __( 'Whether the lock was released.', 'tinta' ),
 						'type'        => 'boolean',
 					),
 				),

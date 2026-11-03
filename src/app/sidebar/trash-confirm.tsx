@@ -43,7 +43,7 @@ export function TrashConfirm( {
 	const [ isBusy, setBusy ] = useState( false );
 	const subtree = subtreeOf( page.id, pages );
 	const subpages = subtree.length - 1;
-	const title = decodeEntities( page.title ) || __( 'Untitled', 'liber' );
+	const title = decodeEntities( page.title ) || __( 'Untitled', 'tinta' );
 
 	const confirm = async () => {
 		setBusy( true );
@@ -57,7 +57,7 @@ export function TrashConfirm( {
 			}
 		} catch {
 			createErrorNotice(
-				__( 'The page could not be moved to the trash.', 'liber' ),
+				__( 'The page could not be moved to the trash.', 'tinta' ),
 				{ type: 'snackbar' }
 			);
 		}
@@ -66,7 +66,7 @@ export function TrashConfirm( {
 
 	return (
 		<Modal
-			title={ __( 'Move to trash?', 'liber' ) }
+			title={ __( 'Move to trash?', 'tinta' ) }
 			onRequestClose={ onClose }
 			size="small"
 		>
@@ -78,20 +78,20 @@ export function TrashConfirm( {
 								'“%1$s” and its %2$d subpage go to the trash.',
 								'“%1$s” and its %2$d subpages go to the trash.',
 								subpages,
-								'liber'
+								'tinta'
 							),
 							title,
 							subpages
 						)
 					: sprintf(
 							/* translators: %s: page title. */
-							__( '“%s” goes to the trash.', 'liber' ),
+							__( '“%s” goes to the trash.', 'tinta' ),
 							title
 						) }
 			</p>
-			<div className="liber-dialog__actions">
+			<div className="tinta-dialog__actions">
 				<Button variant="tertiary" onClick={ onClose }>
-					{ __( 'Cancel', 'liber' ) }
+					{ __( 'Cancel', 'tinta' ) }
 				</Button>
 				<Button
 					variant="primary"
@@ -100,7 +100,7 @@ export function TrashConfirm( {
 					disabled={ isBusy }
 					onClick={ confirm }
 				>
-					{ __( 'Move to trash', 'liber' ) }
+					{ __( 'Move to trash', 'tinta' ) }
 				</Button>
 			</div>
 		</Modal>

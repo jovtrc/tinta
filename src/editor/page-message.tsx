@@ -11,9 +11,9 @@ import { SidebarBar } from '../app/sidebar/sidebar-toggle';
  */
 export function LoadingPage() {
 	return (
-		<div className="liber-editor">
+		<div className="tinta-editor">
 			<SidebarBar />
-			<div className="liber-editor__message">
+			<div className="tinta-editor__message">
 				<Spinner />
 			</div>
 		</div>
@@ -25,12 +25,12 @@ export function LoadingPage() {
  */
 export function MissingPage() {
 	return (
-		<div className="liber-editor">
+		<div className="tinta-editor">
 			<SidebarBar />
-			<p className="liber-editor__message">
+			<p className="tinta-editor__message">
 				{ __(
 					'This page doesn’t exist, or you can’t open it.',
-					'liber'
+					'tinta'
 				) }
 			</p>
 		</div>

@@ -11,7 +11,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { store as prefsStore } from '../app/store/prefs';
 import { EmojiPicker } from './emoji-picker';
 
-export const ICON_META = '_liber_icon';
+export const ICON_META = '_tinta_icon';
 
 /**
  * Renders the icon, the title and the "Edited by" line. The canvas is an
@@ -36,22 +36,22 @@ export function PageHeader() {
 		editPost( { meta: { [ ICON_META ]: value } } );
 
 	return (
-		<div className="liber-page-header">
+		<div className="tinta-page-header">
 			<Dropdown
 				popoverProps={ { placement: 'bottom-start' } }
 				renderToggle={ ( { isOpen, onToggle } ) => (
 					<button
 						type="button"
 						className={
-							icon ? 'liber-page-icon' : 'liber-page-icon__add'
+							icon ? 'tinta-page-icon' : 'tinta-page-icon__add'
 						}
 						aria-expanded={ isOpen }
 						aria-label={
-							icon ? __( 'Change icon', 'liber' ) : undefined
+							icon ? __( 'Change icon', 'tinta' ) : undefined
 						}
 						onClick={ onToggle }
 					>
-						{ icon || __( 'Add icon', 'liber' ) }
+						{ icon || __( 'Add icon', 'tinta' ) }
 					</button>
 				) }
 				renderContent={ ( { onClose } ) => (
@@ -125,10 +125,10 @@ export function EditedByLine( {
 	const since = humanTimeDiff( `${ modifiedGmt }Z` );
 
 	return (
-		<p className="liber-page-meta">
+		<p className="tinta-page-meta">
 			{ name && avatar && (
 				<img
-					className="liber-page-meta__avatar"
+					className="tinta-page-meta__avatar"
 					src={ avatar }
 					alt=""
 					width={ 20 }
@@ -138,13 +138,13 @@ export function EditedByLine( {
 			{ name
 				? sprintf(
 						/* translators: 1: user's name, 2: time since the edit, like "2 hours ago". */
-						__( 'Edited by %1$s · %2$s', 'liber' ),
+						__( 'Edited by %1$s · %2$s', 'tinta' ),
 						name,
 						since
 					)
 				: sprintf(
 						/* translators: %s: time since the edit, like "2 hours ago". */
-						__( 'Edited %s', 'liber' ),
+						__( 'Edited %s', 'tinta' ),
 						since
 					) }
 		</p>

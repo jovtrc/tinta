@@ -35,7 +35,7 @@ export function useNoteActions( postId: number ) {
 				await action( ...args );
 			} catch ( error ) {
 				createErrorNotice(
-					__( 'The note could not be saved.', 'liber' ),
+					__( 'The note could not be saved.', 'tinta' ),
 					{ type: 'snackbar' }
 				);
 				throw error;

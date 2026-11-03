@@ -2,12 +2,12 @@
 /**
  * Tests: pages stay private, and only workspace roles read them.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Docs;
+namespace Tinta\Tests\Docs;
 
-use Liber\Roles\Roles;
+use Tinta\Roles\Roles;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_UnitTestCase;
@@ -15,9 +15,9 @@ use WP_UnitTestCase;
 /**
  * Pages through the REST API and core functions, for every kind of user.
  *
- * @covers \Liber\Docs\Private_Status
- * @covers \Liber\Docs\Post_Type
- * @covers \Liber\Roles\Roles
+ * @covers \Tinta\Docs\Private_Status
+ * @covers \Tinta\Docs\Post_Type
+ * @covers \Tinta\Roles\Roles
  */
 final class Private_Pages_Test extends WP_UnitTestCase {
 
@@ -36,7 +36,7 @@ final class Private_Pages_Test extends WP_UnitTestCase {
 
 		$this->page_id = self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 				'post_title'  => 'Handbook',
 			)
@@ -60,7 +60,7 @@ final class Private_Pages_Test extends WP_UnitTestCase {
 			)
 		);
 
-		$response = $this->request( 'POST', '/wp/v2/liber-docs', $body );
+		$response = $this->request( 'POST', '/wp/v2/tinta-docs', $body );
 
 		$this->assertSame( 201, $response->get_status() );
 		$this->assertSame( 'private', $response->get_data()['status'] );
@@ -84,7 +84,7 @@ final class Private_Pages_Test extends WP_UnitTestCase {
 	 * Logged-out visitors can't read a page.
 	 */
 	public function test_visitors_cannot_read_pages(): void {
-		$response = $this->request( 'GET', '/wp/v2/liber-docs/' . $this->page_id );
+		$response = $this->request( 'GET', '/wp/v2/tinta-docs/' . $this->page_id );
 
 		$this->assertSame( 401, $response->get_status() );
 	}
@@ -93,7 +93,7 @@ final class Private_Pages_Test extends WP_UnitTestCase {
 	 * Logged-out visitors get an empty list.
 	 */
 	public function test_visitors_get_no_pages_in_lists(): void {
-		$response = $this->request( 'GET', '/wp/v2/liber-docs' );
+		$response = $this->request( 'GET', '/wp/v2/tinta-docs' );
 
 		$this->assertSame( 200, $response->get_status() );
 		$this->assertSame( array(), $response->get_data() );
@@ -109,7 +109,7 @@ final class Private_Pages_Test extends WP_UnitTestCase {
 	public function test_workspace_roles_read_pages( string $role ): void {
 		$this->sign_in( $role );
 
-		$response = $this->request( 'GET', '/wp/v2/liber-docs/' . $this->page_id );
+		$response = $this->request( 'GET', '/wp/v2/tinta-docs/' . $this->page_id );
 
 		$this->assertSame( 200, $response->get_status() );
 		$this->assertSame( 'Handbook', $response->get_data()['title']['rendered'] );
@@ -138,7 +138,7 @@ final class Private_Pages_Test extends WP_UnitTestCase {
 	public function test_other_roles_cannot_read_pages( string $role ): void {
 		$this->sign_in( $role );
 
-		$response = $this->request( 'GET', '/wp/v2/liber-docs/' . $this->page_id );
+		$response = $this->request( 'GET', '/wp/v2/tinta-docs/' . $this->page_id );
 
 		$this->assertSame( 403, $response->get_status() );
 	}
@@ -163,7 +163,7 @@ final class Private_Pages_Test extends WP_UnitTestCase {
 	public function test_viewers_cannot_create_pages(): void {
 		$this->sign_in( Roles::VIEWER );
 
-		$response = $this->request( 'POST', '/wp/v2/liber-docs', array( 'title' => 'Roadmap' ) );
+		$response = $this->request( 'POST', '/wp/v2/tinta-docs', array( 'title' => 'Roadmap' ) );
 
 		$this->assertSame( 403, $response->get_status() );
 	}

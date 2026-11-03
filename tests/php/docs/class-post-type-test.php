@@ -2,10 +2,10 @@
 /**
  * Tests for Post_Type.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Docs;
+namespace Tinta\Tests\Docs;
 
 use WP_REST_Request;
 use WP_REST_Response;
@@ -14,7 +14,7 @@ use WP_UnitTestCase;
 /**
  * Pages nest up to 5 levels, under other pages only.
  *
- * @covers \Liber\Docs\Post_Type
+ * @covers \Tinta\Docs\Post_Type
  */
 final class Post_Type_Test extends WP_UnitTestCase {
 
@@ -41,7 +41,7 @@ final class Post_Type_Test extends WP_UnitTestCase {
 
 		$sixth = $this->create_through_rest( $fifth->get_data()['id'] );
 		$this->assertSame( 400, $sixth->get_status() );
-		$this->assertSame( 'liber_too_deep', $sixth->get_data()['code'] );
+		$this->assertSame( 'tinta_too_deep', $sixth->get_data()['code'] );
 	}
 
 	/**
@@ -50,7 +50,7 @@ final class Post_Type_Test extends WP_UnitTestCase {
 	public function test_parents_must_be_pages(): void {
 		$response = $this->create_through_rest( self::factory()->post->create() );
 
-		$this->assertSame( 'liber_invalid_parent', $response->get_data()['code'] );
+		$this->assertSame( 'tinta_invalid_parent', $response->get_data()['code'] );
 	}
 
 	/**
@@ -63,7 +63,7 @@ final class Post_Type_Test extends WP_UnitTestCase {
 
 		$response = $this->update_parent( $handbook, $level_four );
 
-		$this->assertSame( 'liber_too_deep', $response->get_data()['code'] );
+		$this->assertSame( 'tinta_too_deep', $response->get_data()['code'] );
 		$this->assertSame( 0, wp_get_post_parent_id( $handbook ) );
 	}
 
@@ -76,8 +76,8 @@ final class Post_Type_Test extends WP_UnitTestCase {
 		$trashed  = $this->create_page( 0 );
 		wp_trash_post( $trashed );
 
-		$this->assertSame( 'liber_move_cycle', $this->update_parent( $handbook, $child )->get_data()['code'] );
-		$this->assertSame( 'liber_invalid_parent', $this->update_parent( $handbook, $trashed )->get_data()['code'] );
+		$this->assertSame( 'tinta_move_cycle', $this->update_parent( $handbook, $child )->get_data()['code'] );
+		$this->assertSame( 'tinta_invalid_parent', $this->update_parent( $handbook, $trashed )->get_data()['code'] );
 	}
 
 	/**
@@ -104,7 +104,7 @@ final class Post_Type_Test extends WP_UnitTestCase {
 	 * @param int $parent_id New parent ID.
 	 */
 	private function update_parent( int $page_id, int $parent_id ): WP_REST_Response {
-		$request = new WP_REST_Request( 'POST', '/wp/v2/liber-docs/' . $page_id );
+		$request = new WP_REST_Request( 'POST', '/wp/v2/tinta-docs/' . $page_id );
 		$request->set_body_params( array( 'parent' => $parent_id ) );
 
 		return rest_get_server()->dispatch( $request );
@@ -118,7 +118,7 @@ final class Post_Type_Test extends WP_UnitTestCase {
 	private function create_page( int $parent_id ): int {
 		return self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 				'post_parent' => $parent_id,
 			)
@@ -131,7 +131,7 @@ final class Post_Type_Test extends WP_UnitTestCase {
 	 * @param int $parent_id Parent ID.
 	 */
 	private function create_through_rest( int $parent_id ): WP_REST_Response {
-		$request = new WP_REST_Request( 'POST', '/wp/v2/liber-docs' );
+		$request = new WP_REST_Request( 'POST', '/wp/v2/tinta-docs' );
 		$request->set_body_params(
 			array(
 				'title'  => 'Nested',

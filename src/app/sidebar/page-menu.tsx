@@ -107,7 +107,7 @@ export function PageContextMenu() {
 			<NavigableMenu
 				className="components-dropdown-menu__menu"
 				role="menu"
-				aria-label={ __( 'Page actions', 'liber' ) }
+				aria-label={ __( 'Page actions', 'tinta' ) }
 			>
 				<PageMenuItems
 					pageId={ menu.pageId }
@@ -140,9 +140,9 @@ function PageMenuItems( {
 	const { openDialog } = useDispatch( uiStore );
 
 	const editorItems: Array< [ DialogName, string, typeof pencil ] > = [
-		[ 'rename', __( 'Rename', 'liber' ), pencil ],
-		[ 'move', __( 'Move to…', 'liber' ), moveTo ],
-		[ 'move-to-trash', __( 'Move to trash', 'liber' ), trash ],
+		[ 'rename', __( 'Rename', 'tinta' ), pencil ],
+		[ 'move', __( 'Move to…', 'tinta' ), moveTo ],
+		[ 'move-to-trash', __( 'Move to trash', 'tinta' ), trash ],
 	];
 
 	return (
@@ -154,7 +154,7 @@ function PageMenuItems( {
 					togglePin( pageId );
 				} }
 			>
-				{ isPinned ? __( 'Unpin', 'liber' ) : __( 'Pin', 'liber' ) }
+				{ isPinned ? __( 'Unpin', 'tinta' ) : __( 'Pin', 'tinta' ) }
 			</MenuItem>
 			{ config.canCreate &&
 				editorItems.map( ( [ dialog, text, icon ] ) => (

@@ -108,7 +108,7 @@ export function PageSection( {
 	const dragged = listed.find( ( page ) => page.id === draggedId );
 	const Row = onReorder ? SortableRow : StaticRow;
 	const list = (
-		<ul className="liber-tree" aria-label={ title }>
+		<ul className="tinta-tree" aria-label={ title }>
 			{ listed.map( ( page ) => (
 				<Row
 					key={ page.id }
@@ -122,7 +122,7 @@ export function PageSection( {
 
 	return (
 		<>
-			<h2 className="liber-sidebar__heading">{ title }</h2>
+			<h2 className="tinta-sidebar__heading">{ title }</h2>
 			{ onReorder ? (
 				<DndContext
 					sensors={ sensors }
@@ -141,7 +141,7 @@ export function PageSection( {
 					</SortableContext>
 					<DragOverlay dropAnimation={ null }>
 						{ dragged && (
-							<div className="liber-tree__drag-preview">
+							<div className="tinta-tree__drag-preview">
 								{ titleOf( dragged ) }
 							</div>
 						) }
@@ -211,24 +211,24 @@ function RowContent( { page, currentId, onOpen }: RowProps ) {
 	return (
 		<div
 			className={
-				isMenuOpen ? 'liber-tree__row is-menu-open' : 'liber-tree__row'
+				isMenuOpen ? 'tinta-tree__row is-menu-open' : 'tinta-tree__row'
 			}
 			onContextMenu={ ( event ) => {
 				event.preventDefault();
 				openContextMenu( page.id, ...menuPosition( event ) );
 			} }
 		>
-			<span className="liber-tree__toggle" />
+			<span className="tinta-tree__toggle" />
 			<a
-				className="liber-tree__link"
+				className="tinta-tree__link"
 				href={ pageUrl( page.id ) }
 				aria-current={ page.id === currentId ? 'page' : undefined }
 				onClick={ ( event ) => onOpen( event, page.id ) }
 			>
-				<span className="liber-tree__icon" aria-hidden="true">
+				<span className="tinta-tree__icon" aria-hidden="true">
 					{ page.icon || <Icon icon={ pageIcon } size={ 18 } /> }
 				</span>
-				<span className="liber-tree__title">{ titleOf( page ) }</span>
+				<span className="tinta-tree__title">{ titleOf( page ) }</span>
 			</a>
 		</div>
 	);
@@ -240,5 +240,5 @@ function RowContent( { page, currentId, onOpen }: RowProps ) {
  * @param page Page.
  */
 function titleOf( page: TreePage ): string {
-	return decodeEntities( page.title ) || __( 'Untitled', 'liber' );
+	return decodeEntities( page.title ) || __( 'Untitled', 'tinta' );
 }

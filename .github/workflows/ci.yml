@@ -71,4 +71,4 @@ jobs:
       - run: bin/build-zip.sh "$RUNNER_TEMP"
       - uses: wordpress/plugin-check-action@v1
         with:
-          build-dir: ${{ runner.temp }}/liber
+          build-dir: ${{ runner.temp }}/tinta

@@ -2,10 +2,10 @@
 /**
  * Workspace preferences per user.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Rest;
+namespace Tinta\Rest;
 
 use WP_Error;
 use WP_User;
@@ -13,13 +13,13 @@ use WP_User;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * The `liber_prefs` field on users: pinned and recent pages, expanded tree
+ * The `tinta_prefs` field on users: pinned and recent pages, expanded tree
  * branches and recently used emoji. One user option per site, so each site
  * of a network keeps its own. Users read and change only their own.
  */
 final class User_Prefs_Field {
 
-	public const NAME = 'liber_prefs';
+	public const NAME = 'tinta_prefs';
 
 	/**
 	 * Most items each list keeps.
@@ -55,7 +55,7 @@ final class User_Prefs_Field {
 				'get_callback'    => array( $this, 'get_prefs' ),
 				'update_callback' => array( $this, 'update_prefs' ),
 				'schema'          => array(
-					'description'          => __( 'Workspace preferences on this site.', 'liber' ),
+					'description'          => __( 'Workspace preferences on this site.', 'tinta' ),
 					'type'                 => 'object',
 					'context'              => array( 'edit' ),
 					'additionalProperties' => false,
@@ -96,7 +96,7 @@ final class User_Prefs_Field {
 	 */
 	public function update_prefs( $value, WP_User $user ) {
 		if ( get_current_user_id() !== $user->ID ) {
-			return new WP_Error( 'rest_forbidden', __( 'Sorry, you can only change your own preferences.', 'liber' ), array( 'status' => 403 ) );
+			return new WP_Error( 'rest_forbidden', __( 'Sorry, you can only change your own preferences.', 'tinta' ), array( 'status' => 403 ) );
 		}
 
 		$prefs = array_merge( self::read( $user->ID ), array_intersect_key( (array) $value, self::LIMITS ) );

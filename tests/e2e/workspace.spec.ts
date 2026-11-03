@@ -10,13 +10,13 @@ import {
 /**
  * Password for the users these tests create on the disposable Playground site.
  */
-const TEST_PASSWORD = 'liber-e2e-password';
+const TEST_PASSWORD = 'tinta-e2e-password';
 
 interface PageRecord {
 	id: number;
 	parent: number;
 	status: string;
-	meta: { _liber_icon: string };
+	meta: { _tinta_icon: string };
 	content: { raw: string };
 	title: { raw: string };
 }
@@ -41,7 +41,7 @@ test.describe( 'Workspace', () => {
 		page,
 		requestUtils,
 	} ) => {
-		await admin.visitAdminPage( 'admin.php', 'page=liber' );
+		await admin.visitAdminPage( 'admin.php', 'page=tinta' );
 		await page
 			.getByRole( 'button', { name: 'Create the first page' } )
 			.click();
@@ -82,11 +82,11 @@ test.describe( 'Workspace', () => {
 
 		await admin.visitAdminPage(
 			'admin.php',
-			`page=liber&doc=${ handbook }`
+			`page=tinta&doc=${ handbook }`
 		);
 		await expect( title ).toHaveText( 'Handbook' );
 		await page.evaluate( () => {
-			( window as unknown as Record< string, boolean > ).liberLoaded =
+			( window as unknown as Record< string, boolean > ).tintaLoaded =
 				true;
 		} );
 
@@ -98,7 +98,7 @@ test.describe( 'Workspace', () => {
 		await expect( title ).toHaveText( 'Handbook' );
 
 		const isSameDocument = await page.evaluate(
-			() => ( window as unknown as Record< string, boolean > ).liberLoaded
+			() => ( window as unknown as Record< string, boolean > ).tintaLoaded
 		);
 		expect( isSameDocument ).toBe( true );
 	} );
@@ -117,7 +117,7 @@ test.describe( 'Workspace', () => {
 		);
 		await admin.visitAdminPage(
 			'admin.php',
-			`page=liber&doc=${ onboarding }`
+			`page=tinta&doc=${ onboarding }`
 		);
 
 		const breadcrumbs = page.getByRole( 'navigation', {
@@ -141,7 +141,7 @@ test.describe( 'Workspace', () => {
 		requestUtils,
 	} ) => {
 		await createPage( requestUtils, 'Handbook' );
-		await admin.visitAdminPage( 'admin.php', 'page=liber' );
+		await admin.visitAdminPage( 'admin.php', 'page=tinta' );
 		await expect( sidebarLink( page, 'Handbook' ) ).toBeVisible();
 
 		await createPage( requestUtils, 'Created elsewhere' );
@@ -170,7 +170,7 @@ test.describe( 'Workspace', () => {
 		);
 		await admin.visitAdminPage(
 			'admin.php',
-			`page=liber&doc=${ handbook }`
+			`page=tinta&doc=${ handbook }`
 		);
 
 		await page.keyboard.press( 'ControlOrMeta+k' );
@@ -193,10 +193,10 @@ test.describe( 'Workspace', () => {
 	} ) => {
 		const handbook = await createPage( requestUtils, 'Handbook' );
 		const icon = async () =>
-			( await getPage( requestUtils, handbook ) ).meta._liber_icon;
+			( await getPage( requestUtils, handbook ) ).meta._tinta_icon;
 		await admin.visitAdminPage(
 			'admin.php',
-			`page=liber&doc=${ handbook }`
+			`page=tinta&doc=${ handbook }`
 		);
 
 		await editor.canvas.getByRole( 'button', { name: 'Add icon' } ).click();
@@ -227,7 +227,7 @@ test.describe( 'Workspace', () => {
 
 		await admin.visitAdminPage(
 			'admin.php',
-			`page=liber&doc=${ handbook }`
+			`page=tinta&doc=${ handbook }`
 		);
 		await editor.canvas
 			.getByRole( 'textbox', { name: 'Untitled' } )
@@ -256,7 +256,7 @@ test.describe( 'Page actions and trash', () => {
 		const handbook = await createPage( requestUtils, 'Handbook' );
 		await admin.visitAdminPage(
 			'admin.php',
-			`page=liber&doc=${ handbook }`
+			`page=tinta&doc=${ handbook }`
 		);
 
 		await sidebarLink( page, 'Handbook' ).hover();
@@ -282,7 +282,7 @@ test.describe( 'Page actions and trash', () => {
 		const handbook = await createPage( requestUtils, 'Handbook' );
 		await admin.visitAdminPage(
 			'admin.php',
-			`page=liber&doc=${ handbook }`
+			`page=tinta&doc=${ handbook }`
 		);
 
 		await sidebarLink( page, 'Handbook' ).click( { button: 'right' } );
@@ -320,7 +320,7 @@ test.describe( 'Page actions and trash', () => {
 		const handbook = await createPage( requestUtils, 'Handbook' );
 		await admin.visitAdminPage(
 			'admin.php',
-			`page=liber&doc=${ handbook }`
+			`page=tinta&doc=${ handbook }`
 		);
 
 		await page.getByRole( 'button', { name: 'Close sidebar' } ).click();
@@ -343,7 +343,7 @@ test.describe( 'Page actions and trash', () => {
 		await createPage( requestUtils, 'Roadmap' );
 		await admin.visitAdminPage(
 			'admin.php',
-			`page=liber&doc=${ handbook }`
+			`page=tinta&doc=${ handbook }`
 		);
 
 		await sidebarLink( page, 'Handbook' ).hover();
@@ -394,7 +394,7 @@ test.describe( 'Moving pages', () => {
 		const handbook = await createPage( requestUtils, 'Handbook' );
 		const roadmap = await createPage( requestUtils, 'Roadmap' );
 		const ideas = await createPage( requestUtils, 'Ideas' );
-		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ ideas }` );
+		await admin.visitAdminPage( 'admin.php', `page=tinta&doc=${ ideas }` );
 
 		await dragOnto( page, 'Roadmap', 'Handbook', 'inside' );
 		await expect
@@ -408,7 +408,7 @@ test.describe( 'Moving pages', () => {
 			.poll( async () => {
 				const tree = await requestUtils.rest< {
 					pages: { title: string; parent: number }[];
-				} >( { path: '/liber/v1/tree' } );
+				} >( { path: '/tinta/v1/tree' } );
 
 				return tree.pages
 					.filter( ( { parent } ) => ! parent )
@@ -456,7 +456,7 @@ test( 'moves a page with "Move to…"', async ( {
 	await deleteAllPages( requestUtils );
 	const handbook = await createPage( requestUtils, 'Handbook' );
 	const roadmap = await createPage( requestUtils, 'Roadmap' );
-	await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ roadmap }` );
+	await admin.visitAdminPage( 'admin.php', `page=tinta&doc=${ roadmap }` );
 
 	await sidebarLink( page, 'Roadmap' ).hover();
 	await page.getByRole( 'button', { name: 'Actions for “Roadmap”' } ).click();
@@ -477,7 +477,7 @@ test.describe( 'Pinned, recent and expanded', () => {
 			method: 'POST',
 			path: '/wp/v2/users/me',
 			data: {
-				liber_prefs: {
+				tinta_prefs: {
 					pinned: [],
 					recent: [],
 					expanded: [],
@@ -497,11 +497,11 @@ test.describe( 'Pinned, recent and expanded', () => {
 		await requestUtils.rest( {
 			method: 'POST',
 			path: '/wp/v2/users/me',
-			data: { liber_prefs: { pinned: [ handbook, roadmap ] } },
+			data: { tinta_prefs: { pinned: [ handbook, roadmap ] } },
 		} );
 		await admin.visitAdminPage(
 			'admin.php',
-			`page=liber&doc=${ handbook }`
+			`page=tinta&doc=${ handbook }`
 		);
 
 		const pinned = page.getByRole( 'list', { name: 'Pinned' } );
@@ -525,8 +525,8 @@ test.describe( 'Pinned, recent and expanded', () => {
 		await expect( page ).toHaveURL( new RegExp( `doc=${ handbook }` ) );
 		await expect
 			.poll( async () => {
-				const { liber_prefs: prefs } = await requestUtils.rest< {
-					liber_prefs: { pinned: number[] };
+				const { tinta_prefs: prefs } = await requestUtils.rest< {
+					tinta_prefs: { pinned: number[] };
 				} >( {
 					path: '/wp/v2/users/me',
 					params: { context: 'edit' },
@@ -546,7 +546,7 @@ test.describe( 'Pinned, recent and expanded', () => {
 		const roadmap = await createPage( requestUtils, 'Roadmap' );
 		await admin.visitAdminPage(
 			'admin.php',
-			`page=liber&doc=${ roadmap }`
+			`page=tinta&doc=${ roadmap }`
 		);
 
 		await sidebarLink( page, 'Handbook' ).click();
@@ -568,8 +568,8 @@ test.describe( 'Pinned, recent and expanded', () => {
 		await expect( sidebarLink( page, 'Onboarding' ) ).toBeVisible();
 		await expect
 			.poll( async () => {
-				const { liber_prefs: prefs } = await requestUtils.rest< {
-					liber_prefs: { pinned: number[]; expanded: number[] };
+				const { tinta_prefs: prefs } = await requestUtils.rest< {
+					tinta_prefs: { pinned: number[]; expanded: number[] };
 				} >( {
 					path: '/wp/v2/users/me',
 					params: { context: 'edit' },
@@ -598,7 +598,7 @@ test.describe( 'Blocks', () => {
 		requestUtils,
 	} ) => {
 		const pageId = await createPage( requestUtils, 'Notes' );
-		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ pageId }` );
+		await admin.visitAdminPage( 'admin.php', `page=tinta&doc=${ pageId }` );
 
 		await startTyping( editor );
 		await page.keyboard.type( '/callout' );
@@ -617,7 +617,7 @@ test.describe( 'Blocks', () => {
 					( await getPage( requestUtils, pageId ) ).content.raw
 			)
 			.toMatch(
-				/Remember the handbook\.[\s\S]*\/wp:liber\/callout -->\s*<!-- wp:paragraph -->\s*<p>After the callout\./
+				/Remember the handbook\.[\s\S]*\/wp:tinta\/callout -->\s*<!-- wp:paragraph -->\s*<p>After the callout\./
 			);
 	} );
 
@@ -628,7 +628,7 @@ test.describe( 'Blocks', () => {
 		requestUtils,
 	} ) => {
 		const pageId = await createPage( requestUtils, 'Links' );
-		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ pageId }` );
+		await admin.visitAdminPage( 'admin.php', `page=tinta&doc=${ pageId }` );
 
 		await startTyping( editor );
 		await page.keyboard.type( '/page link' );
@@ -651,7 +651,7 @@ test.describe( 'Blocks', () => {
 				async () =>
 					( await getPage( requestUtils, pageId ) ).content.raw
 			)
-			.toMatch( /wp:liber\/page-link[\s\S]*<p>Below the link\./ );
+			.toMatch( /wp:tinta\/page-link[\s\S]*<p>Below the link\./ );
 	} );
 
 	test( 'adds blocks from the Blocks panel', async ( {
@@ -661,7 +661,7 @@ test.describe( 'Blocks', () => {
 		requestUtils,
 	} ) => {
 		const pageId = await createPage( requestUtils, 'Panel' );
-		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ pageId }` );
+		await admin.visitAdminPage( 'admin.php', `page=tinta&doc=${ pageId }` );
 
 		await startTyping( editor );
 		const paragraph = editor.canvas.locator(
@@ -685,7 +685,7 @@ test.describe( 'Blocks', () => {
 				async () =>
 					( await getPage( requestUtils, pageId ) ).content.raw
 			)
-			.toMatch( /^<!-- wp:liber\/callout/ );
+			.toMatch( /^<!-- wp:tinta\/callout/ );
 	} );
 
 	test( 'links to a page and opens it', async ( {
@@ -698,7 +698,7 @@ test.describe( 'Blocks', () => {
 		const roadmap = await createPage( requestUtils, 'Roadmap' );
 		await admin.visitAdminPage(
 			'admin.php',
-			`page=liber&doc=${ roadmap }`
+			`page=tinta&doc=${ roadmap }`
 		);
 
 		await startTyping( editor );
@@ -732,7 +732,7 @@ test.describe( 'Blocks', () => {
 		const pageId = await createPage( requestUtils, 'Order' );
 		await requestUtils.rest( {
 			method: 'POST',
-			path: `/wp/v2/liber-docs/${ pageId }`,
+			path: `/wp/v2/tinta-docs/${ pageId }`,
 			data: {
 				content: [ 'One', 'Two', 'Three' ]
 					.map(
@@ -742,7 +742,7 @@ test.describe( 'Blocks', () => {
 					.join( '' ),
 			},
 		} );
-		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ pageId }` );
+		await admin.visitAdminPage( 'admin.php', `page=tinta&doc=${ pageId }` );
 
 		const three = editor.canvas.getByText( 'Three' );
 		await three.hover( { position: { x: 4, y: 4 } } );
@@ -770,7 +770,7 @@ test.describe( 'Blocks', () => {
 		requestUtils,
 	} ) => {
 		const pageId = await createPage( requestUtils, 'Notes' );
-		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ pageId }` );
+		await admin.visitAdminPage( 'admin.php', `page=tinta&doc=${ pageId }` );
 
 		await startTyping( editor );
 		await page.keyboard.type( '/columns' );
@@ -830,13 +830,13 @@ test.describe( 'Notes', () => {
 		await note( 'Done.', root.id );
 		await requestUtils.rest( {
 			method: 'POST',
-			path: `/wp/v2/liber-docs/${ pageId }`,
+			path: `/wp/v2/tinta-docs/${ pageId }`,
 			data: {
 				content: `<!-- wp:paragraph {"metadata":{"noteId":[${ root.id }]}} --><p>Install Node.</p><!-- /wp:paragraph -->`,
 			},
 		} );
 
-		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ pageId }` );
+		await admin.visitAdminPage( 'admin.php', `page=tinta&doc=${ pageId }` );
 		await editor.canvas
 			.getByRole( 'button', { name: '2 notes on this block' } )
 			.click();
@@ -856,7 +856,7 @@ test.describe( 'Notes', () => {
 	} ) => {
 		const { id: pageId } = await requestUtils.rest< PageRecord >( {
 			method: 'POST',
-			path: '/wp/v2/liber-docs',
+			path: '/wp/v2/tinta-docs',
 			data: {
 				title: 'Handbook',
 				status: 'private',
@@ -877,7 +877,7 @@ test.describe( 'Notes', () => {
 					},
 				}
 			);
-		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ pageId }` );
+		await admin.visitAdminPage( 'admin.php', `page=tinta&doc=${ pageId }` );
 
 		await editor.canvas.getByText( 'VPN steps' ).click();
 		await editor.showBlockToolbar();
@@ -917,7 +917,7 @@ test.describe( 'Settings', () => {
 		await requestUtils.rest( {
 			method: 'POST',
 			path: '/wp/v2/settings',
-			data: { liber_settings: { workspace_mode: false } },
+			data: { tinta_settings: { workspace_mode: false } },
 		} );
 	} );
 
@@ -928,7 +928,7 @@ test.describe( 'Settings', () => {
 	} ) => {
 		await deleteAllPages( requestUtils );
 		await createPage( requestUtils, 'Handbook' );
-		await admin.visitAdminPage( 'admin.php', 'page=liber' );
+		await admin.visitAdminPage( 'admin.php', 'page=tinta' );
 		await expect( page.locator( '#adminmenuwrap' ) ).toBeVisible();
 
 		await page
@@ -965,7 +965,7 @@ test.describe( 'Mobile', () => {
 
 		await admin.visitAdminPage(
 			'admin.php',
-			`page=liber&doc=${ handbook }`
+			`page=tinta&doc=${ handbook }`
 		);
 		await expect( menuButton ).toBeVisible();
 		await expect( sidebarLink( page, 'Roadmap' ) ).toBeHidden();
@@ -1006,7 +1006,7 @@ test.describe( 'Setup', () => {
 		page,
 		requestUtils,
 	} ) => {
-		await admin.visitAdminPage( 'admin.php', 'page=liber' );
+		await admin.visitAdminPage( 'admin.php', 'page=tinta' );
 		const wizard = page.getByRole( 'dialog', {
 			name: 'Set up your workspace',
 		} );
@@ -1018,7 +1018,7 @@ test.describe( 'Setup', () => {
 		await wizard.getByRole( 'button', { name: 'Continue' } ).click();
 		await expect(
 			wizard.getByRole( 'combobox', { name: 'New people join as' } )
-		).toHaveValue( 'liber_member' );
+		).toHaveValue( 'tinta_member' );
 		await wizard.getByRole( 'button', { name: 'Continue' } ).click();
 		await expect(
 			wizard.getByRole( 'checkbox', { name: 'Add sample pages' } )
@@ -1032,22 +1032,22 @@ test.describe( 'Setup', () => {
 		).toHaveText( 'Welcome' );
 		await expect( sidebarLink( page, 'Welcome' ) ).toBeVisible();
 		await expect(
-			editor.canvas.locator( '.wp-block-liber-page-link' )
+			editor.canvas.locator( '.wp-block-tinta-page-link' )
 		).toContainText( 'Getting started' );
 		await expect( wizard ).toBeHidden();
 
 		const settings = await requestUtils.rest< {
 			title: string;
 			default_role: string;
-			liber_settings: { setup_done: boolean };
+			tinta_settings: { setup_done: boolean };
 		} >( { path: '/wp/v2/settings' } );
 		expect( settings.title ).toBe( 'Acme' );
-		expect( settings.default_role ).toBe( 'liber_member' );
-		expect( settings.liber_settings.setup_done ).toBe( true );
+		expect( settings.default_role ).toBe( 'tinta_member' );
+		expect( settings.tinta_settings.setup_done ).toBe( true );
 	} );
 
 	test( 'can be skipped', async ( { admin, page, requestUtils } ) => {
-		await admin.visitAdminPage( 'admin.php', 'page=liber' );
+		await admin.visitAdminPage( 'admin.php', 'page=tinta' );
 		await page.getByRole( 'button', { name: 'Skip for now' } ).click();
 
 		await expect
@@ -1055,9 +1055,9 @@ test.describe( 'Setup', () => {
 				async () =>
 					(
 						await requestUtils.rest< {
-							liber_settings: { setup_done: boolean };
+							tinta_settings: { setup_done: boolean };
 						} >( { path: '/wp/v2/settings' } )
-					).liber_settings.setup_done
+					).tinta_settings.setup_done
 			)
 			.toBe( true );
 		await page.reload();
@@ -1088,7 +1088,7 @@ test.describe( 'Locks and roles', () => {
 			firstName: 'Maria',
 			lastName: 'Souza',
 			password: TEST_PASSWORD,
-			roles: [ 'liber_member' ],
+			roles: [ 'tinta_member' ],
 		} );
 		const asMaria = await RequestUtils.setup( {
 			user: { username: 'maria', password: TEST_PASSWORD },
@@ -1096,12 +1096,12 @@ test.describe( 'Locks and roles', () => {
 		} );
 		await asMaria.rest( {
 			method: 'POST',
-			path: `/liber/v1/docs/${ handbook }/lock`,
+			path: `/tinta/v1/docs/${ handbook }/lock`,
 		} );
 
 		await admin.visitAdminPage(
 			'admin.php',
-			`page=liber&doc=${ handbook }`
+			`page=tinta&doc=${ handbook }`
 		);
 
 		const dialog = page.getByRole( 'dialog', {
@@ -1122,7 +1122,7 @@ test.describe( 'Locks and roles', () => {
 			username: 'vera',
 			email: 'vera@example.com',
 			password: TEST_PASSWORD,
-			roles: [ 'liber_viewer' ],
+			roles: [ 'tinta_viewer' ],
 		} );
 		const context = await browser.newContext( {
 			baseURL: requestUtils.baseURL,
@@ -1133,7 +1133,7 @@ test.describe( 'Locks and roles', () => {
 		} );
 		const page = await context.newPage();
 
-		await page.goto( `/wp-admin/admin.php?page=liber&doc=${ handbook }` );
+		await page.goto( `/wp-admin/admin.php?page=tinta&doc=${ handbook }` );
 
 		await expect( page.getByText( 'View only' ) ).toBeVisible();
 		await expect(
@@ -1152,7 +1152,7 @@ test.describe( 'Locks and roles', () => {
  */
 function getPage( requestUtils: RequestUtils, pageId: number ) {
 	return requestUtils.rest< PageRecord >( {
-		path: `/wp/v2/liber-docs/${ pageId }`,
+		path: `/wp/v2/tinta-docs/${ pageId }`,
 		params: { context: 'edit' },
 	} );
 }
@@ -1184,7 +1184,7 @@ async function createPage(
 ): Promise< number > {
 	const record = await requestUtils.rest< PageRecord >( {
 		method: 'POST',
-		path: '/wp/v2/liber-docs',
+		path: '/wp/v2/tinta-docs',
 		data: { title, status: 'private', parent },
 	} );
 
@@ -1198,7 +1198,7 @@ async function createPage(
  */
 async function deleteAllPages( requestUtils: RequestUtils ) {
 	const pages = await requestUtils.rest< PageRecord[] >( {
-		path: '/wp/v2/liber-docs',
+		path: '/wp/v2/tinta-docs',
 		params: { status: 'private,trash', per_page: 100, context: 'edit' },
 	} );
 
@@ -1206,7 +1206,7 @@ async function deleteAllPages( requestUtils: RequestUtils ) {
 		pages.map( ( { id } ) =>
 			requestUtils.rest( {
 				method: 'DELETE',
-				path: `/wp/v2/liber-docs/${ id }`,
+				path: `/wp/v2/tinta-docs/${ id }`,
 				params: { force: true },
 			} )
 		)
@@ -1223,6 +1223,6 @@ async function setSetupDone( requestUtils: RequestUtils, done: boolean ) {
 	await requestUtils.rest( {
 		method: 'POST',
 		path: '/wp/v2/settings',
-		data: { liber_settings: { setup_done: done } },
+		data: { tinta_settings: { setup_done: done } },
 	} );
 }

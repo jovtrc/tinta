@@ -35,7 +35,7 @@ export function RenameDialog( { page, onClose }: RenameDialogProps ) {
 			await renamePage( page.id, title.trim() );
 		} catch {
 			createErrorNotice(
-				__( 'The page could not be renamed.', 'liber' ),
+				__( 'The page could not be renamed.', 'tinta' ),
 				{ type: 'snackbar' }
 			);
 		}
@@ -43,7 +43,7 @@ export function RenameDialog( { page, onClose }: RenameDialogProps ) {
 
 	return (
 		<Modal
-			title={ __( 'Rename page', 'liber' ) }
+			title={ __( 'Rename page', 'tinta' ) }
 			onRequestClose={ onClose }
 			focusOnMount="firstContentElement"
 			size="small"
@@ -52,18 +52,18 @@ export function RenameDialog( { page, onClose }: RenameDialogProps ) {
 				<TextControl
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
-					label={ __( 'Title', 'liber' ) }
-					placeholder={ __( 'Untitled', 'liber' ) }
+					label={ __( 'Title', 'tinta' ) }
+					placeholder={ __( 'Untitled', 'tinta' ) }
 					value={ title }
 					onChange={ setTitle }
 					onFocus={ ( event ) => event.target.select() }
 				/>
-				<div className="liber-dialog__actions">
+				<div className="tinta-dialog__actions">
 					<Button variant="tertiary" onClick={ onClose }>
-						{ __( 'Cancel', 'liber' ) }
+						{ __( 'Cancel', 'tinta' ) }
 					</Button>
 					<Button variant="primary" type="submit">
-						{ __( 'Rename', 'liber' ) }
+						{ __( 'Rename', 'tinta' ) }
 					</Button>
 				</div>
 			</form>

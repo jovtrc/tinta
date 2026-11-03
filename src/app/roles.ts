@@ -6,7 +6,7 @@ import { __ } from '@wordpress/i18n';
 
 import { config } from './config';
 
-export const LIBER_ROLES = [ 'liber_member', 'liber_viewer' ];
+export const TINTA_ROLES = [ 'tinta_member', 'tinta_viewer' ];
 
 /**
  * The options, for a SelectControl.
@@ -15,9 +15,9 @@ export const LIBER_ROLES = [ 'liber_member', 'liber_viewer' ];
  */
 export function roleOptions( current: string ) {
 	return [
-		{ value: 'liber_member', label: __( 'Member', 'liber' ) },
-		{ value: 'liber_viewer', label: __( 'Viewer', 'liber' ) },
-		...( LIBER_ROLES.includes( current )
+		{ value: 'tinta_member', label: __( 'Member', 'tinta' ) },
+		{ value: 'tinta_viewer', label: __( 'Viewer', 'tinta' ) },
+		...( TINTA_ROLES.includes( current )
 			? []
 			: [
 					{

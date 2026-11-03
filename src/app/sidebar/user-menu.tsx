@@ -22,13 +22,13 @@ export function UserMenu() {
 	const { openDialog } = useDispatch( uiStore );
 
 	return (
-		<div className="liber-sidebar__footer">
+		<div className="tinta-sidebar__footer">
 			<DropdownMenu
-				className="liber-user-menu"
-				label={ __( 'Your account', 'liber' ) }
+				className="tinta-user-menu"
+				label={ __( 'Your account', 'tinta' ) }
 				icon={
 					<img
-						className="liber-user-menu__avatar"
+						className="tinta-user-menu__avatar"
 						src={ config.user.avatar }
 						alt=""
 						width={ 24 }
@@ -37,12 +37,12 @@ export function UserMenu() {
 				}
 				toggleProps={ {
 					children: (
-						<span className="liber-user-menu__text">
-							<span className="liber-user-menu__name">
+						<span className="tinta-user-menu__text">
+							<span className="tinta-user-menu__name">
 								{ config.user.name }
 							</span>
 							{ config.user.role && (
-								<span className="liber-user-menu__role">
+								<span className="tinta-user-menu__role">
 									{ config.user.role }
 								</span>
 							) }
@@ -58,7 +58,7 @@ export function UserMenu() {
 								window.location.assign( config.links.profile )
 							}
 						>
-							{ __( 'Your profile', 'liber' ) }
+							{ __( 'Your profile', 'tinta' ) }
 						</MenuItem>
 						{ config.canManage && (
 							<MenuItem
@@ -67,7 +67,7 @@ export function UserMenu() {
 								}
 								icon={ external }
 							>
-								{ __( 'Admin tools', 'liber' ) }
+								{ __( 'Admin tools', 'tinta' ) }
 							</MenuItem>
 						) }
 						<MenuItem
@@ -75,7 +75,7 @@ export function UserMenu() {
 								window.location.assign( config.links.logout )
 							}
 						>
-							{ __( 'Log out', 'liber' ) }
+							{ __( 'Log out', 'tinta' ) }
 						</MenuItem>
 					</MenuGroup>
 				) }
@@ -83,7 +83,7 @@ export function UserMenu() {
 			{ config.canManage && (
 				<Button
 					icon={ cog }
-					label={ __( 'Workspace settings', 'liber' ) }
+					label={ __( 'Workspace settings', 'tinta' ) }
 					onClick={ () => openDialog( 'settings' ) }
 				/>
 			) }

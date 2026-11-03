@@ -2,19 +2,19 @@
 /**
  * Tests for Tree_Controller.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Rest;
+namespace Tinta\Tests\Rest;
 
-use Liber\Roles\Roles;
+use Tinta\Roles\Roles;
 use WP_REST_Request;
 use WP_UnitTestCase;
 
 /**
- * `GET liber/v1/tree` serves workspace users only.
+ * `GET tinta/v1/tree` serves workspace users only.
  *
- * @covers \Liber\Rest\Tree_Controller
+ * @covers \Tinta\Rest\Tree_Controller
  */
 final class Tree_Controller_Test extends WP_UnitTestCase {
 
@@ -26,7 +26,7 @@ final class Tree_Controller_Test extends WP_UnitTestCase {
 
 		self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 				'post_title'  => 'Handbook',
 			)
@@ -43,7 +43,7 @@ final class Tree_Controller_Test extends WP_UnitTestCase {
 	public function test_workspace_roles_get_the_tree( string $role ): void {
 		wp_set_current_user( self::factory()->user->create( array( 'role' => $role ) ) );
 
-		$response = rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/liber/v1/tree' ) );
+		$response = rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/tinta/v1/tree' ) );
 
 		$this->assertSame( 200, $response->get_status() );
 		$this->assertSame( 'Handbook', $response->get_data()['pages'][0]['title'] );
@@ -74,7 +74,7 @@ final class Tree_Controller_Test extends WP_UnitTestCase {
 	public function test_others_are_refused( string $role, int $status ): void {
 		wp_set_current_user( $role ? self::factory()->user->create( array( 'role' => $role ) ) : 0 );
 
-		$response = rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/liber/v1/tree' ) );
+		$response = rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/tinta/v1/tree' ) );
 
 		$this->assertSame( $status, $response->get_status() );
 	}

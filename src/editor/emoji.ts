@@ -15,7 +15,7 @@ export interface EmojiGroup {
 export function emojiGroups(): EmojiGroup[] {
 	return [
 		{
-			label: __( 'Documents', 'liber' ),
+			label: __( 'Documents', 'tinta' ),
 			emojis: [
 				[ '📄', 'page document' ],
 				[ '📝', 'memo note write' ],
@@ -48,7 +48,7 @@ export function emojiGroups(): EmojiGroup[] {
 			],
 		},
 		{
-			label: __( 'Objects', 'liber' ),
+			label: __( 'Objects', 'tinta' ),
 			emojis: [
 				[ '💻', 'laptop computer code' ],
 				[ '🖥️', 'desktop screen' ],
@@ -81,7 +81,7 @@ export function emojiGroups(): EmojiGroup[] {
 			],
 		},
 		{
-			label: __( 'Symbols', 'liber' ),
+			label: __( 'Symbols', 'tinta' ),
 			emojis: [
 				[ '✅', 'check done' ],
 				[ '❌', 'cross no' ],
@@ -110,7 +110,7 @@ export function emojiGroups(): EmojiGroup[] {
 			],
 		},
 		{
-			label: __( 'People', 'liber' ),
+			label: __( 'People', 'tinta' ),
 			emojis: [
 				[ '👋', 'wave hello welcome' ],
 				[ '👍', 'thumbs up' ],
@@ -135,7 +135,7 @@ export function emojiGroups(): EmojiGroup[] {
 			],
 		},
 		{
-			label: __( 'Places and nature', 'liber' ),
+			label: __( 'Places and nature', 'tinta' ),
 			emojis: [
 				[ '🏠', 'house home' ],
 				[ '🏢', 'office building company' ],

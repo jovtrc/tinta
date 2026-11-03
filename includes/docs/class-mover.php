@@ -2,10 +2,10 @@
 /**
  * Moving pages in the tree.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Docs;
+namespace Tinta\Docs;
 
 use WP_Error;
 
@@ -37,20 +37,20 @@ final class Mover {
 		$pages = array_column( $this->tree->pages(), null, 'id' );
 
 		if ( ! isset( $pages[ $page_id ] ) || ( $parent_id && ! isset( $pages[ $parent_id ] ) ) ) {
-			return new WP_Error( 'rest_post_invalid_id', __( 'Invalid page or parent.', 'liber' ), array( 'status' => 404 ) );
+			return new WP_Error( 'rest_post_invalid_id', __( 'Invalid page or parent.', 'tinta' ), array( 'status' => 404 ) );
 		}
 
 		$subtree = $this->subtree( $page_id, $pages );
 
 		if ( in_array( $parent_id, $subtree, true ) || $this->is_inside( $parent_id, $page_id ) ) {
-			return new WP_Error( 'liber_move_cycle', __( 'A page can’t go inside itself.', 'liber' ), array( 'status' => 400 ) );
+			return new WP_Error( 'tinta_move_cycle', __( 'A page can’t go inside itself.', 'tinta' ), array( 'status' => 400 ) );
 		}
 
 		if ( $this->level( $parent_id, $pages ) + $this->tree->height( $page_id ) > Post_Type::MAX_DEPTH ) {
 			return new WP_Error(
-				'liber_too_deep',
+				'tinta_too_deep',
 				/* translators: %d: maximum number of levels. */
-				sprintf( __( 'Pages can be nested up to %d levels.', 'liber' ), Post_Type::MAX_DEPTH ),
+				sprintf( __( 'Pages can be nested up to %d levels.', 'tinta' ), Post_Type::MAX_DEPTH ),
 				array( 'status' => 400 )
 			);
 		}

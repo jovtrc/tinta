@@ -2,10 +2,10 @@
 /**
  * REST route for the workspace's people.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Rest;
+namespace Tinta\Rest;
 
 use WP_Error;
 use WP_REST_Controller;
@@ -14,7 +14,7 @@ use WP_REST_Server;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * `GET liber/v1/people`: who can edit pages, for @mentions in notes. Core's
+ * `GET tinta/v1/people`: who can edit pages, for @mentions in notes. Core's
  * user list only shows people without `list_users` the authors of published
  * posts, and every page is private.
  */
@@ -26,7 +26,7 @@ final class People_Controller extends WP_REST_Controller {
 	 * Sets the route.
 	 */
 	public function __construct() {
-		$this->namespace = 'liber/v1';
+		$this->namespace = 'tinta/v1';
 		$this->rest_base = 'people';
 	}
 
@@ -62,13 +62,13 @@ final class People_Controller extends WP_REST_Controller {
 	 * @return true|WP_Error
 	 */
 	public function get_items_permissions_check( $request ) {
-		if ( current_user_can( 'edit_liber_docs' ) ) {
+		if ( current_user_can( 'edit_tinta_docs' ) ) {
 			return true;
 		}
 
 		return new WP_Error(
 			'rest_forbidden',
-			__( 'Sorry, you are not allowed to see who is in this workspace.', 'liber' ),
+			__( 'Sorry, you are not allowed to see who is in this workspace.', 'tinta' ),
 			array( 'status' => rest_authorization_required_code() )
 		);
 	}
@@ -117,7 +117,7 @@ final class People_Controller extends WP_REST_Controller {
 		if ( ! $this->schema ) {
 			$this->schema = array(
 				'$schema'    => 'http://json-schema.org/draft-04/schema#',
-				'title'      => 'liber-person',
+				'title'      => 'tinta-person',
 				'type'       => 'object',
 				'properties' => array(
 					'id'     => array( 'type' => 'integer' ),
@@ -142,7 +142,7 @@ final class People_Controller extends WP_REST_Controller {
 		return array_keys(
 			array_filter(
 				wp_roles()->roles,
-				static fn( array $role ): bool => ! empty( $role['capabilities']['edit_liber_docs'] )
+				static fn( array $role ): bool => ! empty( $role['capabilities']['edit_tinta_docs'] )
 			)
 		);
 	}

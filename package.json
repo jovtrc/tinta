@@ -1,5 +1,5 @@
 {
-	"name": "liber",
+	"name": "tinta",
 	"private": true,
 	"description": "A private team wiki for WordPress: pages in a tree, written in the block editor.",
 	"license": "GPL-2.0-or-later",
@@ -16,10 +16,10 @@
 		"format": "wp-scripts format src tests/e2e",
 		"wp-env": "wp-env",
 		"wp-env:test": "wp-env --config=.wp-env.test.json",
-		"test:php": "wp-env run cli --config=.wp-env.test.json --env-cwd=wp-content/plugins/liber vendor/bin/phpunit",
-		"test:php:multisite": "wp-env run cli --config=.wp-env.test.json --env-cwd=wp-content/plugins/liber env WP_MULTISITE=1 vendor/bin/phpunit",
+		"test:php": "wp-env run cli --config=.wp-env.test.json --env-cwd=wp-content/plugins/tinta vendor/bin/phpunit",
+		"test:php:multisite": "wp-env run cli --config=.wp-env.test.json --env-cwd=wp-content/plugins/tinta env WP_MULTISITE=1 vendor/bin/phpunit",
 		"test:e2e": "wp-scripts test-playwright",
-		"playground": "wp-playground-cli server --port=9400 --wp=7.1 --php=8.2 --auto-mount"
+		"playground": "wp-playground-cli server --port=9400 --wp=7.1 --php=8.2 --mount=.:/wordpress/wp-content/plugins/tinta --blueprint=tests/e2e/blueprint.json"
 	},
 	"prettier": "@wordpress/prettier-config",
 	"devDependencies": {

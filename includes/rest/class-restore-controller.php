@@ -2,12 +2,12 @@
 /**
  * REST route for restoring pages from the trash.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Rest;
+namespace Tinta\Rest;
 
-use Liber\Docs\Post_Type;
+use Tinta\Docs\Post_Type;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Server;
@@ -15,7 +15,7 @@ use WP_REST_Server;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * `POST liber/v1/docs/{id}/restore`: core's `wp_untrash_post()`, which a status
+ * `POST tinta/v1/docs/{id}/restore`: core's `wp_untrash_post()`, which a status
  * update through `wp/v2` skips, so the page comes back with its subpages.
  */
 final class Restore_Controller extends WP_REST_Controller {
@@ -24,7 +24,7 @@ final class Restore_Controller extends WP_REST_Controller {
 	 * Sets the route.
 	 */
 	public function __construct() {
-		$this->namespace = 'liber/v1';
+		$this->namespace = 'tinta/v1';
 		$this->rest_base = 'docs/(?P<id>[\d]+)/restore';
 	}
 
@@ -45,7 +45,7 @@ final class Restore_Controller extends WP_REST_Controller {
 			array(
 				'args'   => array(
 					'id' => array(
-						'description' => __( 'Page ID.', 'liber' ),
+						'description' => __( 'Page ID.', 'tinta' ),
 						'type'        => 'integer',
 					),
 				),
@@ -69,13 +69,13 @@ final class Restore_Controller extends WP_REST_Controller {
 		$page_id = (int) $request['id'];
 
 		if ( Post_Type::NAME !== get_post_type( $page_id ) || 'trash' !== get_post_status( $page_id ) ) {
-			return new WP_Error( 'rest_post_invalid_id', __( 'No page with this ID is in the trash.', 'liber' ), array( 'status' => 404 ) );
+			return new WP_Error( 'rest_post_invalid_id', __( 'No page with this ID is in the trash.', 'tinta' ), array( 'status' => 404 ) );
 		}
 
 		if ( ! current_user_can( 'delete_post', $page_id ) ) {
 			return new WP_Error(
 				'rest_forbidden',
-				__( 'Sorry, you are not allowed to restore this page.', 'liber' ),
+				__( 'Sorry, you are not allowed to restore this page.', 'tinta' ),
 				array( 'status' => rest_authorization_required_code() )
 			);
 		}
@@ -93,7 +93,7 @@ final class Restore_Controller extends WP_REST_Controller {
 		$page_id = (int) $request['id'];
 
 		if ( ! wp_untrash_post( $page_id ) ) {
-			return new WP_Error( 'liber_restore_failed', __( 'The page could not be restored.', 'liber' ), array( 'status' => 500 ) );
+			return new WP_Error( 'tinta_restore_failed', __( 'The page could not be restored.', 'tinta' ), array( 'status' => 500 ) );
 		}
 
 		return rest_ensure_response(
@@ -114,7 +114,7 @@ final class Restore_Controller extends WP_REST_Controller {
 		if ( ! $this->schema ) {
 			$this->schema = array(
 				'$schema'    => 'http://json-schema.org/draft-04/schema#',
-				'title'      => 'liber-restored-page',
+				'title'      => 'tinta-restored-page',
 				'type'       => 'object',
 				'properties' => array(
 					'id'     => array( 'type' => 'integer' ),

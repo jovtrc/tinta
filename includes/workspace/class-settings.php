@@ -2,21 +2,21 @@
 /**
  * Workspace settings.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Workspace;
+namespace Tinta\Workspace;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * `liber_settings` (workspace mode, revisions kept), registered with core's
+ * `tinta_settings` (workspace mode, revisions kept), registered with core's
  * settings API so admins change it through `wp/v2/settings`. Core's own
  * `default_role` is exposed there too, for "New people join as".
  */
 final class Settings {
 
-	public const OPTION = 'liber_settings';
+	public const OPTION = 'tinta_settings';
 
 	public const DEFAULTS = array(
 		'workspace_mode' => false,
@@ -36,7 +36,7 @@ final class Settings {
 	 */
 	public function register_settings(): void {
 		register_setting(
-			'liber',
+			'tinta',
 			self::OPTION,
 			array(
 				'type'              => 'object',

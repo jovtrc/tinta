@@ -135,40 +135,40 @@ export function BlocksPanel() {
 	return (
 		<aside
 			ref={ ref }
-			className="liber-blocks"
-			aria-label={ __( 'Blocks', 'liber' ) }
+			className="tinta-blocks"
+			aria-label={ __( 'Blocks', 'tinta' ) }
 		>
-			<form className="liber-blocks__header" onSubmit={ insertFirst }>
+			<form className="tinta-blocks__header" onSubmit={ insertFirst }>
 				<SearchControl
 					__nextHasNoMarginBottom
-					label={ __( 'Search blocks', 'liber' ) }
+					label={ __( 'Search blocks', 'tinta' ) }
 					value={ search }
 					onChange={ setSearch }
 				/>
 				<Button
 					icon={ closeSmall }
-					label={ __( 'Close blocks', 'liber' ) }
+					label={ __( 'Close blocks', 'tinta' ) }
 					size="compact"
 					onClick={ close }
 				/>
 			</form>
 			{ groups.map( ( group ) => (
 				<section key={ group.slug }>
-					<h2 className="liber-blocks__group">{ group.title }</h2>
-					<ul className="liber-blocks__list">
+					<h2 className="tinta-blocks__group">{ group.title }</h2>
+					<ul className="tinta-blocks__list">
 						{ group.items.map( ( item ) => (
 							<li key={ item.id }>
 								<Button
-									className="liber-blocks__item"
+									className="tinta-blocks__item"
 									onClick={ () => insert( item ) }
 								>
 									<BlockIcon icon={ item.icon } showColors />
-									<span className="liber-blocks__text">
-										<span className="liber-blocks__title">
+									<span className="tinta-blocks__text">
+										<span className="tinta-blocks__title">
 											{ item.title }
 										</span>
 										{ item.description && (
-											<span className="liber-blocks__description">
+											<span className="tinta-blocks__description">
 												{ item.description }
 											</span>
 										) }
@@ -180,8 +180,8 @@ export function BlocksPanel() {
 				</section>
 			) ) }
 			{ ! groups.length && (
-				<p className="liber-blocks__empty">
-					{ __( 'No blocks found.', 'liber' ) }
+				<p className="tinta-blocks__empty">
+					{ __( 'No blocks found.', 'tinta' ) }
 				</p>
 			) }
 		</aside>

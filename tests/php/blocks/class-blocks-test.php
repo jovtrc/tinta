@@ -2,20 +2,20 @@
 /**
  * Tests for the block allowlist and the Page link block.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Blocks;
+namespace Tinta\Tests\Blocks;
 
-use Liber\Roles\Roles;
+use Tinta\Roles\Roles;
 use WP_Block_Editor_Context;
 use WP_UnitTestCase;
 
 /**
  * Pages offer a short list of blocks; page links render for who can read them.
  *
- * @covers \Liber\Blocks\Allowlist
- * @covers \Liber\Blocks\Registry
+ * @covers \Tinta\Blocks\Allowlist
+ * @covers \Tinta\Blocks\Registry
  */
 final class Blocks_Test extends WP_UnitTestCase {
 
@@ -29,7 +29,7 @@ final class Blocks_Test extends WP_UnitTestCase {
 		$page_blocks = get_allowed_block_types( new WP_Block_Editor_Context( array( 'post' => $page ) ) );
 		$post_blocks = get_allowed_block_types( new WP_Block_Editor_Context( array( 'post' => $post ) ) );
 
-		$this->assertContains( 'liber/callout', $page_blocks );
+		$this->assertContains( 'tinta/callout', $page_blocks );
 		$this->assertContains( 'core/columns', $page_blocks );
 		$this->assertNotContains( 'core/buttons', $page_blocks );
 		$this->assertTrue( $post_blocks );
@@ -41,13 +41,13 @@ final class Blocks_Test extends WP_UnitTestCase {
 	public function test_page_links_show_the_current_title_and_icon(): void {
 		wp_set_current_user( self::factory()->user->create( array( 'role' => Roles::VIEWER ) ) );
 		$page_id = $this->create_page( 'Handbook' );
-		update_post_meta( $page_id, '_liber_icon', '📘' );
+		update_post_meta( $page_id, '_tinta_icon', '📘' );
 
 		$html = $this->render_link( $page_id );
 
 		$this->assertStringContainsString( 'Handbook', $html );
 		$this->assertStringContainsString( '📘', $html );
-		$this->assertStringContainsString( 'page=liber&#038;doc=' . $page_id, $html );
+		$this->assertStringContainsString( 'page=tinta&#038;doc=' . $page_id, $html );
 	}
 
 	/**
@@ -74,7 +74,7 @@ final class Blocks_Test extends WP_UnitTestCase {
 	private function create_page( string $title ): int {
 		return self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 				'post_title'  => $title,
 			)
@@ -89,7 +89,7 @@ final class Blocks_Test extends WP_UnitTestCase {
 	private function render_link( int $page_id ): string {
 		return render_block(
 			array(
-				'blockName'    => 'liber/page-link',
+				'blockName'    => 'tinta/page-link',
 				'attrs'        => array( 'pageId' => $page_id ),
 				'innerBlocks'  => array(),
 				'innerHTML'    => '',

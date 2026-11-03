@@ -1,6 +1,6 @@
 /**
  * Core blocks as pages use them: headings H1–H3, and embeds from a few providers.
- * PHP limits which blocks the editor offers (`Liber\Blocks\Allowlist`).
+ * PHP limits which blocks the editor offers (`Tinta\Blocks\Allowlist`).
  */
 import { registerCoreBlocks } from '@wordpress/block-library';
 import {
@@ -14,12 +14,12 @@ const HEADING_LEVELS = [ 1, 2, 3 ];
 const EMBED_PROVIDERS = [ 'youtube', 'vimeo', 'twitter' ];
 
 /**
- * Registers core blocks with Liber's heading levels and embed providers.
+ * Registers core blocks with Tinta's heading levels and embed providers.
  */
 export function registerBlocks() {
 	addFilter(
 		'blocks.registerBlockType',
-		'liber/heading-levels',
+		'tinta/heading-levels',
 		(
 			settings: { attributes?: Record< string, object > },
 			name: string

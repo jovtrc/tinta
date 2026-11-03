@@ -2,11 +2,11 @@
 /**
  * Runs when the plugin is deleted.
  *
- * @package Liber
+ * @package Tinta
  */
 
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-Liber\Setup\Uninstaller::uninstall();
+Tinta\Setup\Uninstaller::uninstall();

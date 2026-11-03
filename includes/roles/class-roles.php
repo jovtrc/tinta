@@ -2,53 +2,53 @@
 /**
  * Workspace roles and capabilities.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Roles;
+namespace Tinta\Roles;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Member and Viewer roles, plus Liber's capabilities for administrators.
+ * Member and Viewer roles, plus Tinta's capabilities for administrators.
  */
 final class Roles {
 
-	public const MEMBER = 'liber_member';
-	public const VIEWER = 'liber_viewer';
+	public const MEMBER = 'tinta_member';
+	public const VIEWER = 'tinta_viewer';
 
 	/**
 	 * Enter the workspace and read every page.
 	 */
 	private const READ_CAPS = array(
-		'liber_access',
-		'read_private_liber_docs',
+		'tinta_access',
+		'read_private_tinta_docs',
 	);
 
 	/**
 	 * Create, edit and trash any page. WordPress needs `publish_*` to set any status, `private` included.
 	 */
 	private const WRITE_CAPS = array(
-		'edit_liber_docs',
-		'edit_others_liber_docs',
-		'edit_private_liber_docs',
-		'edit_published_liber_docs',
-		'publish_liber_docs',
-		'delete_liber_docs',
-		'delete_others_liber_docs',
-		'delete_private_liber_docs',
-		'delete_published_liber_docs',
+		'edit_tinta_docs',
+		'edit_others_tinta_docs',
+		'edit_private_tinta_docs',
+		'edit_published_tinta_docs',
+		'publish_tinta_docs',
+		'delete_tinta_docs',
+		'delete_others_tinta_docs',
+		'delete_private_tinta_docs',
+		'delete_published_tinta_docs',
 	);
 
 	/**
 	 * Workspace settings.
 	 */
 	private const ADMIN_CAPS = array(
-		'liber_manage',
+		'tinta_manage',
 	);
 
 	/**
-	 * Adds the roles and grants administrators every Liber capability.
+	 * Adds the roles and grants administrators every Tinta capability.
 	 *
 	 * Adding caps one by one also updates roles created by an older version.
 	 */
@@ -73,7 +73,7 @@ final class Roles {
 	}
 
 	/**
-	 * Removes the roles and Liber's capabilities from administrators.
+	 * Removes the roles and Tinta's capabilities from administrators.
 	 */
 	public static function uninstall(): void {
 		remove_role( self::VIEWER );

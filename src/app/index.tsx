@@ -1,5 +1,5 @@
 /**
- * Workspace entry: registers blocks and mounts the app on Liber's admin screen.
+ * Workspace entry: registers blocks and mounts the app on Tinta's admin screen.
  */
 import { createRoot } from '@wordpress/element';
 import '@wordpress/format-library';
@@ -16,7 +16,7 @@ if ( config.canCreate ) {
 	registerNoteButton();
 }
 
-const root = document.getElementById( 'liber-workspace' );
+const root = document.getElementById( 'tinta-workspace' );
 
 if ( root ) {
 	createRoot( root ).render( <App /> );

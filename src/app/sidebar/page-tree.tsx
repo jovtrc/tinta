@@ -123,9 +123,9 @@ export function PageTree( { currentId, onOpen }: PageTreeProps ) {
 				<TreeLevel parent={ 0 } depth={ 0 } />
 				<DragOverlay dropAnimation={ null }>
 					{ draggedPage && (
-						<div className="liber-tree__drag-preview">
+						<div className="tinta-tree__drag-preview">
 							{ decodeEntities( draggedPage.title ) ||
-								__( 'Untitled', 'liber' ) }
+								__( 'Untitled', 'tinta' ) }
 						</div>
 					) }
 				</DragOverlay>
@@ -146,9 +146,9 @@ function TreeLevel( { parent, depth }: { parent: number; depth: number } ) {
 
 	return (
 		<ul
-			className="liber-tree"
+			className="tinta-tree"
 			role={ depth ? 'group' : undefined }
-			aria-label={ depth ? undefined : __( 'Pages', 'liber' ) }
+			aria-label={ depth ? undefined : __( 'Pages', 'tinta' ) }
 		>
 			{ ( childrenOf.get( parent ) ?? [] ).map( ( page ) => (
 				<TreeItem key={ page.id } page={ page } depth={ depth } />
@@ -188,10 +188,10 @@ function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
 	);
 	const hasChildren = !! childrenOf.get( page.id )?.length;
 	const isExpanded = expanded.has( page.id );
-	const title = decodeEntities( page.title ) || __( 'Untitled', 'liber' );
+	const title = decodeEntities( page.title ) || __( 'Untitled', 'tinta' );
 
 	const rowClass = [
-		'liber-tree__row',
+		'tinta-tree__row',
 		draggedId === page.id && 'is-dragging',
 		target?.id === page.id && `is-drop-${ target.zone }`,
 		isMenuOpen && 'is-menu-open',
@@ -225,30 +225,30 @@ function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
 			>
 				{ hasChildren ? (
 					<Button
-						className="liber-tree__toggle"
+						className="tinta-tree__toggle"
 						size="small"
 						icon={ isExpanded ? chevronDown : chevronRight }
 						label={
 							isExpanded
-								? __( 'Collapse', 'liber' )
-								: __( 'Expand', 'liber' )
+								? __( 'Collapse', 'tinta' )
+								: __( 'Expand', 'tinta' )
 						}
 						aria-expanded={ isExpanded }
 						onClick={ () => toggle( page.id ) }
 					/>
 				) : (
-					<span className="liber-tree__toggle" />
+					<span className="tinta-tree__toggle" />
 				) }
 				<a
-					className="liber-tree__link"
+					className="tinta-tree__link"
 					href={ pageUrl( page.id ) }
 					aria-current={ page.id === currentId ? 'page' : undefined }
 					onClick={ open }
 				>
-					<span className="liber-tree__icon" aria-hidden="true">
+					<span className="tinta-tree__icon" aria-hidden="true">
 						{ page.icon || <Icon icon={ pageIcon } size={ 18 } /> }
 					</span>
-					<span className="liber-tree__title">{ title }</span>
+					<span className="tinta-tree__title">{ title }</span>
 				</a>
 				<PageActions
 					pageId={ page.id }

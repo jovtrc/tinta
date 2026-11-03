@@ -2,12 +2,12 @@
 /**
  * Tests that core's Notes work on pages.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Docs;
+namespace Tinta\Tests\Docs;
 
-use Liber\Roles\Roles;
+use Tinta\Roles\Roles;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_UnitTestCase;
@@ -15,8 +15,8 @@ use WP_UnitTestCase;
 /**
  * Members write and read notes on pages through core's comments API; Viewers can't.
  *
- * @covers \Liber\Docs\Post_Type
- * @covers \Liber\Docs\Notes_Access
+ * @covers \Tinta\Docs\Post_Type
+ * @covers \Tinta\Docs\Notes_Access
  */
 final class Notes_Test extends WP_UnitTestCase {
 
@@ -35,7 +35,7 @@ final class Notes_Test extends WP_UnitTestCase {
 
 		$this->page_id = self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 			)
 		);

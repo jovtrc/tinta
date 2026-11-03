@@ -8,7 +8,7 @@ import { addAction, removeAction } from '@wordpress/hooks';
 
 import { store as workspaceStore } from './store';
 
-const NAMESPACE = 'liber/tree-refresh';
+const NAMESPACE = 'tinta/tree-refresh';
 
 /**
  * Asks for the generation on each tick and refetches when it changed.
@@ -29,14 +29,14 @@ export function useTreeRefresh() {
 			'heartbeat.send',
 			NAMESPACE,
 			( data: Record< string, unknown > ) => {
-				data.liber_tree = generation;
+				data.tinta_tree = generation;
 			}
 		);
 		addAction(
 			'heartbeat.tick',
 			NAMESPACE,
 			( response: Record< string, unknown > ) => {
-				const latest = response.liber_tree;
+				const latest = response.tinta_tree;
 				if ( typeof latest === 'number' && latest !== generation ) {
 					invalidateResolution( 'getPages', [] );
 				}

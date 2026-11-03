@@ -2,12 +2,12 @@
 /**
  * The page tree.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Docs;
+namespace Tinta\Docs;
 
-use Liber\Cache\Cache;
+use Tinta\Cache\Cache;
 use WP_Post;
 
 defined( 'ABSPATH' ) || exit;
@@ -18,9 +18,9 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Tree {
 
-	public const CACHE_KEY = 'liber_tree';
+	public const CACHE_KEY = 'tinta_tree';
 
-	public const GENERATION_OPTION = 'liber_tree_generation';
+	public const GENERATION_OPTION = 'tinta_tree_generation';
 
 	/**
 	 * Post fields the tree shows.

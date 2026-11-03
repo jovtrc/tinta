@@ -2,24 +2,24 @@
 /**
  * Tests for cleanup on uninstall.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Setup;
+namespace Tinta\Tests\Setup;
 
-use Liber\Cache\Cache;
-use Liber\Docs\Tree;
-use Liber\Rest\User_Prefs_Field;
-use Liber\Roles\Roles;
-use Liber\Setup\Installer;
-use Liber\Setup\Uninstaller;
-use Liber\Workspace\Settings;
+use Tinta\Cache\Cache;
+use Tinta\Docs\Tree;
+use Tinta\Rest\User_Prefs_Field;
+use Tinta\Roles\Roles;
+use Tinta\Setup\Installer;
+use Tinta\Setup\Uninstaller;
+use Tinta\Workspace\Settings;
 use WP_UnitTestCase;
 
 /**
  * Deleting the plugin cleans up after it, but keeps the pages.
  *
- * @covers \Liber\Setup\Uninstaller
+ * @covers \Tinta\Setup\Uninstaller
  */
 final class Uninstaller_Test extends WP_UnitTestCase {
 
@@ -46,7 +46,7 @@ final class Uninstaller_Test extends WP_UnitTestCase {
 
 		$this->assertNull( get_role( Roles::MEMBER ) );
 		$this->assertNull( get_role( Roles::VIEWER ) );
-		$this->assertFalse( get_role( 'administrator' )->has_cap( 'liber_access' ) );
+		$this->assertFalse( get_role( 'administrator' )->has_cap( 'tinta_access' ) );
 		$this->assertNull( get_option( Settings::OPTION, null ) );
 		$this->assertFalse( get_option( Tree::GENERATION_OPTION ) );
 		$this->assertFalse( get_option( Installer::VERSION_OPTION ) );
@@ -60,7 +60,7 @@ final class Uninstaller_Test extends WP_UnitTestCase {
 	public function test_keeps_pages(): void {
 		$page = self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 			)
 		);
@@ -71,7 +71,7 @@ final class Uninstaller_Test extends WP_UnitTestCase {
 	}
 
 	/**
-	 * A default role Liber added falls back to Subscriber.
+	 * A default role Tinta added falls back to Subscriber.
 	 */
 	public function test_new_people_join_as_subscribers_again(): void {
 		update_option( 'default_role', Roles::MEMBER );

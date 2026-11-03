@@ -44,73 +44,73 @@ export function Sidebar( { currentId, onOpen }: SidebarProps ) {
 
 	return (
 		<nav
-			className="liber-sidebar"
-			aria-label={ __( 'Workspace', 'liber' ) }
+			className="tinta-sidebar"
+			aria-label={ __( 'Workspace', 'tinta' ) }
 		>
-			<div className="liber-sidebar__header">
+			<div className="tinta-sidebar__header">
 				{ config.siteIcon ? (
 					<img
-						className="liber-sidebar__icon"
+						className="tinta-sidebar__icon"
 						src={ config.siteIcon }
 						alt=""
 						width={ 22 }
 						height={ 22 }
 					/>
 				) : (
-					<span className="liber-sidebar__icon" aria-hidden="true">
+					<span className="tinta-sidebar__icon" aria-hidden="true">
 						{ config.siteName.trim().charAt( 0 ).toUpperCase() }
 					</span>
 				) }
-				<span className="liber-sidebar__name">{ config.siteName }</span>
+				<span className="tinta-sidebar__name">{ config.siteName }</span>
 				<Button
 					icon={ isMobile ? closeSmall : drawerLeft }
-					label={ __( 'Close sidebar', 'liber' ) }
+					label={ __( 'Close sidebar', 'tinta' ) }
 					size="small"
 					onClick={ () => setOpen( false ) }
 				/>
 			</div>
 			<Button
-				className="liber-sidebar__action"
+				className="tinta-sidebar__action"
 				icon={ search }
 				onClick={ () => openCommandPalette() }
 			>
-				{ __( 'Search', 'liber' ) }
-				<kbd className="liber-sidebar__shortcut" aria-hidden="true">
+				{ __( 'Search', 'tinta' ) }
+				<kbd className="tinta-sidebar__shortcut" aria-hidden="true">
 					{ displayShortcut.primary( 'k' ) }
 				</kbd>
 			</Button>
 			{ config.canCreate && (
 				<Button
-					className="liber-sidebar__action"
+					className="tinta-sidebar__action"
 					icon={ plus }
 					onClick={ () => createPage() }
 				>
-					{ __( 'New page', 'liber' ) }
+					{ __( 'New page', 'tinta' ) }
 				</Button>
 			) }
 			<PageSection
-				title={ __( 'Pinned', 'liber' ) }
+				title={ __( 'Pinned', 'tinta' ) }
 				pageIds={ prefs.pinned }
 				currentId={ currentId }
 				onOpen={ onOpen }
 				onReorder={ ( pinned ) => updatePrefs( { pinned } ) }
 			/>
 			<PageSection
-				title={ __( 'Recent', 'liber' ) }
+				title={ __( 'Recent', 'tinta' ) }
 				pageIds={ prefs.recent }
 				currentId={ currentId }
 				onOpen={ onOpen }
 			/>
-			<div className="liber-sidebar__heading-row">
-				<h2 className="liber-sidebar__heading">
-					{ __( 'Pages', 'liber' ) }
+			<div className="tinta-sidebar__heading-row">
+				<h2 className="tinta-sidebar__heading">
+					{ __( 'Pages', 'tinta' ) }
 				</h2>
 				{ config.canCreate && (
 					<Button
-						className="liber-sidebar__heading-action"
+						className="tinta-sidebar__heading-action"
 						icon={ plus }
 						size="small"
-						label={ __( 'Add a page', 'liber' ) }
+						label={ __( 'Add a page', 'tinta' ) }
 						onClick={ () => createPage() }
 					/>
 				) }
@@ -118,11 +118,11 @@ export function Sidebar( { currentId, onOpen }: SidebarProps ) {
 			<PageTree currentId={ currentId } onOpen={ onOpen } />
 			{ config.canCreate && (
 				<Button
-					className="liber-sidebar__action liber-sidebar__trash"
+					className="tinta-sidebar__action tinta-sidebar__trash"
 					icon={ trash }
 					onClick={ () => openDialog( 'trash' ) }
 				>
-					{ __( 'Trash', 'liber' ) }
+					{ __( 'Trash', 'tinta' ) }
 				</Button>
 			) }
 			<UserMenu />

@@ -102,12 +102,12 @@ export function NoteMarkers() {
 	}, [ layer, threads, blocks, layout ] );
 
 	return (
-		<div ref={ ref } className="liber-note-markers">
+		<div ref={ ref } className="tinta-note-markers">
 			{ markers.map( ( marker ) => (
 				<button
 					key={ marker.clientId }
 					type="button"
-					className="liber-note-marker"
+					className="tinta-note-marker"
 					style={ {
 						top: marker.top,
 						insetInlineStart: marker.start,
@@ -118,7 +118,7 @@ export function NoteMarkers() {
 							'%d note on this block',
 							'%d notes on this block',
 							marker.count,
-							'liber'
+							'tinta'
 						),
 						marker.count
 					) }

@@ -35,7 +35,7 @@ export function TrashDialog( { onClose }: { onClose: () => void } ) {
 	const load = useCallback(
 		() =>
 			apiFetch< TrashedPage[] >( {
-				path: addQueryArgs( '/wp/v2/liber-docs', {
+				path: addQueryArgs( '/wp/v2/tinta-docs', {
 					status: 'trash',
 					context: 'edit',
 					per_page: 100,
@@ -62,19 +62,19 @@ export function TrashDialog( { onClose }: { onClose: () => void } ) {
 	const restore = ( id: number ) =>
 		run(
 			apiFetch( {
-				path: `/liber/v1/docs/${ id }/restore`,
+				path: `/tinta/v1/docs/${ id }/restore`,
 				method: 'POST',
 			} ),
-			__( 'The page could not be restored.', 'liber' )
+			__( 'The page could not be restored.', 'tinta' )
 		);
 
 	const destroy = ( id: number ) =>
 		run(
 			apiFetch( {
-				path: `/wp/v2/liber-docs/${ id }?force=true`,
+				path: `/wp/v2/tinta-docs/${ id }?force=true`,
 				method: 'DELETE',
 			} ),
-			__( 'The page could not be deleted.', 'liber' )
+			__( 'The page could not be deleted.', 'tinta' )
 		);
 
 	const roots = pages?.filter(
@@ -83,27 +83,27 @@ export function TrashDialog( { onClose }: { onClose: () => void } ) {
 
 	return (
 		<Modal
-			title={ __( 'Trash', 'liber' ) }
+			title={ __( 'Trash', 'tinta' ) }
 			onRequestClose={ onClose }
 			size="medium"
 		>
-			<p className="liber-dialog__note">
+			<p className="tinta-dialog__note">
 				{ __(
 					'Subpages come back with their page. Pages in the trash are deleted after 30 days.',
-					'liber'
+					'tinta'
 				) }
 			</p>
 			{ ! roots && <Spinner /> }
 			{ roots && ! roots.length && (
-				<p>{ __( 'The trash is empty.', 'liber' ) }</p>
+				<p>{ __( 'The trash is empty.', 'tinta' ) }</p>
 			) }
 			{ !! roots?.length && (
-				<ul className="liber-trash">
+				<ul className="tinta-trash">
 					{ roots.map( ( page ) => (
-						<li key={ page.id } className="liber-trash__item">
-							<span className="liber-trash__title">
+						<li key={ page.id } className="tinta-trash__item">
+							<span className="tinta-trash__title">
 								{ decodeEntities( page.title.raw ) ||
-									__( 'Untitled', 'liber' ) }
+									__( 'Untitled', 'tinta' ) }
 							</span>
 							{ confirmingId === page.id ? (
 								<>
@@ -113,14 +113,14 @@ export function TrashDialog( { onClose }: { onClose: () => void } ) {
 										isDestructive
 										onClick={ () => destroy( page.id ) }
 									>
-										{ __( 'Delete forever', 'liber' ) }
+										{ __( 'Delete forever', 'tinta' ) }
 									</Button>
 									<Button
 										size="compact"
 										variant="tertiary"
 										onClick={ () => setConfirmingId( 0 ) }
 									>
-										{ __( 'Cancel', 'liber' ) }
+										{ __( 'Cancel', 'tinta' ) }
 									</Button>
 								</>
 							) : (
@@ -130,7 +130,7 @@ export function TrashDialog( { onClose }: { onClose: () => void } ) {
 										variant="secondary"
 										onClick={ () => restore( page.id ) }
 									>
-										{ __( 'Restore', 'liber' ) }
+										{ __( 'Restore', 'tinta' ) }
 									</Button>
 									{ config.canManage && (
 										<Button
@@ -141,7 +141,7 @@ export function TrashDialog( { onClose }: { onClose: () => void } ) {
 												setConfirmingId( page.id )
 											}
 										>
-											{ __( 'Delete…', 'liber' ) }
+											{ __( 'Delete…', 'tinta' ) }
 										</Button>
 									) }
 								</>

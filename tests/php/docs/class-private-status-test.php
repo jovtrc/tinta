@@ -2,18 +2,18 @@
 /**
  * Tests for Private_Status.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Docs;
+namespace Tinta\Tests\Docs;
 
-use Liber\Docs\Private_Status;
+use Tinta\Docs\Private_Status;
 use WP_UnitTestCase;
 
 /**
  * Pages are saved and titled as private; other posts are left alone.
  *
- * @covers \Liber\Docs\Private_Status
+ * @covers \Tinta\Docs\Private_Status
  */
 final class Private_Status_Test extends WP_UnitTestCase {
 
@@ -28,7 +28,7 @@ final class Private_Status_Test extends WP_UnitTestCase {
 	public function test_pages_are_saved_as_private( string $asked, string $saved ): void {
 		$data = ( new Private_Status() )->force_private(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => $asked,
 			)
 		);

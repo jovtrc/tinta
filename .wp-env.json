@@ -1,9 +1,13 @@
 {
 	"core": null,
 	"phpVersion": "8.2",
-	"plugins": [
-		"."
-	],
+	"mappings": {
+		"wp-content/plugins/tinta": "."
+	},
+	"lifecycleScripts": {
+		"afterStart": "wp-env run cli wp plugin activate tinta",
+		"afterReset": "wp-env run cli wp plugin activate tinta"
+	},
 	"testsEnvironment": false,
 	"config": {
 		"WP_DEBUG": true,

@@ -2,10 +2,10 @@
 /**
  * Keeps pages' files and notes out of other roles' listings.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Docs;
+namespace Tinta\Docs;
 
 use WP_Comment_Query;
 use WP_Query;
@@ -13,14 +13,14 @@ use WP_Query;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Core already hides pages from people without a Liber role, but the media
+ * Core already hides pages from people without a Tinta role, but the media
  * library lists every file to anyone who can upload, and comment searches
  * count notes even when they can't be read. For those people, listings leave
  * out files attached to pages and notes on pages.
  */
 final class Other_Roles {
 
-	private const FLAG = 'liber_hide_pages';
+	private const FLAG = 'tinta_hide_pages';
 
 	/**
 	 * Hooks the listings.
@@ -34,13 +34,13 @@ final class Other_Roles {
 	}
 
 	/**
-	 * Marks a query to leave pages out, for people without a Liber role.
+	 * Marks a query to leave pages out, for people without a Tinta role.
 	 *
 	 * @param array<string, mixed> $args Query arguments.
 	 * @return array<string, mixed>
 	 */
 	public function flag( array $args ): array {
-		if ( ! current_user_can( 'read_private_liber_docs' ) ) {
+		if ( ! current_user_can( 'read_private_tinta_docs' ) ) {
 			$args[ self::FLAG ] = true;
 		}
 

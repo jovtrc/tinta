@@ -2,20 +2,20 @@
 /**
  * Tests for Restore_Controller.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Rest;
+namespace Tinta\Tests\Rest;
 
-use Liber\Roles\Roles;
+use Tinta\Roles\Roles;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_UnitTestCase;
 
 /**
- * `POST liber/v1/docs/{id}/restore` brings a trashed page back.
+ * `POST tinta/v1/docs/{id}/restore` brings a trashed page back.
  *
- * @covers \Liber\Rest\Restore_Controller
+ * @covers \Tinta\Rest\Restore_Controller
  */
 final class Restore_Controller_Test extends WP_UnitTestCase {
 
@@ -34,7 +34,7 @@ final class Restore_Controller_Test extends WP_UnitTestCase {
 
 		$this->page_id = self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 			)
 		);
@@ -76,6 +76,6 @@ final class Restore_Controller_Test extends WP_UnitTestCase {
 	 * Sends the restore request.
 	 */
 	private function restore(): WP_REST_Response {
-		return rest_get_server()->dispatch( new WP_REST_Request( 'POST', "/liber/v1/docs/{$this->page_id}/restore" ) );
+		return rest_get_server()->dispatch( new WP_REST_Request( 'POST', "/tinta/v1/docs/{$this->page_id}/restore" ) );
 	}
 }

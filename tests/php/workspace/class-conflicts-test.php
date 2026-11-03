@@ -2,18 +2,18 @@
 /**
  * Tests for Conflicts.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Workspace;
+namespace Tinta\Tests\Workspace;
 
-use Liber\Workspace\Conflicts;
+use Tinta\Workspace\Conflicts;
 use WP_UnitTestCase;
 
 /**
  * The setup wizard lists only the active plugins known to conflict.
  *
- * @covers \Liber\Workspace\Conflicts
+ * @covers \Tinta\Workspace\Conflicts
  */
 final class Conflicts_Test extends WP_UnitTestCase {
 

@@ -36,7 +36,7 @@ export function EmojiPicker( {
 		const term = filter.trim().toLowerCase();
 
 		const recentGroup = {
-			label: __( 'Recently used', 'liber' ),
+			label: __( 'Recently used', 'tinta' ),
 			emojis: recent.map( ( emoji ): [ string, string ] => [
 				emoji,
 				emoji,
@@ -55,11 +55,11 @@ export function EmojiPicker( {
 	}, [ filter, recent ] );
 
 	return (
-		<div className="liber-emoji-picker">
+		<div className="tinta-emoji-picker">
 			<SearchControl
 				__nextHasNoMarginBottom
-				label={ __( 'Filter emoji', 'liber' ) }
-				placeholder={ __( 'Filter, or type any emoji', 'liber' ) }
+				label={ __( 'Filter emoji', 'tinta' ) }
+				placeholder={ __( 'Filter, or type any emoji', 'tinta' ) }
 				value={ filter }
 				onChange={ setFilter }
 			/>
@@ -67,20 +67,20 @@ export function EmojiPicker( {
 				<Button variant="secondary" onClick={ () => onSelect( typed ) }>
 					{
 						/* translators: %s: an emoji. */
-						sprintf( __( 'Use %s', 'liber' ), typed )
+						sprintf( __( 'Use %s', 'tinta' ), typed )
 					}
 				</Button>
 			) }
 			{ groups.map( ( group ) => (
 				<div key={ group.label }>
-					<h3 className="liber-emoji-picker__group">
+					<h3 className="tinta-emoji-picker__group">
 						{ group.label }
 					</h3>
-					<div className="liber-emoji-picker__grid">
+					<div className="tinta-emoji-picker__grid">
 						{ group.emojis.map( ( [ emoji, words ] ) => (
 							<Button
 								key={ emoji }
-								className="liber-emoji-picker__emoji"
+								className="tinta-emoji-picker__emoji"
 								aria-label={ words }
 								onClick={ () => onSelect( emoji ) }
 							>
@@ -90,15 +90,15 @@ export function EmojiPicker( {
 					</div>
 				</div>
 			) ) }
-			<p className="liber-emoji-picker__hint">
+			<p className="tinta-emoji-picker__hint">
 				{ __(
 					'More emoji: ⌃⌘Space on a Mac, Windows + . on Windows.',
-					'liber'
+					'tinta'
 				) }
 			</p>
 			{ hasIcon && (
 				<Button variant="tertiary" isDestructive onClick={ onRemove }>
-					{ __( 'Remove icon', 'liber' ) }
+					{ __( 'Remove icon', 'tinta' ) }
 				</Button>
 			) }
 		</div>

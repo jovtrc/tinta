@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="Liber">
+<ruleset name="Tinta">
 	<description>WordPress Coding Standards (Core, Docs, Extra), WordPress VIP and PHP compatibility.</description>
 
 	<file>.</file>
@@ -8,6 +8,7 @@
 	<exclude-pattern>*/vendor/*</exclude-pattern>
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<exclude-pattern>*/build/*</exclude-pattern>
+	<exclude-pattern>*/dist/*</exclude-pattern>
 	<exclude-pattern>*/prototype/*</exclude-pattern>
 
 	<arg name="extensions" value="php"/>
@@ -26,7 +27,7 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="liber"/>
+				<element value="tinta"/>
 			</property>
 		</properties>
 	</rule>
@@ -34,10 +35,10 @@
 	<rule ref="WordPress.WP.Capabilities">
 		<properties>
 			<property name="custom_capabilities" type="array">
-				<element value="liber_access"/>
-				<element value="edit_liber_docs"/>
-				<element value="liber_manage"/>
-				<element value="read_private_liber_docs"/>
+				<element value="tinta_access"/>
+				<element value="edit_tinta_docs"/>
+				<element value="tinta_manage"/>
+				<element value="read_private_tinta_docs"/>
 			</property>
 		</properties>
 	</rule>
@@ -45,7 +46,7 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
-				<element value="liber"/>
+				<element value="tinta"/>
 			</property>
 		</properties>
 	</rule>

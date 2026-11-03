@@ -1,6 +1,6 @@
 /**
  * The open workspace dialog, wherever it was opened from: the tree, the page
- * header, the account menu or ⌘K (see the `liber/ui` store).
+ * header, the account menu or ⌘K (see the `tinta/ui` store).
  */
 import { useDispatch, useSelect } from '@wordpress/data';
 

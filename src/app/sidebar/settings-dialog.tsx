@@ -24,10 +24,10 @@ import { store as uiStore } from '../store/ui';
 interface WorkspaceSettings {
 	title: string;
 	default_role?: string;
-	liber_settings: { workspace_mode: boolean; revisions: number };
+	tinta_settings: { workspace_mode: boolean; revisions: number };
 }
 
-const FIELDS = 'title,default_role,liber_settings';
+const FIELDS = 'title,default_role,tinta_settings';
 
 /**
  * Renders the dialog.
@@ -62,40 +62,40 @@ export function SettingsDialog( { onClose }: { onClose: () => void } ) {
 			} );
 			window.location.reload();
 		} catch {
-			setError( __( 'The settings could not be saved.', 'liber' ) );
+			setError( __( 'The settings could not be saved.', 'tinta' ) );
 			setSaving( false );
 		}
 	};
 
 	return (
 		<Modal
-			title={ __( 'Workspace settings', 'liber' ) }
+			title={ __( 'Workspace settings', 'tinta' ) }
 			onRequestClose={ onClose }
 			size="medium"
 		>
 			{ ! settings ? (
 				<Spinner />
 			) : (
-				<div className="liber-settings">
+				<div className="tinta-settings">
 					<TextControl
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
-						label={ __( 'Workspace name', 'liber' ) }
+						label={ __( 'Workspace name', 'tinta' ) }
 						value={ settings.title }
 						onChange={ ( title ) => change( { title } ) }
 					/>
 					<ToggleControl
 						__nextHasNoMarginBottom
-						label={ __( 'Workspace mode', 'liber' ) }
+						label={ __( 'Workspace mode', 'tinta' ) }
 						help={ __(
 							'Everyone lands in the workspace after logging in, the site is private, and Members and Viewers only see the workspace and their profile. Turn it off to get the usual WordPress back.',
-							'liber'
+							'tinta'
 						) }
-						checked={ settings.liber_settings.workspace_mode }
+						checked={ settings.tinta_settings.workspace_mode }
 						onChange={ ( workspaceMode ) =>
 							change( {
-								liber_settings: {
-									...settings.liber_settings,
+								tinta_settings: {
+									...settings.tinta_settings,
 									workspace_mode: workspaceMode,
 								},
 							} )
@@ -106,7 +106,7 @@ export function SettingsDialog( { onClose }: { onClose: () => void } ) {
 							<SelectControl
 								__next40pxDefaultSize
 								__nextHasNoMarginBottom
-								label={ __( 'New people join as', 'liber' ) }
+								label={ __( 'New people join as', 'tinta' ) }
 								value={ settings.default_role }
 								options={ roleOptions( settings.default_role ) }
 								onChange={ ( defaultRole ) =>
@@ -114,7 +114,7 @@ export function SettingsDialog( { onClose }: { onClose: () => void } ) {
 								}
 								help={
 									<a href={ config.links.invite }>
-										{ __( 'Invite people', 'liber' ) }
+										{ __( 'Invite people', 'tinta' ) }
 									</a>
 								}
 							/>
@@ -129,30 +129,30 @@ export function SettingsDialog( { onClose }: { onClose: () => void } ) {
 						type="number"
 						min={ 0 }
 						max={ 100 }
-						label={ __( 'Versions kept per page', 'liber' ) }
-						value={ String( settings.liber_settings.revisions ) }
+						label={ __( 'Versions kept per page', 'tinta' ) }
+						value={ String( settings.tinta_settings.revisions ) }
 						onChange={ ( revisions ) =>
 							change( {
-								liber_settings: {
-									...settings.liber_settings,
+								tinta_settings: {
+									...settings.tinta_settings,
 									revisions: Number( revisions ),
 								},
 							} )
 						}
 					/>
 					{ error && (
-						<p className="liber-settings__error">{ error }</p>
+						<p className="tinta-settings__error">{ error }</p>
 					) }
-					<div className="liber-dialog__actions">
+					<div className="tinta-dialog__actions">
 						<Button
 							variant="link"
-							className="liber-settings__setup"
+							className="tinta-settings__setup"
 							onClick={ () => openDialog( 'setup' ) }
 						>
-							{ __( 'Run setup again', 'liber' ) }
+							{ __( 'Run setup again', 'tinta' ) }
 						</Button>
 						<Button variant="tertiary" onClick={ onClose }>
-							{ __( 'Cancel', 'liber' ) }
+							{ __( 'Cancel', 'tinta' ) }
 						</Button>
 						<Button
 							variant="primary"
@@ -160,7 +160,7 @@ export function SettingsDialog( { onClose }: { onClose: () => void } ) {
 							disabled={ isSaving }
 							onClick={ save }
 						>
-							{ __( 'Save', 'liber' ) }
+							{ __( 'Save', 'tinta' ) }
 						</Button>
 					</div>
 				</div>

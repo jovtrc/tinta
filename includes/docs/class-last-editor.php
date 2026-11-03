@@ -2,10 +2,10 @@
 /**
  * Who last edited a page.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Docs;
+namespace Tinta\Docs;
 
 use WP_Post;
 
@@ -79,7 +79,7 @@ final class Last_Editor {
 			array(
 				'get_callback' => array( $this, 'get_field' ),
 				'schema'       => array(
-					'description' => __( 'Who last edited the page: the author until someone edits it.', 'liber' ),
+					'description' => __( 'Who last edited the page: the author until someone edits it.', 'tinta' ),
 					'type'        => array( 'object', 'null' ),
 					'context'     => array( 'view', 'edit' ),
 					'readonly'    => true,

@@ -63,8 +63,8 @@ export function WorkspaceCommands( {
 	);
 
 	useCommand( {
-		name: 'liber/new-page',
-		label: __( 'New page', 'liber' ),
+		name: 'tinta/new-page',
+		label: __( 'New page', 'tinta' ),
 		icon: plus,
 		disabled: ! config.canCreate,
 		callback: ( { close } ) => {
@@ -74,8 +74,8 @@ export function WorkspaceCommands( {
 	} );
 
 	useCommand( {
-		name: 'liber/new-subpage',
-		label: __( 'New subpage here', 'liber' ),
+		name: 'tinta/new-subpage',
+		label: __( 'New subpage here', 'tinta' ),
 		icon: plus,
 		disabled: ! config.canCreate || ! level || level >= MAX_DEPTH,
 		callback: ( { close } ) => {
@@ -85,10 +85,10 @@ export function WorkspaceCommands( {
 	} );
 
 	useCommand( {
-		name: 'liber/toggle-pin',
+		name: 'tinta/toggle-pin',
 		label: isPinned
-			? __( 'Unpin this page', 'liber' )
-			: __( 'Pin this page', 'liber' ),
+			? __( 'Unpin this page', 'tinta' )
+			: __( 'Pin this page', 'tinta' ),
 		icon: isPinned ? starFilled : starEmpty,
 		disabled: ! currentId,
 		callback: ( { close } ) => {
@@ -98,8 +98,8 @@ export function WorkspaceCommands( {
 	} );
 
 	useCommand( {
-		name: 'liber/open-trash',
-		label: __( 'Open trash', 'liber' ),
+		name: 'tinta/open-trash',
+		label: __( 'Open trash', 'tinta' ),
 		icon: trash,
 		disabled: ! config.canCreate,
 		callback: ( { close } ) => {
@@ -109,8 +109,8 @@ export function WorkspaceCommands( {
 	} );
 
 	useCommand( {
-		name: 'liber/settings',
-		label: __( 'Workspace settings', 'liber' ),
+		name: 'tinta/settings',
+		label: __( 'Workspace settings', 'tinta' ),
 		icon: cog,
 		disabled: ! config.canManage,
 		callback: ( { close } ) => {
@@ -120,8 +120,8 @@ export function WorkspaceCommands( {
 	} );
 
 	useCommand( {
-		name: 'liber/toggle-sidebar',
-		label: __( 'Toggle sidebar', 'liber' ),
+		name: 'tinta/toggle-sidebar',
+		label: __( 'Toggle sidebar', 'tinta' ),
 		icon: drawerLeft,
 		callback: ( { close } ) => {
 			close();
@@ -129,7 +129,7 @@ export function WorkspaceCommands( {
 		},
 	} );
 
-	useCommandLoader( { name: 'liber/pages', hook: usePageCommands } );
+	useCommandLoader( { name: 'tinta/pages', hook: usePageCommands } );
 
 	return null;
 }
@@ -170,7 +170,7 @@ function usePageCommands( { search }: { search: string } ) {
 					: titleOf( page );
 
 				return {
-					name: `liber/page-${ page.id }`,
+					name: `tinta/page-${ page.id }`,
 					label,
 					searchLabel: label,
 					icon: pageIcon,
@@ -191,5 +191,5 @@ function usePageCommands( { search }: { search: string } ) {
  * @param page Page.
  */
 function titleOf( page: TreePage ): string {
-	return decodeEntities( page.title ) || __( 'Untitled', 'liber' );
+	return decodeEntities( page.title ) || __( 'Untitled', 'tinta' );
 }

@@ -40,24 +40,24 @@ export function EditorHeader( {
 	);
 
 	return (
-		<div className="liber-editor__header">
+		<div className="tinta-editor__header">
 			<SidebarToggle />
 			<Breadcrumbs pageId={ pageId } />
-			<div className="liber-editor__spacer" />
+			<div className="tinta-editor__spacer" />
 			<SaveStatus />
 			<EditorHistoryUndo />
 			<EditorHistoryRedo />
 			<NotesToggle />
 			<Button
 				icon={ drawerRight }
-				label={ __( 'Block settings', 'liber' ) }
+				label={ __( 'Block settings', 'tinta' ) }
 				isPressed={ isInspectorOpen }
 				onClick={ onToggleInspector }
 				size="compact"
 			/>
 			<PageMenu
 				pageId={ pageId }
-				label={ __( 'Page actions', 'liber' ) }
+				label={ __( 'Page actions', 'tinta' ) }
 				size="compact"
 			/>
 		</div>
@@ -76,8 +76,8 @@ function SaveStatus() {
 	);
 
 	return (
-		<span className="liber-editor__status" aria-live="polite">
-			{ isSaved ? __( 'Saved', 'liber' ) : __( 'Saving…', 'liber' ) }
+		<span className="tinta-editor__status" aria-live="polite">
+			{ isSaved ? __( 'Saved', 'tinta' ) : __( 'Saving…', 'tinta' ) }
 		</span>
 	);
 }

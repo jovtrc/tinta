@@ -2,12 +2,12 @@
 /**
  * Tests for User_Prefs_Field.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Rest;
+namespace Tinta\Tests\Rest;
 
-use Liber\Roles\Roles;
+use Tinta\Roles\Roles;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_UnitTestCase;
@@ -15,7 +15,7 @@ use WP_UnitTestCase;
 /**
  * Users keep their own workspace preferences, per site.
  *
- * @covers \Liber\Rest\User_Prefs_Field
+ * @covers \Tinta\Rest\User_Prefs_Field
  */
 final class User_Prefs_Field_Test extends WP_UnitTestCase {
 
@@ -43,7 +43,7 @@ final class User_Prefs_Field_Test extends WP_UnitTestCase {
 		$this->update( array( 'pinned' => array( 4, 7 ) ) );
 		$this->update( array( 'recent' => array( 9, 9, 8, 0 ) ) );
 
-		$prefs = $this->request( 'GET', '/wp/v2/users/me' )->get_data()['liber_prefs'];
+		$prefs = $this->request( 'GET', '/wp/v2/users/me' )->get_data()['tinta_prefs'];
 
 		$this->assertSame( array( 4, 7 ), $prefs['pinned'] );
 		$this->assertSame( array( 9, 8 ), $prefs['recent'] );
@@ -59,9 +59,9 @@ final class User_Prefs_Field_Test extends WP_UnitTestCase {
 		wp_set_current_user( $admin );
 
 		$read = $this->request( 'GET', "/wp/v2/users/{$this->user_id}" )->get_data();
-		$this->assertNull( $read['liber_prefs'] ?? null );
+		$this->assertNull( $read['tinta_prefs'] ?? null );
 
-		$write = $this->request( 'POST', "/wp/v2/users/{$this->user_id}", array( 'liber_prefs' => array( 'pinned' => array( 1 ) ) ) );
+		$write = $this->request( 'POST', "/wp/v2/users/{$this->user_id}", array( 'tinta_prefs' => array( 'pinned' => array( 1 ) ) ) );
 		$this->assertSame( 403, $write->get_status() );
 	}
 
@@ -76,7 +76,7 @@ final class User_Prefs_Field_Test extends WP_UnitTestCase {
 		$this->update( array( 'pinned' => array( 4 ) ) );
 		switch_to_blog( self::factory()->blog->create() ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog -- Reads another site's option.
 
-		$this->assertSame( array(), \Liber\Rest\User_Prefs_Field::read( $this->user_id )['pinned'] );
+		$this->assertSame( array(), \Tinta\Rest\User_Prefs_Field::read( $this->user_id )['pinned'] );
 
 		restore_current_blog();
 	}
@@ -87,7 +87,7 @@ final class User_Prefs_Field_Test extends WP_UnitTestCase {
 	 * @param array<string, int[]> $prefs Lists to save.
 	 */
 	private function update( array $prefs ): void {
-		$response = $this->request( 'POST', '/wp/v2/users/me', array( 'liber_prefs' => $prefs ) );
+		$response = $this->request( 'POST', '/wp/v2/users/me', array( 'tinta_prefs' => $prefs ) );
 
 		$this->assertSame( 200, $response->get_status() );
 	}

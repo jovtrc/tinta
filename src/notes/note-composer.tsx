@@ -102,10 +102,10 @@ export function NoteComposer( {
 	};
 
 	return (
-		<div className="liber-note-composer">
+		<div className="tinta-note-composer">
 			<textarea
 				ref={ ref }
-				className="liber-note-composer__text"
+				className="tinta-note-composer__text"
 				aria-label={ label }
 				placeholder={ label }
 				value={ text }
@@ -121,8 +121,8 @@ export function NoteComposer( {
 			/>
 			{ !! suggestions.length && (
 				<ul
-					className="liber-note-composer__mentions"
-					aria-label={ __( 'People to mention', 'liber' ) }
+					className="tinta-note-composer__mentions"
+					aria-label={ __( 'People to mention', 'tinta' ) }
 				>
 					{ suggestions.map( ( person ) => (
 						<li key={ person.id }>
@@ -145,14 +145,14 @@ export function NoteComposer( {
 					) ) }
 				</ul>
 			) }
-			<div className="liber-note-composer__actions">
+			<div className="tinta-note-composer__actions">
 				{ onCancel && (
 					<Button
 						variant="tertiary"
 						size="compact"
 						onClick={ onCancel }
 					>
-						{ __( 'Cancel', 'liber' ) }
+						{ __( 'Cancel', 'tinta' ) }
 					</Button>
 				) }
 				<Button

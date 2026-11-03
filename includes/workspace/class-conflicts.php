@@ -2,16 +2,16 @@
 /**
  * Plugins known to get in the workspace's way.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Workspace;
+namespace Tinta\Workspace;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * A short list, updated each release, that the setup wizard checks against
- * the active plugins. Liber only points them out; it never deactivates them.
+ * the active plugins. Tinta only points them out; it never deactivates them.
  */
 final class Conflicts {
 
@@ -41,9 +41,9 @@ final class Conflicts {
 	 * @return array<string, array{name: string, reason: string}>
 	 */
 	private static function known(): array {
-		$editor   = __( 'Turns off the block editor, which Liber’s pages are written in.', 'liber' );
-		$rest     = __( 'Blocks the REST API, which the workspace uses to load and save pages.', 'liber' );
-		$redirect = __( 'Redirects people after they log in, which can skip the workspace when workspace mode is on.', 'liber' );
+		$editor   = __( 'Turns off the block editor, which Tinta’s pages are written in.', 'tinta' );
+		$rest     = __( 'Blocks the REST API, which the workspace uses to load and save pages.', 'tinta' );
+		$redirect = __( 'Redirects people after they log in, which can skip the workspace when workspace mode is on.', 'tinta' );
 
 		return array(
 			'classic-editor/classic-editor.php'           => array(

@@ -2,12 +2,12 @@
 /**
  * Tests for Other_Roles.
  *
- * @package Liber
+ * @package Tinta
  */
 
-namespace Liber\Tests\Docs;
+namespace Tinta\Tests\Docs;
 
-use Liber\Roles\Roles;
+use Tinta\Roles\Roles;
 use WP_Query;
 use WP_REST_Request;
 use WP_UnitTestCase;
@@ -15,9 +15,9 @@ use WP_UnitTestCase;
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Applies core filters, as core does.
 
 /**
- * People without a Liber role don't see pages' files or notes in listings.
+ * People without a Tinta role don't see pages' files or notes in listings.
  *
- * @covers \Liber\Docs\Other_Roles
+ * @covers \Tinta\Docs\Other_Roles
  */
 final class Other_Roles_Test extends WP_UnitTestCase {
 
@@ -36,7 +36,7 @@ final class Other_Roles_Test extends WP_UnitTestCase {
 
 		$this->page = self::factory()->post->create(
 			array(
-				'post_type'   => 'liber_doc',
+				'post_type'   => 'tinta_doc',
 				'post_status' => 'private',
 			)
 		);
