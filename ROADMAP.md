@@ -6,7 +6,7 @@
 - [x] Review the May plan against WordPress 7.1 (PLAN §7).
 - [x] Static layout prototype — [`prototype/workspace.html`](prototype/workspace.html).
 - [x] Editor spike: Liber's own screen won on speed — ARCHITECTURE §2, branch `spike/editor-host`.
-- [ ] GitHub repo (local git for now; needed before v1.0).
+- [x] GitHub repo (private until the first release).
 
 ## v0.x — Internal
 - Build the MVP on a personal site (single site and a multisite subsite). Dogfood before going public.
@@ -37,7 +37,7 @@
   - [x] `readme.txt`, `.distignore`, and Plugin Check in CI on the release contents (clean, experimental checks included).
   - [x] Translation-ready: 196 strings extract cleanly from the release files (pt_BR is translated on translate.wordpress.org after release).
   - [x] Prototype polish: breadcrumbs, bold titles, the editor's avatar in "Edited by", an arrow on page links, "+" beside Pages, your role under your name, the workspace icon in the sidebar.
-  - [ ] Liber Light.
+  - [x] Liber Light admin color scheme (built on core's scheme partials), given to people who join in workspace mode.
 
 ## v1.0 — MVP (wordpress.org)
 Full scope in PLAN §4:

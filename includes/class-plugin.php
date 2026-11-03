@@ -39,6 +39,7 @@ final class Plugin {
 		( new Workspace\Settings() )->register();
 		( new Workspace\Mode() )->register();
 		( new Workspace\Private_Site() )->register();
+		( new Workspace\Color_Scheme() )->register();
 		( new Blocks\Registry() )->register();
 		( new Blocks\Allowlist() )->register();
 	}

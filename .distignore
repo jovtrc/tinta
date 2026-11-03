@@ -5,6 +5,7 @@
 /.gitignore
 /.idea
 /.phpunit.result.cache
+/.stylelintignore
 /.wp-env.json
 /.wp-env.test.json
 /artifacts

@@ -55,6 +55,7 @@ The workspace is one admin screen, `admin.php?page=liber&doc=ID`. Liber's React 
 | `Liber\Roles\Roles` | `includes/roles/class-roles.php` | Member and Viewer roles, caps |
 | `Liber\Workspace\Screen` | `includes/workspace/class-screen.php` | Workspace screen: block-editor setup, preloads, assets (§2); page edit/preview links and core's page screens lead to it |
 | `Liber\Workspace\Settings` | `includes/workspace/class-settings.php` | `liber_settings` (workspace mode, revisions, setup done) and core's `default_role` in `wp/v2/settings` |
+| `Liber\Workspace\Color_Scheme` | `includes/workspace/class-color-scheme.php` | Registers Liber Light; gives it to people who join in workspace mode |
 | `Liber\Workspace\Conflicts` | `includes/workspace/class-conflicts.php` | Active plugins known to conflict, for the setup wizard |
 | `Liber\Workspace\Mode` | `includes/workspace/class-mode.php` | Workspace mode: login landing, `liber-workspace-mode` body class (the screen hides admin menu and toolbar), keeps Members and Viewers in the workspace |
 | `Liber\Workspace\Private_Site` | `includes/workspace/class-private-site.php` | Workspace mode: logged-out visitors to the login screen (feeds and archives included), REST asks for a login, sitemaps off |
@@ -185,6 +186,7 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 - `src/app/store/` — `liber/workspace` (the tree and the actions that change it), `liber/prefs` (per-user lists) and `liber/ui` (open dialog, right-click menu, sidebar shown or hidden) stores.
 - `src/app/commands.tsx` — ⌘K commands.
 - `src/app/dialogs.tsx` — renders the open dialog (rename, move, move to trash, trash, settings, setup), whichever menu or command opened it.
+- `src/admin-colors/` — Liber Light: `liber-light.scss` configures core's admin color partials (`core/`, copied unchanged from WordPress 7.1 and left out of linting) and sets the `--wp-admin-theme-color` variables core's `admin-schemes.css` sets for its own schemes.
 - `src/app/setup/` — the setup wizard and its sample pages (built with `createBlock` + `serialize`, so the markup is what the editor saves).
 - `src/app/sidebar/page-menu.tsx` — the page menu, shared by the tree's "⋯", the page header's "⋯" and right click.
 - `src/app/sidebar/use-sidebar.ts`, `sidebar-toggle.tsx`, `drawer.tsx` — the sidebar shown or hidden on wide screens, a drawer on small ones (`useViewportMatch( 'medium', '<' )`), and the button pages put in their header to bring it back.

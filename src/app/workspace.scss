@@ -396,7 +396,7 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 
 	&:has([aria-current="page"]) {
-		background: rgba(0, 0, 0, 0.08);
+		background: color-mix(in srgb, var(--wp-admin-theme-color, #3858e9) 14%, #fff);
 	}
 }
 

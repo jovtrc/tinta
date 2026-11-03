@@ -1,0 +1,51 @@
+/**
+ * Liber Light: a neutral admin color scheme. A light menu with dark text,
+ * WordPress blue for actions, and a blue tint on the current item. Built on
+ * core's scheme partials, copied unchanged from WordPress 7.1 into `core/`.
+ */
+@use "sass:color";
+
+$accent: #3858e9;
+$ink: #1d2327;
+
+@use "core/admin" with (
+	$scheme-name: "liber-light",
+	$base-color: #f6f7f7,
+	$text-color: $ink,
+	$icon-color: #646970,
+	$highlight-color: $accent,
+	$notification-color: #d63638,
+	$link: $accent,
+	$link-focus: color.adjust($accent, $lightness: -10%),
+	$button-color: $accent,
+	$menu-highlight-text: $ink,
+	$menu-highlight-icon: $accent,
+	$menu-highlight-background: #e1e7fc,
+	$menu-submenu-text: #50575e,
+	$menu-submenu-focus-text: $accent,
+	$menu-submenu-background: #fff,
+	$menu-bubble-text: #fff,
+	$menu-collapse-text: #646970,
+	$menu-collapse-focus-icon: $ink,
+	$dashboard-accent-1: $accent,
+	$dashboard-accent-2: color.adjust($accent, $lightness: 10%),
+	$dashboard-icon-background: $ink
+);
+
+// The editor and components read the scheme's accent from these, as core's
+// `admin-schemes.css` sets them for its own schemes.
+body.admin-color-liber-light {
+	--wp-admin-theme-color: #{$accent};
+	--wp-admin-theme-color--rgb: #{color.channel($accent, "red")}, #{color.channel($accent, "green")}, #{color.channel($accent, "blue")};
+	--wp-admin-theme-color-darker-10: #{color.adjust($accent, $lightness: -5%)};
+	--wp-admin-theme-color-darker-20: #{color.adjust($accent, $lightness: -10%)};
+}
+
+// Hairlines where the light menu and toolbar meet white screens.
+#adminmenuback {
+	box-shadow: inset -1px 0 #e2e4e7;
+}
+
+#wpadminbar {
+	box-shadow: inset 0 -1px #e2e4e7;
+}
