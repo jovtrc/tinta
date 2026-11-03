@@ -1,5 +1,5 @@
 /**
- * Editor header: undo/redo, save status and the block settings toggle.
+ * Editor header: undo/redo, save status, Notes and the block settings toggle.
  */
 import { Button } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -10,6 +10,8 @@ import {
 } from '@wordpress/editor';
 import { __ } from '@wordpress/i18n';
 import { drawerRight } from '@wordpress/icons';
+
+import { NotesToggle } from '../notes/notes-panel';
 
 interface EditorHeaderProps {
 	isInspectorOpen: boolean;
@@ -33,6 +35,7 @@ export function EditorHeader( {
 			<EditorHistoryRedo />
 			<div className="liber-editor__spacer" />
 			<SaveStatus />
+			<NotesToggle />
 			<Button
 				icon={ drawerRight }
 				label={ __( 'Block settings', 'liber' ) }

@@ -245,6 +245,7 @@ final class Screen {
 			'siteName'  => get_bloginfo( 'name' ),
 			'canCreate' => current_user_can( 'edit_liber_docs' ),
 			'canManage' => current_user_can( 'liber_manage' ),
+			'userId'    => get_current_user_id(),
 			'settings'  => get_block_editor_settings(
 				array(
 					'titlePlaceholder' => __( 'Untitled', 'liber' ),

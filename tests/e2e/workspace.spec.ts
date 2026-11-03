@@ -544,6 +544,75 @@ async function startTyping(
 		.click();
 }
 
+test.describe( 'Notes', () => {
+	test.beforeEach( async ( { requestUtils } ) => {
+		await deleteAllPages( requestUtils );
+	} );
+
+	test( 'adds a note with a mention, replies and resolves it', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const { id: pageId } = await requestUtils.rest< PageRecord >( {
+			method: 'POST',
+			path: '/wp/v2/liber-docs',
+			data: {
+				title: 'Handbook',
+				status: 'private',
+				content:
+					'<!-- wp:paragraph --><p>VPN steps</p><!-- /wp:paragraph -->',
+			},
+		} );
+		const notes = () =>
+			requestUtils.rest< { status: string; content: { raw: string } }[] >(
+				{
+					path: '/wp/v2/comments',
+					params: {
+						post: pageId,
+						type: 'note',
+						status: 'all',
+						context: 'edit',
+						parent: 0,
+					},
+				}
+			);
+		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ pageId }` );
+
+		await editor.canvas.getByText( 'VPN steps' ).click();
+		await editor.showBlockToolbar();
+		await page.getByRole( 'button', { name: 'Add note' } ).click();
+		await page.keyboard.type( 'Please check, @adm' );
+		await expect(
+			page.getByRole( 'list', { name: 'People to mention' } )
+		).toBeVisible();
+		await page.keyboard.press( 'Enter' );
+		await page.keyboard.type( 'thanks' );
+		await page.keyboard.press( 'ControlOrMeta+Enter' );
+
+		await expect
+			.poll( async () => ( await notes() )[ 0 ]?.content.raw )
+			.toContain( 'class="wp-note-mention user-1"' );
+
+		const panel = page.getByRole( 'complementary', { name: 'Notes' } );
+		await panel
+			.getByRole( 'button', { name: 'Reply', exact: true } )
+			.click();
+		await page.keyboard.type( 'Done.' );
+		await page.keyboard.press( 'ControlOrMeta+Enter' );
+		await expect( panel.getByText( 'Done.' ) ).toBeVisible();
+
+		await panel
+			.getByRole( 'button', { name: 'Resolve', exact: true } )
+			.click();
+		await expect( panel.getByText( /No open notes/ ) ).toBeVisible();
+		await expect
+			.poll( async () => ( await notes() )[ 0 ]?.status )
+			.toBe( 'approved' );
+	} );
+} );
+
 test.describe( 'Locks and roles', () => {
 	test.beforeEach( async ( { requestUtils } ) => {
 		await deleteAllPages( requestUtils );

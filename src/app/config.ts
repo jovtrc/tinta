@@ -7,6 +7,7 @@ export interface WorkspaceConfig {
 	siteName: string;
 	canCreate: boolean;
 	canManage: boolean;
+	userId: number;
 	settings: Record< string, unknown > & { styles?: object[] };
 }
 

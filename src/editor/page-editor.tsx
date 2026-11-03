@@ -12,12 +12,15 @@ import {
 	EditorProvider,
 	UnsavedChangesWarning,
 } from '@wordpress/editor';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { InlineNotices } from '@wordpress/notices';
 import type { ComponentType } from 'react';
 
 import { config } from '../app/config';
+import { NotesPanel } from '../notes/notes-panel';
+import { store as notesStore } from '../notes/store';
 import { ContinuousSave } from './continuous-save';
 import { EditorHeader } from './editor-header';
 import { LockModal } from './lock-modal';
@@ -65,6 +68,11 @@ interface PageEditorProps {
  */
 export function PageEditor( { page, lock }: PageEditorProps ) {
 	const [ isInspectorOpen, setInspectorOpen ] = useState( false );
+	const isNotesOpen = useSelect(
+		( select ) => select( notesStore ).isOpen(),
+		[]
+	);
+	const { setOpen: setNotesOpen } = useDispatch( notesStore );
 	const settings = useMemo(
 		() => ( {
 			...config.settings,
@@ -88,10 +96,11 @@ export function PageEditor( { page, lock }: PageEditorProps ) {
 			<LockModal />
 			<div className="liber-editor">
 				<EditorHeader
-					isInspectorOpen={ isInspectorOpen }
-					onToggleInspector={ () =>
-						setInspectorOpen( ! isInspectorOpen )
-					}
+					isInspectorOpen={ isInspectorOpen && ! isNotesOpen }
+					onToggleInspector={ () => {
+						setNotesOpen( false );
+						setInspectorOpen( isNotesOpen || ! isInspectorOpen );
+					} }
 				/>
 				<InlineNotices />
 				<div className="liber-editor__body">
@@ -101,7 +110,8 @@ export function PageEditor( { page, lock }: PageEditorProps ) {
 							<BlockList />
 						</BlockCanvas>
 					</div>
-					{ isInspectorOpen && (
+					{ isNotesOpen && <NotesPanel /> }
+					{ isInspectorOpen && ! isNotesOpen && (
 						<aside
 							className="liber-editor__inspector"
 							aria-label={ __( 'Block settings', 'liber' ) }

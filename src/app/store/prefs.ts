@@ -20,6 +20,8 @@ const EMPTY: Prefs = { pinned: [], recent: [], expanded: [], emojis: [] };
 
 const LIMITS = { recent: 5, expanded: 500, emojis: 16 };
 
+const RECENT_DELAY = 2000;
+
 /**
  * The same path the workspace screen preloads.
  */
@@ -39,12 +41,15 @@ interface ThunkArgs {
 
 /**
  * One save at a time, always with the latest preferences: changes made while
- * a save runs go out in one follow-up save, or right away if the page closes.
+ * a save runs go out in one follow-up save. Small changes (like Recent) wait a
+ * moment, so quick page switches send one request. A save still waiting when
+ * the page closes is sent right away.
  */
 const saver = {
 	latest: EMPTY,
 	isSaving: false,
 	isPending: false,
+	timer: 0,
 };
 
 /**
@@ -62,12 +67,11 @@ function send( prefs: Prefs ) {
 }
 
 /**
- * Saves the latest preferences, or marks them pending while a save runs.
- *
- * @param prefs Latest preferences.
+ * Sends the latest preferences, or marks them pending while a save runs.
  */
-function save( prefs: Prefs ) {
-	saver.latest = prefs;
+function flush() {
+	window.clearTimeout( saver.timer );
+	saver.timer = 0;
 
 	if ( saver.isSaving ) {
 		saver.isPending = true;
@@ -75,17 +79,34 @@ function save( prefs: Prefs ) {
 	}
 
 	saver.isSaving = true;
-	send( prefs ).finally( () => {
+	send( saver.latest ).finally( () => {
 		saver.isSaving = false;
 		if ( saver.isPending ) {
 			saver.isPending = false;
-			save( saver.latest );
+			flush();
 		}
 	} );
 }
 
+/**
+ * Saves the latest preferences now, or after a delay.
+ *
+ * @param prefs Latest preferences.
+ * @param delay Milliseconds to wait for more changes.
+ */
+function save( prefs: Prefs, delay: number ) {
+	saver.latest = prefs;
+	window.clearTimeout( saver.timer );
+
+	if ( delay ) {
+		saver.timer = window.setTimeout( flush, delay );
+	} else {
+		flush();
+	}
+}
+
 window.addEventListener( 'pagehide', () => {
-	if ( saver.isPending ) {
+	if ( saver.timer || saver.isPending ) {
 		saver.isPending = false;
 		send( saver.latest );
 	}
@@ -101,9 +122,10 @@ const actions = {
 	 * Applies changes at once and saves them.
 	 *
 	 * @param changes Lists to replace.
+	 * @param delay   Milliseconds to wait for more changes before saving.
 	 */
 	updatePrefs:
-		( changes: Partial< Prefs > ) =>
+		( changes: Partial< Prefs >, delay = 0 ) =>
 		( { dispatch, select, registry }: ThunkArgs ) => {
 			const pages = registry.select( workspaceStore ).getPages();
 			dispatch(
@@ -111,7 +133,7 @@ const actions = {
 					pages ? withoutGonePages( changes, pages ) : changes
 				)
 			);
-			save( select.getPrefs() );
+			save( select.getPrefs(), delay );
 		},
 
 	/**
@@ -124,12 +146,15 @@ const actions = {
 		async ( { dispatch, resolveSelect }: ThunkArgs ) => {
 			const { recent } = await resolveSelect.getPrefs();
 			if ( recent[ 0 ] !== pageId ) {
-				dispatch.updatePrefs( {
-					recent: [
-						pageId,
-						...recent.filter( ( id ) => id !== pageId ),
-					].slice( 0, LIMITS.recent ),
-				} );
+				dispatch.updatePrefs(
+					{
+						recent: [
+							pageId,
+							...recent.filter( ( id ) => id !== pageId ),
+						].slice( 0, LIMITS.recent ),
+					},
+					RECENT_DELAY
+				);
 			}
 		},
 

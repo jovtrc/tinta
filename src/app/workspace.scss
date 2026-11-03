@@ -272,6 +272,142 @@ body.liber-workspace-screen {
 	color: #757575;
 }
 
+// Notes
+
+.liber-notes {
+	display: flex;
+	flex: none;
+	flex-direction: column;
+	gap: 12px;
+	box-sizing: border-box;
+	width: 320px;
+	padding: 12px;
+	overflow-y: auto;
+	background: #fafafa;
+	border-left: 1px solid #e0e0e0;
+}
+
+.liber-notes__header {
+	display: flex;
+	gap: 4px;
+	align-items: center;
+}
+
+.liber-notes__empty {
+	color: #757575;
+}
+
+.liber-thread {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 12px;
+	background: #fff;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+
+	&.is-resolved {
+		opacity: 0.75;
+	}
+}
+
+.liber-thread__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	justify-content: flex-end;
+}
+
+.liber-note__meta {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+}
+
+.liber-note__avatar {
+	border-radius: 50%;
+}
+
+.liber-note__time {
+	flex: 1;
+	font-size: 12px;
+	color: #757575;
+}
+
+.liber-note__content {
+	margin-top: 4px;
+	overflow-wrap: anywhere;
+
+	p {
+		margin: 0;
+	}
+}
+
+.wp-note-mention {
+	font-weight: 500;
+	color: var(--wp-admin-theme-color, #3858e9);
+}
+
+.liber-note-composer {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.liber-note-composer__text {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 8px;
+	font: inherit;
+	resize: vertical;
+	border: 1px solid #949494;
+	border-radius: 4px;
+}
+
+.liber-note-composer__mentions {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 10;
+	min-width: 200px;
+	margin: -36px 0 0;
+	padding: 4px;
+	list-style: none;
+	background: #fff;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+
+	button {
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		width: 100%;
+		padding: 4px 6px;
+		font: inherit;
+		text-align: start;
+		cursor: pointer;
+		background: none;
+		border: 0;
+		border-radius: 4px;
+
+		&:hover {
+			background: #f0f0f0;
+		}
+	}
+
+	img {
+		border-radius: 50%;
+	}
+}
+
+.liber-note-composer__actions {
+	display: flex;
+	gap: 4px;
+	justify-content: flex-end;
+}
+
 // Dialogs
 
 .liber-dialog__actions {
