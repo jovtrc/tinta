@@ -165,7 +165,7 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 - TypeScript everywhere. `@wordpress/scripts` 37 builds it (Babel strips types), so `tsc` runs as its own step (`pnpm typecheck`). `@wordpress/*` dev dependencies are for types and bundling; at runtime the app uses WordPress's own scripts. `@wordpress/block-editor` and `block-library` declare no types → shims in `src/types/`.
 - React 18 via `@wordpress/element` (React 19 isn't in core yet).
 - Saving: continuous. `ContinuousSave` calls core-data's `saveEditedEntityRecord` a second after the last edit and when a page closes (no editor "Page updated" notice each time); failures retry with backoff. `Liber\Docs\Revisions` skips a revision when the same author saved one in the last 10 minutes (`wp_save_post_revision_post_has_changed`).
-- Data: `@wordpress/data` + `@wordpress/core-data` (entities, undo, saving), plus a small `liber/workspace` store for the tree and UI state. `EditorProvider` runs on its own registry; stores it doesn't register (the workspace store, notices) fall through to the global one.
+- Data: `@wordpress/data` + `@wordpress/core-data` (entities, undo, saving), plus two small stores: `liber/workspace` (the tree) and `liber/prefs` (pinned, recent, expanded, recently used emoji). Preference changes wait for the stored copy, apply at once and save in the background: one request at a time, always with the latest state, a pending save sent right away (`keepalive`) when the page closes; pages that no longer exist are dropped on save. `EditorProvider` runs on its own registry; stores it doesn't register (the workspace store, notices) fall through to the global one.
 - Notices: `InlineNotices` / `SnackbarNotices` from `@wordpress/notices` (core deprecated `EditorNotices` / `EditorSnackbars` in 7.0; they go in 7.2).
 - UI: `@wordpress/components`, `@wordpress/icons` (not a script handle in 7.1; wp-scripts bundles it). `@wordpress/ui` isn't registered in 7.1 either; use it only if wp-scripts bundles it cleanly. DataViews (bundled) only if the Trash list needs it.
 - Theme: `ThemeProvider` (`wp.theme`, public) seeded from the user's admin color scheme, read in PHP from the registered schemes (`@wordpress/admin-ui` isn't registered in 7.1). Fallback: the `--wp-admin-theme-color` CSS variable. One root provider per document.
@@ -177,7 +177,7 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 
 ### Modules
 - `src/app/` — workspace shell: layout, sidebar and page tree, URL routing, page creation.
-- `src/app/store/` — `liber/workspace` store.
+- `src/app/store/` — `liber/workspace` and `liber/prefs` stores.
 - `src/app/commands.tsx` — ⌘K commands.
 - `src/app/theme/` — color scheme → `ThemeProvider`.
 - `src/editor/` — page header (icon picker with a curated emoji list, title, "Edited by"), and the open page: `OpenPage` picks `PageEditor` (`EditorProvider` per page, header, canvas, inspector, lock dialog, continuous save) or `PageView` (read-only).

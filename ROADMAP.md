@@ -22,7 +22,9 @@
   - [x] ⌘K: find pages by title (with their path), New page, Open trash.
   - [x] Page header: emoji icon picker (curated list, any typed emoji), "Edited by … · 2 hours ago".
   - [x] Block allowlist; Page link and Callout blocks.
-  - [ ] "Move to…" menu item (keyboard path for moving), pinned and recent (with recently used emoji), mobile drawer.
+  - [x] Pinned and Recent sections, remembered tree branches, recently used emoji (per user, per site).
+  - [x] CI on GitHub Actions: standards, PHP tests (single site and multisite), e2e on Playground.
+  - [ ] "Move to…" menu item (keyboard path for moving), mobile drawer, drag to reorder pins.
   - [ ] CI, once the GitHub repo exists.
 
 ## v1.0 — MVP (wordpress.org)
