@@ -1,7 +1,7 @@
 /**
  * A click below the last block starts a new paragraph (or goes to the empty
  * one already there), as in core's editor. It's how you keep writing after a
- * block without text, like a page link.
+ * block without text, like a page link. Presses on the scrollbar don't count.
  */
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { isUnmodifiedDefaultBlock } from '@wordpress/blocks';
@@ -22,8 +22,9 @@ export function ClickBelowToWrite() {
 			const onPointerDown = ( event: PointerEvent ) => {
 				const blocks = doc.querySelector( '.is-root-container' );
 				const isOnPage =
-					event.target === doc.body ||
-					event.target === doc.documentElement;
+					( event.target === doc.body ||
+						event.target === doc.documentElement ) &&
+					event.clientX < doc.documentElement.clientWidth;
 
 				if (
 					! blocks ||
