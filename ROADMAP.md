@@ -19,6 +19,7 @@
   - [x] Heartbeat tree refresh.
   - [x] Page actions: add a subpage, move to trash (with subpages); Trash dialog with restore and, for admins, delete; 5-level limit.
   - [x] Drag to move pages (above, below, inside).
+  - [x] ⌘K: find pages by title (with their path), New page, Open trash.
   - [ ] "Move to…" menu item (keyboard path for moving), page icons, pinned and recent, mobile drawer.
   - [ ] CI, once the GitHub repo exists.
 

@@ -167,7 +167,7 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 - Notices: `InlineNotices` / `SnackbarNotices` from `@wordpress/notices` (core deprecated `EditorNotices` / `EditorSnackbars` in 7.0; they go in 7.2).
 - UI: `@wordpress/components`, `@wordpress/icons` (not a script handle in 7.1; wp-scripts bundles it). `@wordpress/ui` isn't registered in 7.1 either; use it only if wp-scripts bundles it cleanly. DataViews (bundled) only if the Trash list needs it.
 - Theme: `ThemeProvider` (`wp.theme`, public) seeded from the user's admin color scheme, read in PHP from the registered schemes (`@wordpress/admin-ui` isn't registered in 7.1). Fallback: the `--wp-admin-theme-color` CSS variable. One root provider per document.
-- Commands: `@wordpress/commands` (`registerCommand`, `useCommandLoader`).
+- Commands: `@wordpress/commands` (`useCommand`, `useCommandLoader`) in core's palette. The palette renders in its own React root, so page commands open pages by URL (`navigateTo()` pushes `?doc=ID` and fires `popstate`, which the workspace follows like back/forward).
 - Drag and drop: `@dnd-kit/core` (pointer sensor, 6 px to start, so clicks still open pages). Like Notion, the top or bottom quarter of a row drops above or below it, the middle drops inside; targets inside the page's own subtree or past level 5 aren't offered. The tree updates at once, then syncs with `liber/v1/docs/{id}/move`. No keyboard dragging yet: a "Move to…" menu item is the planned keyboard path.
 - Blocks: `apiVersion: 3`; canvas styles through block.json `editorStyle` / `enqueue_block_assets` (the canvas is an iframe; admin body classes don't reach it).
 - Routing: `?page=liber&doc=ID` with `history.pushState`; `popstate` reopens the page for back/forward.
@@ -175,7 +175,7 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 ### Modules
 - `src/app/` — workspace shell: layout, sidebar and page tree, URL routing, page creation.
 - `src/app/store/` — `liber/workspace` store.
-- `src/app/commands/` — ⌘K commands.
+- `src/app/commands.tsx` — ⌘K commands.
 - `src/app/emoji-picker/`
 - `src/app/theme/` — color scheme → `ThemeProvider`.
 - `src/editor/` — the open page: `OpenPage` picks `PageEditor` (`EditorProvider` per page, header, canvas, inspector, lock dialog, continuous save) or `PageView` (read-only).
