@@ -25,6 +25,7 @@ final class Plugin {
 		( new Docs\Private_Status() )->register();
 		( new Docs\Revisions() )->register();
 		( new Docs\Subtree_Trash() )->register();
+		( new Docs\Last_Editor() )->register();
 		$tree->register();
 		( new Cache\Tree_Pulse( $tree ) )->register();
 		( new Rest\Tree_Controller( $tree ) )->register();
