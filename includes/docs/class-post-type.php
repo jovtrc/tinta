@@ -7,10 +7,12 @@
 
 namespace Liber\Docs;
 
+use WP_Error;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Registers `liber_doc`, the workspace page, and its icon meta.
+ * Registers `liber_doc`, the workspace page, and its icon meta; pages nest up to 5 levels.
  */
 final class Post_Type {
 
@@ -18,11 +20,52 @@ final class Post_Type {
 
 	public const ICON_META = '_liber_icon';
 
+	public const MAX_DEPTH = 5;
+
 	/**
-	 * Hooks the registration.
+	 * Hooks the registration and the parent check.
 	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_post_type' ) );
+		add_filter( 'rest_pre_insert_' . self::NAME, array( $this, 'check_parent' ) );
+	}
+
+	/**
+	 * Level of a page: 1 at the top.
+	 *
+	 * @param int $page_id Page ID.
+	 */
+	public static function level( int $page_id ): int {
+		return count( get_post_ancestors( $page_id ) ) + 1;
+	}
+
+	/**
+	 * Refuses a parent that isn't a page, or one at the deepest level.
+	 *
+	 * @param \stdClass|WP_Error $prepared_post Page about to be saved through REST.
+	 * @return \stdClass|WP_Error
+	 */
+	public function check_parent( $prepared_post ) {
+		$parent_id = is_wp_error( $prepared_post ) ? 0 : (int) ( $prepared_post->post_parent ?? 0 );
+
+		if ( ! $parent_id ) {
+			return $prepared_post;
+		}
+
+		if ( self::NAME !== get_post_type( $parent_id ) ) {
+			return new WP_Error( 'liber_invalid_parent', __( 'A page can only go under another page.', 'liber' ), array( 'status' => 400 ) );
+		}
+
+		if ( self::level( $parent_id ) >= self::MAX_DEPTH ) {
+			return new WP_Error(
+				'liber_too_deep',
+				/* translators: %d: maximum number of levels. */
+				sprintf( __( 'Pages can be nested up to %d levels.', 'liber' ), self::MAX_DEPTH ),
+				array( 'status' => 400 )
+			);
+		}
+
+		return $prepared_post;
 	}
 
 	/**
