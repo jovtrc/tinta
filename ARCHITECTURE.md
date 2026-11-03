@@ -54,8 +54,9 @@ The workspace is one admin screen, `admin.php?page=liber&doc=ID`. Liber's React 
 | `Liber\Docs\Tree` | `includes/docs/class-tree.php` | Tree skeleton query, cache and invalidation |
 | `Liber\Roles\Roles` | `includes/roles/class-roles.php` | Member and Viewer roles, caps |
 | `Liber\Workspace\Screen` | `includes/workspace/class-screen.php` | Workspace screen: block-editor setup, preloads, assets (§2); page edit/preview links and core's page screens lead to it |
-| `Liber\Workspace\Mode` | `includes/workspace/class-mode.php` | Login landing, admin chrome, wp-admin gate |
-| `Liber\Workspace\Private_Site` | `includes/workspace/class-private-site.php` | Login redirect, REST login requirement, feeds/sitemaps/oEmbed/author archives off |
+| `Liber\Workspace\Settings` | `includes/workspace/class-settings.php` | `liber_settings` and core's `default_role` in `wp/v2/settings` |
+| `Liber\Workspace\Mode` | `includes/workspace/class-mode.php` | Workspace mode: login landing, `liber-workspace-mode` body class (the screen hides admin menu and toolbar), keeps Members and Viewers in the workspace |
+| `Liber\Workspace\Private_Site` | `includes/workspace/class-private-site.php` | Workspace mode: logged-out visitors to the login screen (feeds and archives included), REST asks for a login, sitemaps off |
 | `Liber\Workspace\Color_Schemes` | `includes/workspace/class-color-schemes.php` | Liber Light (Liber Dark postponed) |
 | `Liber\Rest\Tree_Controller` | `includes/rest/class-tree-controller.php` | `GET liber/v1/tree` |
 | `Liber\Rest\People_Controller` | `includes/rest/class-people-controller.php` | `GET liber/v1/people` (who can be mentioned) |
@@ -86,7 +87,7 @@ No custom tables.
 | `comments` | `comment_type = note` | Notes (core's data, Liber's UI) |
 | block attributes | `metadata.noteId` | Links a note thread to a block (core's format) |
 | user option | `liber_prefs` | `pinned[]`, `recent[5]`, `expanded[]`, `emojis[]` — per user, per site |
-| option | `liber_settings` (autoload) | Workspace mode, revisions cap, default role, setup state |
+| option | `liber_settings` (autoload) | Workspace mode, revisions kept (setup state later); new users' role is core's `default_role` |
 | option | `liber_tree_generation` (autoload) | Bumped on every tree change |
 | option | `liber_version` | Upgrade routines |
 | core options | `blogname`, `site_icon` | Workspace name and icon |

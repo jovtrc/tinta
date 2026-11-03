@@ -26,7 +26,9 @@
   - [x] CI on GitHub Actions: standards, PHP tests (single site and multisite), e2e on Playground.
   - [x] "Move to…" (keyboard path for moving).
   - [x] Notes on blocks: threads, replies, @mentions, resolve and reopen (core's data, Liber's panel).
-  - [ ] Mobile drawer, drag to reorder pins, a marker on blocks with open notes.
+  - [x] Workspace settings (name, workspace mode, new people's role, versions kept) and the account menu.
+  - [x] Workspace mode: login landing, full-window workspace, Members and Viewers kept in it, private site.
+  - [ ] Mobile drawer, drag to reorder pins, a marker on blocks with open notes, setup wizard, Liber Light, pt_BR.
   - [ ] CI, once the GitHub repo exists.
 
 ## v1.0 — MVP (wordpress.org)
