@@ -80,20 +80,25 @@ export function PageHeader() {
  * "Edited by Maria · 2 hours ago" ("Edited 2 hours ago" when nobody is known).
  */
 function EditedBy() {
-	const { name, modified } = useSelect( ( select ) => {
+	const { editor, modified } = useSelect( ( select ) => {
 		const { getEditedPostAttribute } = select( editorStore );
 
 		return {
-			name: (
-				getEditedPostAttribute( 'last_editor' ) as {
-					name: string;
-				} | null
-			 )?.name,
+			editor: getEditedPostAttribute( 'last_editor' ) as {
+				name: string;
+				avatar: string;
+			} | null,
 			modified: getEditedPostAttribute( 'modified_gmt' ) as string,
 		};
 	}, [] );
 
-	return <EditedByLine name={ name } modifiedGmt={ modified } />;
+	return (
+		<EditedByLine
+			name={ editor?.name }
+			avatar={ editor?.avatar }
+			modifiedGmt={ modified }
+		/>
+	);
 }
 
 /**
@@ -101,13 +106,16 @@ function EditedBy() {
  *
  * @param props             Props.
  * @param props.name        Last editor's name.
+ * @param props.avatar      Last editor's avatar URL.
  * @param props.modifiedGmt Last change, in GMT.
  */
 export function EditedByLine( {
 	name,
+	avatar,
 	modifiedGmt,
 }: {
 	name?: string;
+	avatar?: string;
 	modifiedGmt?: string;
 } ) {
 	if ( ! modifiedGmt ) {
@@ -118,6 +126,15 @@ export function EditedByLine( {
 
 	return (
 		<p className="liber-page-meta">
+			{ name && avatar && (
+				<img
+					className="liber-page-meta__avatar"
+					src={ avatar }
+					alt=""
+					width={ 20 }
+					height={ 20 }
+				/>
+			) }
 			{ name
 				? sprintf(
 						/* translators: 1: user's name, 2: time since the edit, like "2 hours ago". */

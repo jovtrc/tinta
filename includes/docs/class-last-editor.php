@@ -84,8 +84,12 @@ final class Last_Editor {
 					'context'     => array( 'view', 'edit' ),
 					'readonly'    => true,
 					'properties'  => array(
-						'id'   => array( 'type' => 'integer' ),
-						'name' => array( 'type' => 'string' ),
+						'id'     => array( 'type' => 'integer' ),
+						'name'   => array( 'type' => 'string' ),
+						'avatar' => array(
+							'type'   => 'string',
+							'format' => 'uri',
+						),
 					),
 				),
 			)
@@ -93,18 +97,19 @@ final class Last_Editor {
 	}
 
 	/**
-	 * The last editor's ID and display name.
+	 * The last editor's ID, display name and avatar.
 	 *
 	 * @param array<string, mixed> $post Page as prepared for the response.
-	 * @return array{id: int, name: string}|null
+	 * @return array{id: int, name: string, avatar: string}|null
 	 */
 	public function get_field( array $post ): ?array {
 		$user_id = (int) get_post_meta( $post['id'], '_edit_last', true );
 		$user    = get_userdata( $user_id ? $user_id : (int) get_post_field( 'post_author', $post['id'] ) );
 
 		return $user ? array(
-			'id'   => $user->ID,
-			'name' => $user->display_name,
+			'id'     => $user->ID,
+			'name'   => $user->display_name,
+			'avatar' => (string) get_avatar_url( $user->ID, array( 'size' => 40 ) ),
 		) : null;
 	}
 }

@@ -242,6 +242,56 @@ body.liber-workspace-mode.liber-workspace-screen {
 	}
 }
 
+.liber-user-menu .components-button {
+	justify-content: flex-start;
+	height: auto;
+	min-height: 36px;
+	padding-block: 4px;
+}
+
+.liber-user-menu__text {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	text-align: start;
+}
+
+.liber-user-menu__name {
+	overflow: hidden;
+	font-weight: 500;
+	text-overflow: ellipsis;
+}
+
+.liber-user-menu__role {
+	font-size: 11px;
+	color: #757575;
+}
+
+.liber-sidebar__heading-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin: 16px 0 4px;
+	padding-inline-end: 4px;
+
+	.liber-sidebar__heading {
+		margin-block: 0;
+	}
+}
+
+.liber-sidebar__heading-action.components-button {
+	opacity: 0;
+
+	.liber-sidebar__heading-row:hover &,
+	&:focus-visible {
+		opacity: 1;
+	}
+
+	@media (hover: none) {
+		opacity: 1;
+	}
+}
+
 .liber-user-menu__avatar {
 	flex: none;
 	border-radius: 50%;
@@ -685,6 +735,85 @@ body.liber-workspace-mode.liber-workspace-screen {
 	flex: 1;
 }
 
+// Breadcrumbs
+
+.liber-breadcrumbs {
+	min-width: 0;
+
+	ol {
+		display: flex;
+		align-items: center;
+		min-width: 0;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	li {
+		display: flex;
+		align-items: center;
+		min-width: 0;
+		margin: 0;
+
+		+ li::before {
+			margin: 0 2px;
+			color: #949494;
+			content: "/";
+		}
+
+		@media (max-width: 782px) {
+
+			&:not(:last-child) {
+				display: none;
+			}
+
+			+ li::before {
+				content: none;
+			}
+		}
+	}
+
+	a,
+	[aria-current="page"] {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		min-width: 0;
+		max-width: 220px;
+		padding: 4px 6px;
+		color: #1e1e1e;
+		text-decoration: none;
+		border-radius: 4px;
+	}
+
+	a:hover {
+		color: #1e1e1e;
+		background: rgba(0, 0, 0, 0.05);
+	}
+
+	a:focus-visible {
+		outline: 2px solid var(--wp-admin-theme-color, #3858e9);
+		outline-offset: -2px;
+		box-shadow: none;
+	}
+
+	[aria-current="page"] {
+		font-weight: 500;
+	}
+}
+
+.liber-breadcrumbs__icon {
+	display: inline-flex;
+	flex: none;
+	font-size: 14px;
+}
+
+.liber-breadcrumbs__title {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 .liber-editor__status {
 	padding: 0 8px;
 	font-size: 13px;
@@ -728,13 +857,21 @@ body.liber-workspace-mode.liber-workspace-screen {
 }
 
 .liber-page-meta {
+	display: flex;
+	align-items: center;
+	gap: 8px;
 	margin: 0 0 24px;
 	font-size: 13px;
 	color: #757575;
 }
 
+.liber-page-meta__avatar {
+	border-radius: 50%;
+}
+
 .liber-reader__title {
 	margin: 0 0 24px;
+	font-weight: 700;
 	font-size: 2.5em;
 	line-height: 1.2;
 }

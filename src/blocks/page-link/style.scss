@@ -4,10 +4,18 @@
 	align-items: baseline;
 	color: inherit;
 	text-decoration: none;
+
+	&::after {
+		color: #757575;
+		content: "→" / "";
+	}
+}
+
+.wp-block-liber-page-link__title {
 	border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
-.wp-block-liber-page-link__link:hover {
+.wp-block-liber-page-link__link:hover .wp-block-liber-page-link__title {
 	border-bottom-color: currentcolor;
 }
 

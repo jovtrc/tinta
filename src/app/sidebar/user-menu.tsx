@@ -35,7 +35,20 @@ export function UserMenu() {
 						height={ 24 }
 					/>
 				}
-				toggleProps={ { children: config.user.name } }
+				toggleProps={ {
+					children: (
+						<span className="liber-user-menu__text">
+							<span className="liber-user-menu__name">
+								{ config.user.name }
+							</span>
+							{ config.user.role && (
+								<span className="liber-user-menu__role">
+									{ config.user.role }
+								</span>
+							) }
+						</span>
+					),
+				} }
 				popoverProps={ { placement: 'top-start' } }
 			>
 				{ () => (

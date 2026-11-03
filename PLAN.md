@@ -80,12 +80,12 @@ Tree behaviour:
 - **Allowed blocks:** Paragraph, Heading (H1–H3), List, Quote, Code, Preformatted, Image, Gallery, File, Video, Embed (YouTube, Vimeo, X; Loom and Figma need oEmbed providers core doesn't ship, so they come later), Separator, Table, Details, Columns (for layouts like text with a sidebar). Plus Liber's two blocks:
   - **Page link** — links to another page, showing its current icon and title.
   - **Callout** — tinted box with an emoji and rich text. Enter on an empty last line leaves it, like core's Quote.
-- Page header: emoji icon (click to change) above a large title (`post_title`), then "Edited by Maria · 2 h ago".
+- Page header: emoji icon (click to change) above a large bold title (`post_title`), then the last editor's avatar and "Edited by Maria · 2 h ago".
 - `/` opens the core inserter, filtered to allowed blocks. Empty pages show "Type / for commands".
 - "Browse all" in the quick inserter opens the Blocks panel beside the page: every allowed block by category, with search (Enter adds the first match).
 - Clicking below the last block starts a new paragraph, as in core's editor — how you keep writing after a page link or a callout.
 - Hovering a block shows a drag handle at its left, like Notion's: drag it to move the block (core's drop indicator and move), click it to select the block. Hidden while typing; inside a callout it moves the whole callout.
-- Header actions: undo/redo, save status ("Saving…" / "Saved"), Notes, block settings, "⋯" page actions (the same menu as in the tree). No Publish or Save button: pages save as you type (a moment after the last edit, and when you leave the page), like Notion. ⌘S saves at once.
+- Header: breadcrumbs on the left (the page's parents as links, then the page; only the page on small screens); on the right, save status ("Saving…" / "Saved"), undo/redo, Notes, block settings, "⋯" page actions (the same menu as in the tree). No Publish or Save button: pages save as you type (a moment after the last edit, and when you leave the page), like Notion. ⌘S saves at once.
 - **Notes:** Liber's UI on core's note data. Notes on blocks, threads, replies, @mentions, resolve. Notes on selected text come in v1.1. Anyone who can edit can add notes; Viewers don't see them (core requires edit rights). A marker beside each block with open notes shows how many it has; clicking it opens them, and the panel highlights the selected block's threads.
 - **Locking (core post locks):** one editor at a time. Others get core's dialog, "Maria is editing this page", with "Take over". Liber only feeds it the lock of each page it opens; nothing saves while someone else holds it. A read-only view instead of the dialog comes in v1.1.
 - **Viewers** get a read-only page (the server's rendered HTML) instead of the editor, and no New page button.

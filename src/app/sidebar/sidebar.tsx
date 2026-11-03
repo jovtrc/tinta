@@ -101,9 +101,20 @@ export function Sidebar( { currentId, onOpen }: SidebarProps ) {
 				currentId={ currentId }
 				onOpen={ onOpen }
 			/>
-			<h2 className="liber-sidebar__heading">
-				{ __( 'Pages', 'liber' ) }
-			</h2>
+			<div className="liber-sidebar__heading-row">
+				<h2 className="liber-sidebar__heading">
+					{ __( 'Pages', 'liber' ) }
+				</h2>
+				{ config.canCreate && (
+					<Button
+						className="liber-sidebar__heading-action"
+						icon={ plus }
+						size="small"
+						label={ __( 'Add a page', 'liber' ) }
+						onClick={ () => createPage() }
+					/>
+				) }
+			</div>
 			<PageTree currentId={ currentId } onOpen={ onOpen } />
 			{ config.canCreate && (
 				<Button

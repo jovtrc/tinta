@@ -7,6 +7,7 @@ import { __ } from '@wordpress/i18n';
 
 import { PageMenu } from '../app/sidebar/page-menu';
 import { SidebarToggle } from '../app/sidebar/sidebar-toggle';
+import { Breadcrumbs } from './breadcrumbs';
 import { EditedByLine, ICON_META } from './page-header';
 import { LoadingPage, MissingPage } from './page-message';
 import { usePageRecord } from './use-page-record';
@@ -32,6 +33,7 @@ export function PageView( { pageId }: { pageId: number } ) {
 		<div className="liber-editor">
 			<div className="liber-editor__header">
 				<SidebarToggle />
+				<Breadcrumbs pageId={ pageId } />
 				<div className="liber-editor__spacer" />
 				<span className="liber-editor__status">
 					{ __( 'View only', 'liber' ) }
@@ -55,6 +57,7 @@ export function PageView( { pageId }: { pageId: number } ) {
 					</h1>
 					<EditedByLine
 						name={ page.last_editor?.name }
+						avatar={ page.last_editor?.avatar }
 						modifiedGmt={ page.modified_gmt }
 					/>
 					<RawHTML className="liber-reader__content">

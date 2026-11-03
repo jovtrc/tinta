@@ -1,6 +1,7 @@
 /**
- * Editor header: the sidebar button (when the sidebar is hidden or a drawer),
- * undo/redo, save status, Notes, the block settings toggle and the page menu.
+ * Editor header: the sidebar button (when the sidebar is hidden or a drawer)
+ * and breadcrumbs, then save status, undo/redo, Notes, the block settings
+ * toggle and the page menu.
  */
 import { Button } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -15,6 +16,7 @@ import { drawerRight } from '@wordpress/icons';
 import { PageMenu } from '../app/sidebar/page-menu';
 import { SidebarToggle } from '../app/sidebar/sidebar-toggle';
 import { NotesToggle } from '../notes/notes-panel';
+import { Breadcrumbs } from './breadcrumbs';
 
 interface EditorHeaderProps {
 	isInspectorOpen: boolean;
@@ -40,10 +42,11 @@ export function EditorHeader( {
 	return (
 		<div className="liber-editor__header">
 			<SidebarToggle />
-			<EditorHistoryUndo />
-			<EditorHistoryRedo />
+			<Breadcrumbs pageId={ pageId } />
 			<div className="liber-editor__spacer" />
 			<SaveStatus />
+			<EditorHistoryUndo />
+			<EditorHistoryRedo />
 			<NotesToggle />
 			<Button
 				icon={ drawerRight }

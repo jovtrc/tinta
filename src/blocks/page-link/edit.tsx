@@ -80,8 +80,10 @@ export function Edit( { attributes, setAttributes }: EditProps ) {
 					>
 						{ page?.meta?._liber_icon || '📄' }
 					</span>
-					{ decodeEntities( page?.title.raw ?? '' ) ||
-						__( 'Untitled', 'liber' ) }
+					<span className="wp-block-liber-page-link__title">
+						{ decodeEntities( page?.title.raw ?? '' ) ||
+							__( 'Untitled', 'liber' ) }
+					</span>
 				</span>
 			</p>
 		</>

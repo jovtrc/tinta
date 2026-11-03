@@ -103,6 +103,38 @@ test.describe( 'Workspace', () => {
 		expect( isSameDocument ).toBe( true );
 	} );
 
+	test( 'shows where the page sits, and opens its parents', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		const onboarding = await createPage(
+			requestUtils,
+			'Onboarding',
+			handbook
+		);
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=liber&doc=${ onboarding }`
+		);
+
+		const breadcrumbs = page.getByRole( 'navigation', {
+			name: 'Breadcrumbs',
+		} );
+		await expect( breadcrumbs.getByRole( 'listitem' ) ).toHaveText( [
+			'Handbook',
+			'Onboarding',
+		] );
+		await breadcrumbs.getByRole( 'link', { name: 'Handbook' } ).click();
+
+		await expect( page ).toHaveURL( new RegExp( `doc=${ handbook }` ) );
+		await expect(
+			editor.canvas.getByRole( 'textbox', { name: 'Untitled' } )
+		).toHaveText( 'Handbook' );
+	} );
+
 	test( 'shows pages other people create, on the next Heartbeat', async ( {
 		admin,
 		page,

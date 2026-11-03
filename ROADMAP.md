@@ -35,7 +35,9 @@
   - [x] Drag to reorder pins.
   - [x] Setup wizard: name and icon, conflicting plugins, new people's role, sample pages, workspace mode.
   - [x] `readme.txt`, `.distignore`, and Plugin Check in CI on the release contents (clean, experimental checks included).
-  - [ ] Liber Light, pt_BR.
+  - [x] Translation-ready: 196 strings extract cleanly from the release files (pt_BR is translated on translate.wordpress.org after release).
+  - [x] Prototype polish: breadcrumbs, bold titles, the editor's avatar in "Edited by", an arrow on page links, "+" beside Pages, your role under your name, the workspace icon in the sidebar.
+  - [ ] Liber Light.
 
 ## v1.0 — MVP (wordpress.org)
 Full scope in PLAN §4:

@@ -11,7 +11,7 @@ export interface PageRecord {
 	title: { raw?: string; rendered: string };
 	content: { raw?: string; rendered: string };
 	meta?: Record< string, string >;
-	last_editor?: { id: number; name: string } | null;
+	last_editor?: { id: number; name: string; avatar: string } | null;
 	modified_gmt?: string;
 	[ key: string ]: unknown;
 }

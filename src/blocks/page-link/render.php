@@ -33,7 +33,7 @@ $liber_icon  = (string) get_post_meta( $liber_page_id, Post_Type::ICON_META, tru
 $liber_title = get_the_title( $liber_page );
 
 printf(
-	'<p %1$s><a class="wp-block-liber-page-link__link" href="%2$s"><span class="wp-block-liber-page-link__icon" aria-hidden="true">%3$s</span>%4$s</a></p>',
+	'<p %1$s><a class="wp-block-liber-page-link__link" href="%2$s"><span class="wp-block-liber-page-link__icon" aria-hidden="true">%3$s</span><span class="wp-block-liber-page-link__title">%4$s</span></a></p>',
 	get_block_wrapper_attributes(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped by core.
 	esc_url( Screen::url( $liber_page_id ) ),
 	esc_html( $liber_icon ? $liber_icon : '📄' ),

@@ -254,6 +254,7 @@ final class Screen {
 			'userId'    => get_current_user_id(),
 			'user'      => array(
 				'name'   => wp_get_current_user()->display_name,
+				'role'   => self::role_name(),
 				'avatar' => get_avatar_url( get_current_user_id(), array( 'size' => 48 ) ),
 			),
 			'links'     => array(
@@ -272,5 +273,15 @@ final class Screen {
 				$context
 			),
 		);
+	}
+
+	/**
+	 * The current user's role on this site, by its translated name.
+	 */
+	private static function role_name(): string {
+		$role  = wp_get_current_user()->roles[0] ?? '';
+		$names = wp_roles()->get_names();
+
+		return isset( $names[ $role ] ) ? translate_user_role( $names[ $role ] ) : '';
 	}
 }

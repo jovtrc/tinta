@@ -14,7 +14,7 @@ export interface WorkspaceConfig {
 		conflicts: Array< { name: string; reason: string } >;
 	} | null;
 	userId: number;
-	user: { name: string; avatar: string };
+	user: { name: string; role: string; avatar: string };
 	links: {
 		profile: string;
 		admin: string;
