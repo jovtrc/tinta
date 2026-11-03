@@ -1,5 +1,5 @@
 /**
- * E2E tests on WordPress Playground: the @wordpress/scripts Playwright config,
+ * E2E tests on WordPress Playground: the `@wordpress/scripts` Playwright config,
  * with Playground (`pnpm playground`) as the web server instead of wp-env,
  * in Chrome, Firefox and Safari's engine (`--project=webkit` runs one).
  *
