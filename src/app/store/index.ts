@@ -18,6 +18,8 @@ export interface TreePage {
 	icon: string;
 }
 
+export type PageChanges = Partial< Pick< TreePage, 'title' | 'icon' > >;
+
 interface State {
 	pages: TreePage[] | null;
 	generation: number | null;
@@ -28,7 +30,7 @@ type Action =
 	| { type: 'ADD_PAGE'; page: TreePage }
 	| { type: 'REMOVE_PAGES'; ids: number[] }
 	| { type: 'MOVE_PAGE'; id: number; parent: number; position: number }
-	| { type: 'RENAME_PAGE'; id: number; title: string };
+	| { type: 'UPDATE_PAGE'; id: number; changes: PageChanges };
 
 interface ThunkArgs {
 	dispatch: ( ( action: Action ) => void ) & {
@@ -45,10 +47,10 @@ const actions = {
 		generation,
 	} ),
 
-	renamePage: ( id: number, title: string ): Action => ( {
-		type: 'RENAME_PAGE',
+	updatePage: ( id: number, changes: PageChanges ): Action => ( {
+		type: 'UPDATE_PAGE',
 		id,
-		title,
+		changes,
 	} ),
 
 	/**
@@ -180,13 +182,13 @@ function reducer(
 						)
 					: null,
 			};
-		case 'RENAME_PAGE':
+		case 'UPDATE_PAGE':
 			return {
 				...state,
 				pages:
 					state.pages?.map( ( page ) =>
 						page.id === action.id
-							? { ...page, title: action.title }
+							? { ...page, ...action.changes }
 							: page
 					) ?? null,
 			};

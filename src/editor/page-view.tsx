@@ -5,6 +5,7 @@ import { RawHTML } from '@wordpress/element';
 import { decodeEntities } from '@wordpress/html-entities';
 import { __ } from '@wordpress/i18n';
 
+import { EditedByLine, ICON_META } from './page-header';
 import { LoadingPage, MissingPage } from './page-message';
 import { usePageRecord } from './use-page-record';
 
@@ -35,10 +36,19 @@ export function PageView( { pageId }: { pageId: number } ) {
 			</div>
 			<div className="liber-reader">
 				<article className="liber-reader__page">
+					{ page.meta?.[ ICON_META ] && (
+						<div className="liber-reader__icon" aria-hidden="true">
+							{ page.meta[ ICON_META ] }
+						</div>
+					) }
 					<h1 className="liber-reader__title">
 						{ decodeEntities( page.title.rendered ) ||
 							__( 'Untitled', 'liber' ) }
 					</h1>
+					<EditedByLine
+						name={ page.last_editor?.name }
+						modifiedGmt={ page.modified_gmt }
+					/>
 					<RawHTML className="liber-reader__content">
 						{ page.content.rendered }
 					</RawHTML>

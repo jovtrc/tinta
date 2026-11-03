@@ -16,6 +16,7 @@ interface PageRecord {
 	id: number;
 	parent: number;
 	status: string;
+	meta: { _liber_icon: string };
 	title: { raw: string };
 }
 
@@ -141,6 +142,37 @@ test.describe( 'Workspace', () => {
 		await expect(
 			editor.canvas.getByRole( 'textbox', { name: 'Untitled' } )
 		).toHaveText( 'Onboarding' );
+	} );
+
+	test( 'sets a page icon from the list or any emoji', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		const icon = async () =>
+			( await getPage( requestUtils, handbook ) ).meta._liber_icon;
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=liber&doc=${ handbook }`
+		);
+
+		await editor.canvas.getByRole( 'button', { name: 'Add icon' } ).click();
+		await page
+			.getByRole( 'searchbox', { name: 'Filter emoji' } )
+			.fill( 'rocket' );
+		await page.getByRole( 'button', { name: 'rocket launch' } ).click();
+		await expect.poll( icon ).toBe( '🚀' );
+
+		await editor.canvas
+			.getByRole( 'button', { name: 'Change icon' } )
+			.click();
+		await page
+			.getByRole( 'searchbox', { name: 'Filter emoji' } )
+			.fill( '🦄' );
+		await page.getByRole( 'button', { name: 'Use 🦄' } ).click();
+		await expect.poll( icon ).toBe( '🦄' );
 	} );
 
 	test( 'keeps edits made right before switching pages', async ( {

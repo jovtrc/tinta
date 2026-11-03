@@ -47,6 +47,9 @@ importers:
       '@wordpress/data':
         specifier: ^11.0.0
         version: 11.0.0(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@wordpress/date':
+        specifier: ^6.0.0
+        version: 6.0.0
       '@wordpress/e2e-test-utils-playwright':
         specifier: ^3.1.0
         version: 3.1.0(@playwright/test@1.64.1)(@types/node@24.19.2)(ajv@6.15.0)(webpack@5.112.2)
@@ -10952,7 +10955,7 @@ snapshots:
       eslint: 10.14.0
       eslint-config-prettier: 10.1.8(eslint@10.14.0)
       eslint-import-resolver-typescript: 4.4.5(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.72.1(eslint@10.14.0)(typescript@6.0.3))(eslint@10.14.0))(eslint@10.14.0)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.72.1(eslint@10.14.0)(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.72.1(eslint@10.14.0)(typescript@6.0.3))(eslint@10.14.0))(eslint@10.14.0))(eslint@10.14.0)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.72.1(eslint@10.14.0)(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5)(eslint@10.14.0)
       eslint-plugin-jest: 29.17.0(@typescript-eslint/eslint-plugin@8.72.1(@typescript-eslint/parser@8.72.1(eslint@10.14.0)(typescript@6.0.3))(eslint@10.14.0)(typescript@6.0.3))(eslint@10.14.0)(typescript@6.0.3)
       eslint-plugin-jsdoc: 64.5.4(eslint@10.14.0)(typescript@6.0.3)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@10.14.0)
@@ -13012,7 +13015,7 @@ snapshots:
       tinyglobby: 0.2.17
       unrs-resolver: 1.13.0
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.72.1(eslint@10.14.0)(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.72.1(eslint@10.14.0)(typescript@6.0.3))(eslint@10.14.0))(eslint@10.14.0))(eslint@10.14.0)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.72.1(eslint@10.14.0)(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5)(eslint@10.14.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -13027,7 +13030,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.72.1(eslint@10.14.0)(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.72.1(eslint@10.14.0)(typescript@6.0.3))(eslint@10.14.0))(eslint@10.14.0))(eslint@10.14.0):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.72.1(eslint@10.14.0)(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5)(eslint@10.14.0):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.2.0

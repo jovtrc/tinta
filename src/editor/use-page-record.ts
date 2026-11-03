@@ -10,6 +10,9 @@ export interface PageRecord {
 	id: number;
 	title: { raw?: string; rendered: string };
 	content: { raw?: string; rendered: string };
+	meta?: Record< string, string >;
+	last_editor?: { id: number; name: string } | null;
+	modified_gmt?: string;
 	[ key: string ]: unknown;
 }
 

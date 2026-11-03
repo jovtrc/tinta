@@ -10,7 +10,6 @@ import {
 	EditorKeyboardShortcuts,
 	EditorKeyboardShortcutsRegister,
 	EditorProvider,
-	PostTitle,
 	UnsavedChangesWarning,
 } from '@wordpress/editor';
 import { useMemo, useState } from '@wordpress/element';
@@ -22,7 +21,8 @@ import { config } from '../app/config';
 import { ContinuousSave } from './continuous-save';
 import { EditorHeader } from './editor-header';
 import { LockModal } from './lock-modal';
-import { TitleSync } from './title-sync';
+import { PageHeader } from './page-header';
+import { PageSync } from './page-sync';
 import type { PageLock } from './use-page-access';
 import type { PageRecord } from './use-page-record';
 
@@ -33,14 +33,21 @@ const ShortcutsRegister =
 	EditorKeyboardShortcutsRegister as unknown as ComponentType;
 
 /**
- * Page width and spacing inside the canvas (core's layout wrappers are private).
+ * Page width, spacing and header inside the canvas (core's layout wrappers are private).
  */
 const CANVAS_STYLES = [
 	...( config.settings.styles ?? [] ),
 	{
-		css: `.editor-styles-wrapper { padding: 64px 24px 160px; }
-		.editor-styles-wrapper .editor-post-title,
-		.editor-styles-wrapper .is-root-container { max-width: 720px; margin-inline: auto; }`,
+		css: `.editor-styles-wrapper { padding: 48px 24px 160px; }
+		.editor-styles-wrapper .liber-page-header,
+		.editor-styles-wrapper .is-root-container { max-width: 720px; margin-inline: auto; }
+		.liber-page-icon, .liber-page-icon__add { display: block; border: 0; background: none; cursor: pointer; font-family: inherit; }
+		.liber-page-icon { margin-inline-start: -6px; padding: 4px 6px; border-radius: 8px; font-size: 64px; line-height: 1.1; }
+		.liber-page-icon:hover { background: rgba(0, 0, 0, 0.05); }
+		.liber-page-icon__add { margin-inline-start: -6px; padding: 4px 6px; border-radius: 4px; font-size: 14px; color: #757575; opacity: 0; }
+		.liber-page-header:hover .liber-page-icon__add, .liber-page-icon__add:focus-visible, .liber-page-icon__add[aria-expanded="true"] { opacity: 1; }
+		.liber-page-icon__add:hover { background: rgba(0, 0, 0, 0.05); }
+		.liber-page-meta { margin: 0 0 24px; font-size: 13px; color: #757575; }`,
 	},
 ];
 
@@ -77,7 +84,7 @@ export function PageEditor( { page, lock }: PageEditorProps ) {
 			<EditorKeyboardShortcuts />
 			<ContinuousSave pageId={ page.id } />
 			<UnsavedChangesWarning />
-			<TitleSync pageId={ page.id } />
+			<PageSync pageId={ page.id } />
 			<LockModal />
 			<div className="liber-editor">
 				<EditorHeader
@@ -90,7 +97,7 @@ export function PageEditor( { page, lock }: PageEditorProps ) {
 				<div className="liber-editor__body">
 					<div className="liber-editor__canvas">
 						<BlockCanvas height="100%" styles={ CANVAS_STYLES }>
-							<PostTitle />
+							<PageHeader />
 							<BlockList />
 						</BlockCanvas>
 					</div>
