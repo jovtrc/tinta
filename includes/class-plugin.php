@@ -25,5 +25,6 @@ final class Plugin {
 		( new Docs\Private_Status() )->register();
 		$tree->register();
 		( new Rest\Tree_Controller( $tree ) )->register();
+		( new Workspace\Screen( $tree ) )->register();
 	}
 }
