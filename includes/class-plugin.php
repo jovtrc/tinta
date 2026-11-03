@@ -20,5 +20,6 @@ final class Plugin {
 	public static function boot(): void {
 		( new Setup\Installer() )->register();
 		( new Docs\Post_Type() )->register();
+		( new Docs\Private_Status() )->register();
 	}
 }
