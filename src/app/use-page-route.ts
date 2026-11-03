@@ -6,12 +6,12 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
 import { config, pageUrl } from './config';
 
 /**
- * Page ID in the current URL, or the page the screen opened with.
+ * Page ID in the current URL (0: none), or the page the screen opened with.
  */
 function pageFromUrl(): number {
 	const doc = new URL( window.location.href ).searchParams.get( 'doc' );
 
-	return Number( doc ) || config.pageId;
+	return doc === null ? config.pageId : Number( doc );
 }
 
 /**

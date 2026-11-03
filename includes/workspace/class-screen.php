@@ -243,6 +243,7 @@ final class Screen {
 			'url'       => self::url(),
 			'siteName'  => get_bloginfo( 'name' ),
 			'canCreate' => current_user_can( 'edit_liber_docs' ),
+			'canManage' => current_user_can( 'liber_manage' ),
 			'settings'  => get_block_editor_settings(
 				array(
 					'titlePlaceholder' => __( 'Untitled', 'liber' ),

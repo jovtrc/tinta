@@ -1,5 +1,6 @@
 /**
- * The page tree: nested links, collapsible, with the open page's ancestors expanded.
+ * The page tree: nested links, collapsible, with the open page's ancestors
+ * expanded, and hover actions to add a subpage or move a page to the trash.
  */
 import { Button, Spinner } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -22,6 +23,10 @@ import type { MouseEvent } from 'react';
 
 import { pageUrl } from '../config';
 import { store as workspaceStore, type TreePage } from '../store';
+import { ancestorsOf, groupByParent } from '../tree-utils';
+import { useCreatePage } from '../use-create-page';
+import { PageActions } from './page-actions';
+import { TrashConfirm } from './trash-confirm';
 
 interface TreeState {
 	childrenOf: Map< number, TreePage[] >;
@@ -29,6 +34,8 @@ interface TreeState {
 	toggle: ( pageId: number ) => void;
 	currentId: number;
 	onOpen: ( pageId: number ) => void;
+	onAddSubpage: ( parent: TreePage ) => void;
+	onTrash: ( page: TreePage ) => void;
 }
 
 const TreeContext = createContext< TreeState | null >( null );
@@ -54,6 +61,8 @@ export function PageTree( { currentId, onOpen }: PageTreeProps ) {
 	const [ expanded, setExpanded ] = useState< Set< number > >(
 		() => new Set()
 	);
+	const [ trashing, setTrashing ] = useState< TreePage | null >( null );
+	const createPage = useCreatePage( onOpen );
 
 	useEffect( () => {
 		const ancestors = ancestorsOf( currentId, pages ?? [] );
@@ -75,11 +84,32 @@ export function PageTree( { currentId, onOpen }: PageTreeProps ) {
 			return next;
 		} );
 
+	const onAddSubpage = ( parent: TreePage ) => {
+		setExpanded( ( open ) => new Set( [ ...open, parent.id ] ) );
+		createPage( parent.id );
+	};
+
 	return (
 		<TreeContext.Provider
-			value={ { childrenOf, expanded, toggle, currentId, onOpen } }
+			value={ {
+				childrenOf,
+				expanded,
+				toggle,
+				currentId,
+				onOpen,
+				onAddSubpage,
+				onTrash: setTrashing,
+			} }
 		>
 			<TreeLevel parent={ 0 } depth={ 0 } />
+			{ trashing && (
+				<TrashConfirm
+					page={ trashing }
+					currentId={ currentId }
+					onOpen={ onOpen }
+					onClose={ () => setTrashing( null ) }
+				/>
+			) }
 		</TreeContext.Provider>
 	);
 }
@@ -104,15 +134,22 @@ function TreeLevel( { parent, depth }: { parent: number; depth: number } ) {
 }
 
 /**
- * One page: expand button, icon and title link, then its children when expanded.
+ * One page: expand button, icon and title link, actions, then its children when expanded.
  *
  * @param props       Props.
  * @param props.page  Page.
  * @param props.depth Nesting depth.
  */
 function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
-	const { childrenOf, expanded, toggle, currentId, onOpen } =
-		useContext( TreeContext )!;
+	const {
+		childrenOf,
+		expanded,
+		toggle,
+		currentId,
+		onOpen,
+		onAddSubpage,
+		onTrash,
+	} = useContext( TreeContext )!;
 	const hasChildren = !! childrenOf.get( page.id )?.length;
 	const isExpanded = expanded.has( page.id );
 	const title = decodeEntities( page.title ) || __( 'Untitled', 'liber' );
@@ -157,53 +194,18 @@ function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
 					</span>
 					<span className="liber-tree__title">{ title }</span>
 				</a>
+				<PageActions
+					title={ title }
+					level={ depth + 1 }
+					onAddSubpage={ () => onAddSubpage( page ) }
+					onTrash={ () => onTrash( page ) }
+				/>
 			</div>
 			{ hasChildren && isExpanded && (
 				<TreeLevel parent={ page.id } depth={ depth + 1 } />
 			) }
 		</li>
 	);
-}
-
-/**
- * Pages grouped by parent ID, each group in tree order.
- *
- * @param pages Flat page list, already in tree order.
- */
-function groupByParent( pages: TreePage[] ): Map< number, TreePage[] > {
-	const groups = new Map< number, TreePage[] >();
-
-	for ( const page of pages ) {
-		groups.set( page.parent, [
-			...( groups.get( page.parent ) ?? [] ),
-			page,
-		] );
-	}
-
-	return groups;
-}
-
-/**
- * IDs of a page's ancestors.
- *
- * @param pageId Page ID.
- * @param pages  Flat page list.
- */
-function ancestorsOf( pageId: number, pages: TreePage[] ): number[] {
-	const parentOf = new Map(
-		pages.map( ( page ) => [ page.id, page.parent ] )
-	);
-	const ancestors: number[] = [];
-
-	for (
-		let id = parentOf.get( pageId ) ?? 0;
-		id;
-		id = parentOf.get( id ) ?? 0
-	) {
-		ancestors.push( id );
-	}
-
-	return ancestors;
 }
 
 /**

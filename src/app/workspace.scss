@@ -104,6 +104,10 @@ body.liber-workspace-screen {
 	width: 100%;
 }
 
+.liber-sidebar__action.liber-sidebar__trash {
+	margin-top: auto;
+}
+
 .liber-sidebar__heading {
 	margin: 16px 8px 4px;
 	font-size: 11px;
@@ -137,6 +141,22 @@ body.liber-workspace-screen {
 
 	&:has([aria-current="page"]) {
 		background: rgba(0, 0, 0, 0.08);
+	}
+}
+
+.liber-tree__actions {
+	display: flex;
+	flex: none;
+	opacity: 0;
+
+	.liber-tree__row:hover &,
+	.liber-tree__row:focus-within &,
+	&:has([aria-expanded="true"]) {
+		opacity: 1;
+	}
+
+	@media (hover: none) {
+		opacity: 1;
 	}
 }
 
@@ -182,6 +202,42 @@ body.liber-workspace-screen {
 }
 
 .liber-tree__title {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+// Dialogs
+
+.liber-dialog__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 24px;
+}
+
+.liber-dialog__note {
+	margin-top: 0;
+	color: #757575;
+}
+
+.liber-trash {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.liber-trash__item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 0;
+	border-top: 1px solid #f0f0f0;
+}
+
+.liber-trash__title {
+	flex: 1;
+	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;

@@ -14,6 +14,7 @@ const TEST_PASSWORD = 'liber-e2e-password';
 
 interface PageRecord {
 	id: number;
+	parent: number;
 	status: string;
 	title: { raw: string };
 }
@@ -140,6 +141,88 @@ test.describe( 'Workspace', () => {
 	} );
 } );
 
+test.describe( 'Page actions and trash', () => {
+	test.beforeEach( async ( { requestUtils } ) => {
+		await deleteAllPages( requestUtils );
+	} );
+
+	test( 'adds a page inside another', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=liber&doc=${ handbook }`
+		);
+
+		await sidebarLink( page, 'Handbook' ).hover();
+		await page
+			.getByRole( 'button', { name: 'Add a page inside “Handbook”' } )
+			.click();
+
+		await expect( page ).not.toHaveURL( new RegExp( `doc=${ handbook }` ) );
+		const pageId = Number(
+			new URL( page.url() ).searchParams.get( 'doc' )
+		);
+		expect( ( await getPage( requestUtils, pageId ) ).parent ).toBe(
+			handbook
+		);
+	} );
+
+	test( 'moves a page and its subpages to the trash, and restores them', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		const onboarding = await createPage(
+			requestUtils,
+			'Onboarding',
+			handbook
+		);
+		await createPage( requestUtils, 'Roadmap' );
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=liber&doc=${ handbook }`
+		);
+
+		await sidebarLink( page, 'Handbook' ).hover();
+		await page
+			.getByRole( 'button', { name: 'Actions for “Handbook”' } )
+			.click();
+		await page.getByRole( 'menuitem', { name: 'Move to trash' } ).click();
+		await expect(
+			page.getByText( '“Handbook” and its 1 subpage go to the trash.' )
+		).toBeVisible();
+		await page
+			.getByRole( 'dialog' )
+			.getByRole( 'button', { name: 'Move to trash' } )
+			.click();
+
+		await expect( sidebarLink( page, 'Handbook' ) ).toHaveCount( 0 );
+		await expect( sidebarLink( page, 'Roadmap' ) ).toHaveAttribute(
+			'aria-current',
+			'page'
+		);
+		expect( ( await getPage( requestUtils, onboarding ) ).status ).toBe(
+			'trash'
+		);
+
+		await page
+			.getByRole( 'button', { name: 'Trash', exact: true } )
+			.click();
+		await page.getByRole( 'button', { name: 'Restore' } ).click();
+		await expect( page.getByText( 'The trash is empty.' ) ).toBeVisible();
+		await page.getByRole( 'button', { name: 'Close' } ).click();
+		await expect( sidebarLink( page, 'Handbook' ) ).toBeVisible();
+		expect( ( await getPage( requestUtils, onboarding ) ).status ).toBe(
+			'private'
+		);
+	} );
+} );
+
 test.describe( 'Locks and roles', () => {
 	test.beforeEach( async ( { requestUtils } ) => {
 		await deleteAllPages( requestUtils );
@@ -249,16 +332,18 @@ function sidebarLink( page: import( '@playwright/test' ).Page, title: string ) {
  *
  * @param requestUtils REST helpers.
  * @param title        Page title.
+ * @param parent       Parent page ID.
  * @return The page ID.
  */
 async function createPage(
 	requestUtils: RequestUtils,
-	title: string
+	title: string,
+	parent = 0
 ): Promise< number > {
 	const record = await requestUtils.rest< PageRecord >( {
 		method: 'POST',
 		path: '/wp/v2/liber-docs',
-		data: { title, status: 'private' },
+		data: { title, status: 'private', parent },
 	} );
 
 	return record.id;

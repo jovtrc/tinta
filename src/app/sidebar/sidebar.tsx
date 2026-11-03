@@ -1,13 +1,15 @@
 /**
- * Sidebar: workspace name, New page, and the page tree.
+ * Sidebar: workspace name, New page, the page tree, and the trash.
  */
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { plus } from '@wordpress/icons';
+import { useState } from '@wordpress/element';
+import { plus, trash } from '@wordpress/icons';
 
 import { config } from '../config';
 import { useCreatePage } from '../use-create-page';
 import { PageTree } from './page-tree';
+import { TrashDialog } from './trash-dialog';
 
 interface SidebarProps {
 	currentId: number;
@@ -23,6 +25,7 @@ interface SidebarProps {
  */
 export function Sidebar( { currentId, onOpen }: SidebarProps ) {
 	const createPage = useCreatePage( onOpen );
+	const [ isTrashOpen, setTrashOpen ] = useState( false );
 
 	return (
 		<nav
@@ -43,6 +46,18 @@ export function Sidebar( { currentId, onOpen }: SidebarProps ) {
 				{ __( 'Pages', 'liber' ) }
 			</h2>
 			<PageTree currentId={ currentId } onOpen={ onOpen } />
+			{ config.canCreate && (
+				<Button
+					className="liber-sidebar__action liber-sidebar__trash"
+					icon={ trash }
+					onClick={ () => setTrashOpen( true ) }
+				>
+					{ __( 'Trash', 'liber' ) }
+				</Button>
+			) }
+			{ isTrashOpen && (
+				<TrashDialog onClose={ () => setTrashOpen( false ) } />
+			) }
 		</nav>
 	);
 }

@@ -8,6 +8,7 @@ import { createReduxStore, register } from '@wordpress/data';
 import type { DataRegistry } from '@wordpress/data';
 
 import { POST_TYPE } from '../config';
+import { subtreeOf } from '../tree-utils';
 
 export interface TreePage {
 	id: number;
@@ -25,10 +26,13 @@ interface State {
 type Action =
 	| { type: 'RECEIVE_PAGES'; pages: TreePage[]; generation: number }
 	| { type: 'ADD_PAGE'; page: TreePage }
+	| { type: 'REMOVE_PAGES'; ids: number[] }
 	| { type: 'RENAME_PAGE'; id: number; title: string };
 
 interface ThunkArgs {
-	dispatch: ( action: Action ) => void;
+	dispatch: ( ( action: Action ) => void ) & {
+		invalidateResolution: ( selector: string, args: unknown[] ) => void;
+	};
 	select: { getPages: () => TreePage[] | null };
 	registry: DataRegistry;
 }
@@ -80,6 +84,39 @@ const actions = {
 
 			return record.id;
 		},
+
+	/**
+	 * Moves a page and its subpages to the trash.
+	 *
+	 * @param id Page ID.
+	 */
+	trashPage:
+		( id: number ) =>
+		async ( { dispatch, select, registry }: ThunkArgs ) => {
+			await registry
+				.dispatch( coreStore )
+				.deleteEntityRecord(
+					'postType',
+					POST_TYPE,
+					id,
+					{},
+					{ throwOnError: true }
+				);
+
+			dispatch( {
+				type: 'REMOVE_PAGES',
+				ids: subtreeOf( id, select.getPages() ?? [] ),
+			} );
+			dispatch.invalidateResolution( 'getPages', [] );
+		},
+
+	/**
+	 * Refetches the tree, after restoring or deleting from the trash.
+	 */
+	refreshPages:
+		() =>
+		( { dispatch }: ThunkArgs ) =>
+			dispatch.invalidateResolution( 'getPages', [] ),
 };
 
 /**
@@ -99,6 +136,14 @@ function reducer(
 			return {
 				...state,
 				pages: [ ...( state.pages ?? [] ), action.page ],
+			};
+		case 'REMOVE_PAGES':
+			return {
+				...state,
+				pages:
+					state.pages?.filter(
+						( page ) => ! action.ids.includes( page.id )
+					) ?? null,
 			};
 		case 'RENAME_PAGE':
 			return {

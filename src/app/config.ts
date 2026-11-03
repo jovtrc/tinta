@@ -6,6 +6,7 @@ export interface WorkspaceConfig {
 	url: string;
 	siteName: string;
 	canCreate: boolean;
+	canManage: boolean;
 	settings: Record< string, unknown > & { styles?: object[] };
 }
 
@@ -22,7 +23,7 @@ export const config = window.liberWorkspace;
 /**
  * Workspace URL for a page.
  *
- * @param pageId Page ID.
+ * @param pageId Page ID; 0 opens the empty workspace.
  */
 export function pageUrl( pageId: number ): string {
 	const url = new URL( config.url, window.location.href );
