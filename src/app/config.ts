@@ -18,6 +18,11 @@ declare global {
 
 export const POST_TYPE = 'liber_doc';
 
+/**
+ * Deepest level a page can have (PHP: `Post_Type::MAX_DEPTH`).
+ */
+export const MAX_DEPTH = 5;
+
 export const config = window.liberWorkspace;
 
 /**

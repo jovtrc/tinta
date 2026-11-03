@@ -62,3 +62,73 @@ export function subtreeOf( pageId: number, pages: TreePage[] ): number[] {
 
 	return ids;
 }
+
+/**
+ * Level of a page, 1 at the top; 0 for the top level itself.
+ *
+ * @param pageId Page ID, or 0.
+ * @param pages  Flat page list.
+ */
+export function levelOf( pageId: number, pages: TreePage[] ): number {
+	return pageId ? ancestorsOf( pageId, pages ).length + 1 : 0;
+}
+
+/**
+ * Number of levels a page's subtree spans, 1 for a page without subpages.
+ *
+ * @param pageId Page ID.
+ * @param pages  Flat page list.
+ */
+export function heightOf( pageId: number, pages: TreePage[] ): number {
+	const children = pages.filter( ( page ) => page.parent === pageId );
+
+	return (
+		1 +
+		Math.max( 0, ...children.map( ( { id } ) => heightOf( id, pages ) ) )
+	);
+}
+
+/**
+ * The page list after moving a page, in the server's order (menu order, then title).
+ *
+ * @param pages    Flat page list.
+ * @param pageId   Moved page.
+ * @param parent   New parent.
+ * @param position Position among the new siblings.
+ */
+export function movePageIn(
+	pages: TreePage[],
+	pageId: number,
+	parent: number,
+	position: number
+): TreePage[] {
+	const moved = pages.find( ( page ) => page.id === pageId );
+	if ( ! moved ) {
+		return pages;
+	}
+
+	const siblings = pages.filter(
+		( page ) => page.parent === parent && page.id !== pageId
+	);
+	siblings.splice( position, 0, { ...moved, parent } );
+	const orders = new Map(
+		siblings.map( ( { id }, order ) => [ id, order ] )
+	);
+
+	return pages
+		.map( ( page ) =>
+			orders.has( page.id )
+				? {
+						...page,
+						parent: page.id === pageId ? parent : page.parent,
+						order: orders.get( page.id )!,
+					}
+				: page
+		)
+		.sort(
+			( a, b ) =>
+				a.order - b.order ||
+				a.title.localeCompare( b.title ) ||
+				a.id - b.id
+		);
+}

@@ -223,6 +223,73 @@ test.describe( 'Page actions and trash', () => {
 	} );
 } );
 
+test.describe( 'Moving pages', () => {
+	test.beforeEach( async ( { requestUtils } ) => {
+		await deleteAllPages( requestUtils );
+	} );
+
+	test( 'moves pages by dragging them', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		const roadmap = await createPage( requestUtils, 'Roadmap' );
+		const ideas = await createPage( requestUtils, 'Ideas' );
+		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ ideas }` );
+
+		await dragOnto( page, 'Roadmap', 'Handbook', 'inside' );
+		await expect
+			.poll(
+				async () => ( await getPage( requestUtils, roadmap ) ).parent
+			)
+			.toBe( handbook );
+
+		await dragOnto( page, 'Ideas', 'Handbook', 'before' );
+		await expect
+			.poll( async () => {
+				const tree = await requestUtils.rest< {
+					pages: { title: string; parent: number }[];
+				} >( { path: '/liber/v1/tree' } );
+
+				return tree.pages
+					.filter( ( { parent } ) => ! parent )
+					.map( ( { title } ) => title );
+			} )
+			.toEqual( [ 'Ideas', 'Handbook' ] );
+	} );
+} );
+
+/**
+ * Drags a sidebar page onto another one, inside it or above it.
+ *
+ * @param page  Playwright page.
+ * @param from  Title of the page to drag.
+ * @param onto  Title of the target page.
+ * @param where Drop inside the target, or above it.
+ */
+async function dragOnto(
+	page: import( '@playwright/test' ).Page,
+	from: string,
+	onto: string,
+	where: 'inside' | 'before'
+) {
+	const start = ( await sidebarLink( page, from ).boundingBox() )!;
+	const end = ( await sidebarLink( page, onto ).boundingBox() )!;
+	const startX = start.x + start.width / 2;
+	const startY = start.y + start.height / 2;
+
+	await page.mouse.move( startX, startY );
+	await page.mouse.down();
+	await page.mouse.move( startX, startY + 10, { steps: 5 } );
+	await page.mouse.move(
+		end.x + end.width / 2,
+		where === 'inside' ? end.y + end.height / 2 : end.y + 2,
+		{ steps: 10 }
+	);
+	await page.mouse.up();
+}
+
 test.describe( 'Locks and roles', () => {
 	test.beforeEach( async ( { requestUtils } ) => {
 		await deleteAllPages( requestUtils );

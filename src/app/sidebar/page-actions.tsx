@@ -11,12 +11,7 @@ import {
 import { __, sprintf } from '@wordpress/i18n';
 import { moreHorizontal, plus, trash } from '@wordpress/icons';
 
-import { config } from '../config';
-
-/**
- * Deepest level a page can have (PHP: `Post_Type::MAX_DEPTH`).
- */
-const MAX_DEPTH = 5;
+import { config, MAX_DEPTH } from '../config';
 
 interface PageActionsProps {
 	title: string;

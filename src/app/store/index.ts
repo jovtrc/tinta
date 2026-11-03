@@ -8,7 +8,7 @@ import { createReduxStore, register } from '@wordpress/data';
 import type { DataRegistry } from '@wordpress/data';
 
 import { POST_TYPE } from '../config';
-import { subtreeOf } from '../tree-utils';
+import { movePageIn, subtreeOf } from '../tree-utils';
 
 export interface TreePage {
 	id: number;
@@ -27,6 +27,7 @@ type Action =
 	| { type: 'RECEIVE_PAGES'; pages: TreePage[]; generation: number }
 	| { type: 'ADD_PAGE'; page: TreePage }
 	| { type: 'REMOVE_PAGES'; ids: number[] }
+	| { type: 'MOVE_PAGE'; id: number; parent: number; position: number }
 	| { type: 'RENAME_PAGE'; id: number; title: string };
 
 interface ThunkArgs {
@@ -111,6 +112,28 @@ const actions = {
 		},
 
 	/**
+	 * Moves a page in the tree at once, then on the server; refetches either way.
+	 *
+	 * @param id       Page ID.
+	 * @param parent   New parent, or 0 for the top level.
+	 * @param position Position among the new siblings.
+	 */
+	movePage:
+		( id: number, parent: number, position: number ) =>
+		async ( { dispatch }: ThunkArgs ) => {
+			dispatch( { type: 'MOVE_PAGE', id, parent, position } );
+			try {
+				await apiFetch( {
+					path: `/liber/v1/docs/${ id }/move`,
+					method: 'POST',
+					data: { parent, position },
+				} );
+			} finally {
+				dispatch.invalidateResolution( 'getPages', [] );
+			}
+		},
+
+	/**
 	 * Refetches the tree, after restoring or deleting from the trash.
 	 */
 	refreshPages:
@@ -144,6 +167,18 @@ function reducer(
 					state.pages?.filter(
 						( page ) => ! action.ids.includes( page.id )
 					) ?? null,
+			};
+		case 'MOVE_PAGE':
+			return {
+				...state,
+				pages: state.pages
+					? movePageIn(
+							state.pages,
+							action.id,
+							action.parent,
+							action.position
+						)
+					: null,
 			};
 		case 'RENAME_PAGE':
 			return {

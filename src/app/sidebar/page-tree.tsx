@@ -1,7 +1,15 @@
 /**
  * The page tree: nested links, collapsible, with the open page's ancestors
- * expanded, and hover actions to add a subpage or move a page to the trash.
+ * expanded, hover actions to add a subpage or move a page to the trash, and
+ * drag and drop to move pages.
  */
+import {
+	DndContext,
+	DragOverlay,
+	pointerWithin,
+	useDraggable,
+	useDroppable,
+} from '@dnd-kit/core';
 import { Button, Spinner } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import {
@@ -19,14 +27,15 @@ import {
 	Icon,
 	page as pageIcon,
 } from '@wordpress/icons';
-import type { MouseEvent } from 'react';
+import type { MouseEvent, MutableRefObject } from 'react';
 
-import { pageUrl } from '../config';
+import { config, pageUrl } from '../config';
 import { store as workspaceStore, type TreePage } from '../store';
 import { ancestorsOf, groupByParent } from '../tree-utils';
 import { useCreatePage } from '../use-create-page';
 import { PageActions } from './page-actions';
 import { TrashConfirm } from './trash-confirm';
+import { useTreeDrag, type DropTarget } from './use-tree-drag';
 
 interface TreeState {
 	childrenOf: Map< number, TreePage[] >;
@@ -36,6 +45,9 @@ interface TreeState {
 	onOpen: ( pageId: number ) => void;
 	onAddSubpage: ( parent: TreePage ) => void;
 	onTrash: ( page: TreePage ) => void;
+	draggedId: number;
+	target: DropTarget | null;
+	justDropped: MutableRefObject< boolean >;
 }
 
 const TreeContext = createContext< TreeState | null >( null );
@@ -63,6 +75,9 @@ export function PageTree( { currentId, onOpen }: PageTreeProps ) {
 	);
 	const [ trashing, setTrashing ] = useState< TreePage | null >( null );
 	const createPage = useCreatePage( onOpen );
+	const expand = ( pageId: number ) =>
+		setExpanded( ( open ) => new Set( [ ...open, pageId ] ) );
+	const drag = useTreeDrag( pages ?? [], expand );
 
 	useEffect( () => {
 		const ancestors = ancestorsOf( currentId, pages ?? [] );
@@ -85,9 +100,10 @@ export function PageTree( { currentId, onOpen }: PageTreeProps ) {
 		} );
 
 	const onAddSubpage = ( parent: TreePage ) => {
-		setExpanded( ( open ) => new Set( [ ...open, parent.id ] ) );
+		expand( parent.id );
 		createPage( parent.id );
 	};
+	const draggedPage = pages.find( ( page ) => page.id === drag.draggedId );
 
 	return (
 		<TreeContext.Provider
@@ -99,9 +115,26 @@ export function PageTree( { currentId, onOpen }: PageTreeProps ) {
 				onOpen,
 				onAddSubpage,
 				onTrash: setTrashing,
+				draggedId: drag.draggedId,
+				target: drag.target,
+				justDropped: drag.justDropped,
 			} }
 		>
-			<TreeLevel parent={ 0 } depth={ 0 } />
+			<DndContext
+				sensors={ drag.sensors }
+				collisionDetection={ pointerWithin }
+				{ ...drag.handlers }
+			>
+				<TreeLevel parent={ 0 } depth={ 0 } />
+				<DragOverlay dropAnimation={ null }>
+					{ draggedPage && (
+						<div className="liber-tree__drag-preview">
+							{ decodeEntities( draggedPage.title ) ||
+								__( 'Untitled', 'liber' ) }
+						</div>
+					) }
+				</DragOverlay>
+			</DndContext>
 			{ trashing && (
 				<TrashConfirm
 					page={ trashing }
@@ -149,13 +182,31 @@ function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
 		onOpen,
 		onAddSubpage,
 		onTrash,
+		draggedId,
+		target,
+		justDropped,
 	} = useContext( TreeContext )!;
+	const draggable = useDraggable( {
+		id: page.id,
+		disabled: ! config.canCreate,
+	} );
+	const droppable = useDroppable( { id: page.id } );
 	const hasChildren = !! childrenOf.get( page.id )?.length;
 	const isExpanded = expanded.has( page.id );
 	const title = decodeEntities( page.title ) || __( 'Untitled', 'liber' );
 
+	const rowClass = [
+		'liber-tree__row',
+		draggedId === page.id && 'is-dragging',
+		target?.id === page.id && `is-drop-${ target.zone }`,
+	]
+		.filter( Boolean )
+		.join( ' ' );
+
 	const open = ( event: MouseEvent ) => {
-		if ( ! isModifiedClick( event ) ) {
+		if ( justDropped.current ) {
+			event.preventDefault();
+		} else if ( ! isModifiedClick( event ) ) {
 			event.preventDefault();
 			onOpen( page.id );
 		}
@@ -164,8 +215,13 @@ function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
 	return (
 		<li>
 			<div
-				className="liber-tree__row"
+				ref={ ( node ) => {
+					draggable.setNodeRef( node );
+					droppable.setNodeRef( node );
+				} }
+				className={ rowClass }
 				style={ { paddingInlineStart: depth * 12 } }
+				{ ...draggable.listeners }
 			>
 				{ hasChildren ? (
 					<Button
