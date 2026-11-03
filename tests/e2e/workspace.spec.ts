@@ -15,7 +15,7 @@ test.describe( 'Workspace', () => {
 		await deleteAllPages( requestUtils );
 	} );
 
-	test( 'creates a private page and saves its title', async ( {
+	test( 'creates a private page and saves it while typing', async ( {
 		admin,
 		editor,
 		page,
@@ -31,19 +31,21 @@ test.describe( 'Workspace', () => {
 
 		await expect( sidebarLink( page, 'Roadmap' ) ).toBeVisible();
 
-		await page.keyboard.press( 'ControlOrMeta+s' );
+		const pageId = Number(
+			new URL( page.url() ).searchParams.get( 'doc' )
+		);
+
+		await expect
+			.poll(
+				async () => ( await getPage( requestUtils, pageId ) ).title.raw
+			)
+			.toBe( 'Roadmap' );
+		expect( ( await getPage( requestUtils, pageId ) ).status ).toBe(
+			'private'
+		);
 		await expect(
 			page.getByText( 'Saved', { exact: true } )
 		).toBeVisible();
-
-		const pageId = new URL( page.url() ).searchParams.get( 'doc' );
-		const record = await requestUtils.rest< PageRecord >( {
-			path: `/wp/v2/liber-docs/${ pageId }`,
-			params: { context: 'edit' },
-		} );
-
-		expect( record.status ).toBe( 'private' );
-		expect( record.title.raw ).toBe( 'Roadmap' );
 	} );
 
 	test( 'opens pages in place, with back and forward', async ( {
@@ -80,7 +82,46 @@ test.describe( 'Workspace', () => {
 		);
 		expect( isSameDocument ).toBe( true );
 	} );
+
+	test( 'keeps edits made right before switching pages', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		await createPage( requestUtils, 'Roadmap' );
+
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=liber&doc=${ handbook }`
+		);
+		await editor.canvas
+			.getByRole( 'textbox', { name: 'Untitled' } )
+			.fill( 'Team handbook' );
+		await sidebarLink( page, 'Roadmap' ).click();
+
+		await expect
+			.poll(
+				async () =>
+					( await getPage( requestUtils, handbook ) ).title.raw
+			)
+			.toBe( 'Team handbook' );
+	} );
 } );
+
+/**
+ * Reads a page through the REST API.
+ *
+ * @param requestUtils REST helpers.
+ * @param pageId       Page ID.
+ */
+function getPage( requestUtils: RequestUtils, pageId: number ) {
+	return requestUtils.rest< PageRecord >( {
+		path: `/wp/v2/liber-docs/${ pageId }`,
+		params: { context: 'edit' },
+	} );
+}
 
 /**
  * A page link in the workspace sidebar.

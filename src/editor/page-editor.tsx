@@ -11,7 +11,6 @@ import { Spinner } from '@wordpress/components';
 import { store as coreStore } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
 import {
-	AutosaveMonitor,
 	EditorKeyboardShortcuts,
 	EditorKeyboardShortcutsRegister,
 	EditorProvider,
@@ -25,6 +24,7 @@ import { __ } from '@wordpress/i18n';
 import type { ComponentType } from 'react';
 
 import { config, POST_TYPE } from '../app/config';
+import { ContinuousSave } from './continuous-save';
 import { EditorHeader } from './editor-header';
 import { TitleSync } from './title-sync';
 
@@ -99,7 +99,7 @@ export function PageEditor( { pageId }: { pageId: number } ) {
 		<EditorProvider post={ page } settings={ config.settings }>
 			<ShortcutsRegister />
 			<EditorKeyboardShortcuts />
-			<AutosaveMonitor />
+			<ContinuousSave pageId={ pageId } />
 			<UnsavedChangesWarning />
 			<TitleSync pageId={ pageId } />
 			<div className="liber-editor">

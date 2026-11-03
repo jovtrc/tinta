@@ -2,7 +2,7 @@
  * Editor header: undo/redo, save status and the block settings toggle.
  */
 import { Button } from '@wordpress/components';
-import { useDispatch, useSelect } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import {
 	EditorHistoryRedo,
 	EditorHistoryUndo,
@@ -45,38 +45,19 @@ export function EditorHeader( {
 }
 
 /**
- * "Saved", "Saving…", or a Save button when there are changes (⌘S also saves).
+ * "Saving…" while there are unsaved edits, then "Saved".
  */
 function SaveStatus() {
-	const { isDirty, isSaving } = useSelect( ( select ) => {
-		const editor = select( editorStore );
-
-		return {
-			isDirty: editor.isEditedPostDirty(),
-			isSaving: editor.isSavingPost() && ! editor.isAutosavingPost(),
-		};
-	}, [] );
-	const { savePost } = useDispatch( editorStore );
-
-	if ( isSaving ) {
-		return (
-			<span className="liber-editor__status">
-				{ __( 'Saving…', 'liber' ) }
-			</span>
-		);
-	}
-
-	if ( ! isDirty ) {
-		return (
-			<span className="liber-editor__status">
-				{ __( 'Saved', 'liber' ) }
-			</span>
-		);
-	}
+	const isSaved = useSelect(
+		( select ) =>
+			! select( editorStore ).isEditedPostDirty() &&
+			! select( editorStore ).isSavingPost(),
+		[]
+	);
 
 	return (
-		<Button variant="primary" size="compact" onClick={ () => savePost() }>
-			{ __( 'Save', 'liber' ) }
-		</Button>
+		<span className="liber-editor__status" aria-live="polite">
+			{ isSaved ? __( 'Saved', 'liber' ) : __( 'Saving…', 'liber' ) }
+		</span>
 	);
 }
