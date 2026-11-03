@@ -10,7 +10,11 @@
 
 ## v0.x — Internal
 - Build the MVP on a personal site (single site and a multisite subsite). Dogfood before going public.
-- First week: plugin skeleton, tooling, CI, and private-page handling with its tests.
+- First week:
+  - [x] Plugin skeleton, Composer tooling (PHPCS, PHPStan, PHPUnit), pre-commit hook.
+  - [x] `liber_doc` post type; Member and Viewer roles; every page private — unit and integration tests, single site and multisite.
+  - [ ] TypeScript tooling (`@wordpress/scripts`), with the workspace screen.
+  - [ ] CI, once the GitHub repo exists.
 
 ## v1.0 — MVP (wordpress.org)
 Full scope in PLAN §4:

@@ -118,7 +118,7 @@ Per user and per site (multisite-safe): pinned (ordered), recent (last 5), tree 
 | Any other role | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
 
 - Custom capabilities on the CPT, plus `liber_access` (enter the workspace) and `liber_manage` (settings). Added to Administrator on activation; removed on uninstall.
-- Viewers read pages through core's `read_private_liber_docs`. Members also get `publish_liber_docs`: WordPress requires it to set any status, even `private`.
+- Viewers read pages through core's `read_private_liber_docs`. Members also get `publish_liber_docs` (WordPress requires it to set any status, even `private`) and core's `upload_files` (images in pages).
 - Members edit every page (small-team wiki; no per-page permissions in the MVP).
 - Existing Editors/Authors get nothing automatically; an admin switches them to Member.
 - Guests (who see only shared pages) come later (ROADMAP v1.3).
