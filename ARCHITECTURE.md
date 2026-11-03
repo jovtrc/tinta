@@ -155,9 +155,10 @@ Maybe one more (`/docs/{id}/restore`) if core's update can't restore to the top 
 ## 6. Frontend (TypeScript)
 
 ### Stack
-- TypeScript everywhere. `@wordpress/scripts` 37 builds it (Babel strips types), so `tsc --noEmit` runs as its own step. `@wordpress/block-editor` ships no types → local shims.
+- TypeScript everywhere. `@wordpress/scripts` 37 builds it (Babel strips types), so `tsc` runs as its own step (`pnpm typecheck`). `@wordpress/*` dev dependencies are for types and bundling; at runtime the app uses WordPress's own scripts. `@wordpress/block-editor` and `block-library` declare no types → shims in `src/types/`.
 - React 18 via `@wordpress/element` (React 19 isn't in core yet).
-- Data: `@wordpress/data` + `@wordpress/core-data` (entities, undo, saving), plus a small `liber/workspace` store for UI state.
+- Data: `@wordpress/data` + `@wordpress/core-data` (entities, undo, saving), plus a small `liber/workspace` store for the tree and UI state. `EditorProvider` runs on its own registry; stores it doesn't register (the workspace store, notices) fall through to the global one.
+- Notices: `InlineNotices` / `SnackbarNotices` from `@wordpress/notices` (core deprecated `EditorNotices` / `EditorSnackbars` in 7.0; they go in 7.2).
 - UI: `@wordpress/components`, `@wordpress/icons` (not a script handle in 7.1; wp-scripts bundles it). `@wordpress/ui` isn't registered in 7.1 either; use it only if wp-scripts bundles it cleanly. DataViews (bundled) only if the Trash list needs it.
 - Theme: `ThemeProvider` (`wp.theme`, public) seeded from the user's admin color scheme, read in PHP from the registered schemes (`@wordpress/admin-ui` isn't registered in 7.1). Fallback: the `--wp-admin-theme-color` CSS variable. One root provider per document.
 - Commands: `@wordpress/commands` (`registerCommand`, `useCommandLoader`).
@@ -166,13 +167,14 @@ Maybe one more (`/docs/{id}/restore`) if core's update can't restore to the top 
 - Routing: `?page=liber&doc=ID` with `history.pushState`; `popstate` reopens the page for back/forward.
 
 ### Modules
-- `src/app/` — workspace shell: sidebar, tree, header, routes.
+- `src/app/` — workspace shell: layout, sidebar and page tree, URL routing, page creation.
 - `src/app/store/` — `liber/workspace` store.
 - `src/app/commands/` — ⌘K commands.
 - `src/app/emoji-picker/`
 - `src/app/theme/` — color scheme → `ThemeProvider`.
 - `src/editor/` — editor host: `EditorProvider` per page, header, canvas, inspector.
 - `src/notes/` — Notes panel, threads, @mentions.
+- `src/types/` — type shims.
 - `src/blocks/page-link/`, `src/blocks/callout/`.
 
 ## 7. Build & tooling
@@ -197,7 +199,8 @@ Maybe one more (`/docs/{id}/restore`) if core's update can't restore to the top 
 
 ### Build
 - pnpm (one package, no turbo). `pnpm-workspace.yaml` holds pnpm 11's build-script approvals.
-- `wp-scripts build --blocks-manifest`; PHP registers blocks with `wp_register_block_types_from_metadata_collection()`. Asset versions come from `index.asset.php`.
+- `wp-scripts build` with `webpack.config.js` adding the workspace entry → `build/workspace.{js,css,asset.php}`; asset versions and script dependencies come from the `.asset.php` file. Blocks will add `--blocks-manifest`, registered with `wp_register_block_types_from_metadata_collection()`.
+- `prettier` is aliased to `wp-prettier` (WordPress formatting); plain Prettier would undo it.
 
 ### CI (GitHub Actions)
 - PHP 8.2 and 8.5 × WP 7.1, latest and trunk (trunk may fail) × single site and multisite.
@@ -212,11 +215,15 @@ Maybe one more (`/docs/{id}/restore`) if core's update can't restore to the top 
 ```sh
 composer install                  # dev tools + pre-commit hook
 pnpm install
-pnpm env start                    # dev site, http://localhost:8888
-pnpm env:test start               # test site, http://localhost:8889
+pnpm build                        # or: pnpm start (watch)
+pnpm wp-env start                 # dev site, http://localhost:8888
+pnpm wp-env:test start            # PHPUnit site, http://localhost:8889
 composer run phpcs                # also: phpcbf, phpstan
+pnpm typecheck && pnpm lint:js && pnpm lint:css
 pnpm test:php                     # and test:php:multisite
+pnpm test:e2e                     # starts Playground on :9400 (pnpm playground)
 ```
+`pnpm env` is a built-in pnpm command, hence the `wp-env` script names.
 
 ### Git
 - Default branch: `trunk`.
@@ -234,7 +241,7 @@ liber/
 ├── readme.txt
 ├── composer.json                classmap autoload, dev tools, platform php 8.2
 ├── package.json, pnpm-lock.yaml, pnpm-workspace.yaml
-├── tsconfig.json
+├── tsconfig.json, webpack.config.js, playwright.config.js
 ├── phpcs.xml.dist, phpstan.neon.dist, phpunit.xml.dist
 ├── vitest.config.ts
 ├── .wp-env.json, .wp-env.test.json
@@ -243,7 +250,7 @@ liber/
 │   ├── class-plugin.php
 │   └── blocks/ cache/ docs/ rest/ roles/ setup/ sharing/ workspace/
 ├── src/                         TypeScript
-│   └── app/ editor/ notes/ blocks/
+│   └── app/ editor/ notes/ blocks/ types/
 ├── data/conflicting-plugins.json
 ├── tests/
 │   ├── php/                     WP test suite, PHPUnit 9.6
