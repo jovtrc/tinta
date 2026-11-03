@@ -92,6 +92,27 @@ test.describe( 'Workspace', () => {
 		expect( isSameDocument ).toBe( true );
 	} );
 
+	test( 'shows pages other people create, on the next Heartbeat', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		await createPage( requestUtils, 'Handbook' );
+		await admin.visitAdminPage( 'admin.php', 'page=liber' );
+		await expect( sidebarLink( page, 'Handbook' ) ).toBeVisible();
+
+		await createPage( requestUtils, 'Created elsewhere' );
+		await page.evaluate( () =>
+			(
+				window as unknown as {
+					wp: { heartbeat: { connectNow: () => void } };
+				}
+			 ).wp.heartbeat.connectNow()
+		);
+
+		await expect( sidebarLink( page, 'Created elsewhere' ) ).toBeVisible();
+	} );
+
 	test( 'keeps edits made right before switching pages', async ( {
 		admin,
 		editor,

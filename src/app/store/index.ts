@@ -1,5 +1,6 @@
 /**
- * `liber/workspace` store: the page tree (from `liber/v1/tree`) and page creation.
+ * `liber/workspace` store: the page tree (from `liber/v1/tree`, with its
+ * generation) and page creation.
  */
 import apiFetch from '@wordpress/api-fetch';
 import { store as coreStore } from '@wordpress/core-data';
@@ -18,10 +19,11 @@ export interface TreePage {
 
 interface State {
 	pages: TreePage[] | null;
+	generation: number | null;
 }
 
 type Action =
-	| { type: 'RECEIVE_PAGES'; pages: TreePage[] }
+	| { type: 'RECEIVE_PAGES'; pages: TreePage[]; generation: number }
 	| { type: 'ADD_PAGE'; page: TreePage }
 	| { type: 'RENAME_PAGE'; id: number; title: string };
 
@@ -32,9 +34,10 @@ interface ThunkArgs {
 }
 
 const actions = {
-	receivePages: ( pages: TreePage[] ): Action => ( {
+	receivePages: ( pages: TreePage[], generation: number ): Action => ( {
 		type: 'RECEIVE_PAGES',
 		pages,
+		generation,
 	} ),
 
 	renamePage: ( id: number, title: string ): Action => ( {
@@ -85,14 +88,21 @@ const actions = {
  * @param state  Current state.
  * @param action Action.
  */
-function reducer( state: State = { pages: null }, action: Action ): State {
+function reducer(
+	state: State = { pages: null, generation: null },
+	action: Action
+): State {
 	switch ( action.type ) {
 		case 'RECEIVE_PAGES':
-			return { pages: action.pages };
+			return { pages: action.pages, generation: action.generation };
 		case 'ADD_PAGE':
-			return { pages: [ ...( state.pages ?? [] ), action.page ] };
+			return {
+				...state,
+				pages: [ ...( state.pages ?? [] ), action.page ],
+			};
 		case 'RENAME_PAGE':
 			return {
+				...state,
 				pages:
 					state.pages?.map( ( page ) =>
 						page.id === action.id
@@ -107,17 +117,19 @@ function reducer( state: State = { pages: null }, action: Action ): State {
 
 const selectors = {
 	getPages: ( state: State ): TreePage[] | null => state.pages,
+	getGeneration: ( state: State ): number | null => state.generation,
 };
 
 const resolvers = {
 	getPages:
 		() =>
 		async ( { dispatch }: ThunkArgs ) => {
-			const tree = await apiFetch< { pages: TreePage[] } >( {
-				path: '/liber/v1/tree',
-			} );
+			const tree = await apiFetch< {
+				pages: TreePage[];
+				generation: number;
+			} >( { path: '/liber/v1/tree' } );
 
-			dispatch( actions.receivePages( tree.pages ) );
+			dispatch( actions.receivePages( tree.pages, tree.generation ) );
 		},
 };
 

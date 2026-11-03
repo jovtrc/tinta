@@ -10,12 +10,14 @@ import { config } from './config';
 import { Sidebar } from './sidebar/sidebar';
 import { useCreatePage } from './use-create-page';
 import { usePageRoute } from './use-page-route';
+import { useTreeRefresh } from './use-tree-refresh';
 
 /**
  * Renders the workspace.
  */
 export function App() {
 	const [ pageId, openPage ] = usePageRoute();
+	useTreeRefresh();
 
 	return (
 		<SlotFillProvider>

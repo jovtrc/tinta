@@ -59,6 +59,9 @@ importers:
       '@wordpress/format-library':
         specifier: ^6.0.0
         version: 6.0.0(@date-fns/tz@1.5.0)(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(postcss@8.5.32)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@17.16.0(typescript@6.0.3))
+      '@wordpress/hooks':
+        specifier: ^5.0.0
+        version: 5.0.0
       '@wordpress/html-entities':
         specifier: ^5.0.0
         version: 5.0.0
