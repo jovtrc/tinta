@@ -144,8 +144,8 @@ Opt-in; can be re-run from settings.
 - JS strings via `wp_set_script_translations()`.
 
 ### 4.14 Mobile
-- Below 768 px the sidebar becomes a slide-out drawer opened from a menu button.
-- The editor uses core's responsive behaviour.
+- At wp-admin's mobile breakpoint (782 px and below) the sidebar becomes a slide-out drawer, opened from a menu button in the page header. It closes on Escape, a tap outside, or when a page opens.
+- Notes and block settings cover the page instead of sitting beside it; the header buttons close them.
 
 ### 4.15 Sharing — ships in v1.1, designed now
 - **Share to web** (page menu → Share) makes the page **and every page under it** public (`publish`). Turning it off makes them all private again.

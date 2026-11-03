@@ -28,8 +28,8 @@
   - [x] Notes on blocks: threads, replies, @mentions, resolve and reopen (core's data, Liber's panel).
   - [x] Workspace settings (name, workspace mode, new people's role, versions kept) and the account menu.
   - [x] Workspace mode: login landing, full-window workspace, Members and Viewers kept in it, private site.
-  - [ ] Mobile drawer, drag to reorder pins, a marker on blocks with open notes, setup wizard, Liber Light, pt_BR.
-  - [ ] CI, once the GitHub repo exists.
+  - [x] Mobile: the sidebar as a drawer; Notes and block settings cover the page.
+  - [ ] Drag to reorder pins, a marker on blocks with open notes, setup wizard, Liber Light, pt_BR.
 
 ## v1.0 — MVP (wordpress.org)
 Full scope in PLAN §4:

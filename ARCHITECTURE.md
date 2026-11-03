@@ -183,6 +183,7 @@ Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits 
 - `src/app/` — workspace shell: layout, sidebar and page tree, URL routing, page creation.
 - `src/app/store/` — `liber/workspace` and `liber/prefs` stores.
 - `src/app/commands.tsx` — ⌘K commands.
+- `src/app/drawer.tsx` — the sidebar as a drawer on small screens (`useViewportMatch( 'medium', '<' )`), with the menu button pages put in their header.
 - `src/app/theme/` — color scheme → `ThemeProvider`.
 - `src/editor/` — page header (icon picker with a curated emoji list, title, "Edited by"), and the open page: `OpenPage` picks `PageEditor` (`EditorProvider` per page, header, canvas, inspector, lock dialog, continuous save) or `PageView` (read-only).
 - `src/notes/` — Notes: panel, thread cards, composer with @mentions, block toolbar button, `liber/notes` UI store.
