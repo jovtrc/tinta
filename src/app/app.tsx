@@ -1,13 +1,16 @@
 /**
- * Workspace layout: the sidebar and the open page's editor.
+ * Workspace layout: the sidebar and the open page's editor, plus ⌘K commands and the trash.
  */
 import { Button, Popover, SlotFillProvider } from '@wordpress/components';
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { SnackbarNotices } from '@wordpress/notices';
 
 import { OpenPage } from '../editor/open-page';
+import { WorkspaceCommands } from './commands';
 import { config } from './config';
 import { Sidebar } from './sidebar/sidebar';
+import { TrashDialog } from './sidebar/trash-dialog';
 import { useCreatePage } from './use-create-page';
 import { usePageRoute } from './use-page-route';
 import { useTreeRefresh } from './use-tree-refresh';
@@ -17,12 +20,21 @@ import { useTreeRefresh } from './use-tree-refresh';
  */
 export function App() {
 	const [ pageId, openPage ] = usePageRoute();
+	const [ isTrashOpen, setTrashOpen ] = useState( false );
 	useTreeRefresh();
 
 	return (
 		<SlotFillProvider>
+			<WorkspaceCommands
+				onOpen={ openPage }
+				onOpenTrash={ () => setTrashOpen( true ) }
+			/>
 			<div className="liber-workspace__layout">
-				<Sidebar currentId={ pageId } onOpen={ openPage } />
+				<Sidebar
+					currentId={ pageId }
+					onOpen={ openPage }
+					onOpenTrash={ () => setTrashOpen( true ) }
+				/>
 				<main className="liber-workspace__main">
 					{ pageId ? (
 						<OpenPage key={ pageId } pageId={ pageId } />
@@ -31,6 +43,9 @@ export function App() {
 					) }
 				</main>
 			</div>
+			{ isTrashOpen && (
+				<TrashDialog onClose={ () => setTrashOpen( false ) } />
+			) }
 			<SnackbarNotices className="liber-workspace__snackbar" />
 			<Popover.Slot />
 		</SlotFillProvider>

@@ -3,29 +3,28 @@
  */
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
 import { plus, trash } from '@wordpress/icons';
 
 import { config } from '../config';
 import { useCreatePage } from '../use-create-page';
 import { PageTree } from './page-tree';
-import { TrashDialog } from './trash-dialog';
 
 interface SidebarProps {
 	currentId: number;
 	onOpen: ( pageId: number ) => void;
+	onOpenTrash: () => void;
 }
 
 /**
  * Renders the sidebar.
  *
- * @param props           Props.
- * @param props.currentId Open page.
- * @param props.onOpen    Opens a page.
+ * @param props             Props.
+ * @param props.currentId   Open page.
+ * @param props.onOpen      Opens a page.
+ * @param props.onOpenTrash Opens the trash.
  */
-export function Sidebar( { currentId, onOpen }: SidebarProps ) {
+export function Sidebar( { currentId, onOpen, onOpenTrash }: SidebarProps ) {
 	const createPage = useCreatePage( onOpen );
-	const [ isTrashOpen, setTrashOpen ] = useState( false );
 
 	return (
 		<nav
@@ -50,13 +49,10 @@ export function Sidebar( { currentId, onOpen }: SidebarProps ) {
 				<Button
 					className="liber-sidebar__action liber-sidebar__trash"
 					icon={ trash }
-					onClick={ () => setTrashOpen( true ) }
+					onClick={ onOpenTrash }
 				>
 					{ __( 'Trash', 'liber' ) }
 				</Button>
-			) }
-			{ isTrashOpen && (
-				<TrashDialog onClose={ () => setTrashOpen( false ) } />
 			) }
 		</nav>
 	);

@@ -40,3 +40,14 @@ export function usePageRoute(): [ number, ( pageId: number ) => void ] {
 
 	return [ pageId, openPage ];
 }
+
+/**
+ * Opens a page from outside the workspace's React tree (like core's command
+ * palette): pushes its URL and lets the route follow, as for back/forward.
+ *
+ * @param pageId Page ID.
+ */
+export function navigateTo( pageId: number ) {
+	window.history.pushState( {}, '', pageUrl( pageId ) );
+	window.dispatchEvent( new PopStateEvent( 'popstate' ) );
+}

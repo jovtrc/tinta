@@ -114,6 +114,35 @@ test.describe( 'Workspace', () => {
 		await expect( sidebarLink( page, 'Created elsewhere' ) ).toBeVisible();
 	} );
 
+	test( 'finds and opens pages from the command palette', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		const onboarding = await createPage(
+			requestUtils,
+			'Onboarding',
+			handbook
+		);
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=liber&doc=${ handbook }`
+		);
+
+		await page.keyboard.press( 'ControlOrMeta+k' );
+		await page.keyboard.type( 'onboard' );
+		await page
+			.getByRole( 'option', { name: 'Onboarding (Handbook)' } )
+			.click();
+
+		await expect( page ).toHaveURL( new RegExp( `doc=${ onboarding }` ) );
+		await expect(
+			editor.canvas.getByRole( 'textbox', { name: 'Untitled' } )
+		).toHaveText( 'Onboarding' );
+	} );
+
 	test( 'keeps edits made right before switching pages', async ( {
 		admin,
 		editor,
