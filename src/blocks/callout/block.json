@@ -15,6 +15,7 @@
 	},
 	"supports": {
 		"html": false,
+		"__experimentalOnEnter": true,
 		"color": {
 			"background": true,
 			"text": false

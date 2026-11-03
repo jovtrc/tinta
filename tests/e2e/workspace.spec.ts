@@ -502,7 +502,7 @@ test.describe( 'Blocks', () => {
 		await deleteAllPages( requestUtils );
 	} );
 
-	test( 'writes in a callout right after inserting it', async ( {
+	test( 'writes in a callout, and leaves it with Enter on an empty line', async ( {
 		admin,
 		editor,
 		page,
@@ -518,13 +518,85 @@ test.describe( 'Blocks', () => {
 		).toHaveAttribute( 'aria-selected', 'true' );
 		await page.keyboard.press( 'Enter' );
 		await page.keyboard.type( 'Remember the handbook.' );
+		await page.keyboard.press( 'Enter' );
+		await page.keyboard.press( 'Enter' );
+		await page.keyboard.type( 'After the callout.' );
 
 		await expect
 			.poll(
 				async () =>
 					( await getPage( requestUtils, pageId ) ).content.raw
 			)
-			.toMatch( /wp:liber\/callout[\s\S]*Remember the handbook\./ );
+			.toMatch(
+				/Remember the handbook\.[\s\S]*\/wp:liber\/callout -->\s*<!-- wp:paragraph -->\s*<p>After the callout\./
+			);
+	} );
+
+	test( 'keeps writing below a page link with a click', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const pageId = await createPage( requestUtils, 'Links' );
+		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ pageId }` );
+
+		await startTyping( editor );
+		await page.keyboard.type( '/page link' );
+		await expect(
+			page.getByRole( 'option', { name: 'Page link' } )
+		).toHaveAttribute( 'aria-selected', 'true' );
+		await page.keyboard.press( 'Enter' );
+
+		const blocks = await editor.canvas
+			.locator( '.is-root-container' )
+			.boundingBox();
+		await page.mouse.click(
+			blocks!.x + 20,
+			blocks!.y + blocks!.height + 40
+		);
+		await page.keyboard.type( 'Below the link.' );
+
+		await expect
+			.poll(
+				async () =>
+					( await getPage( requestUtils, pageId ) ).content.raw
+			)
+			.toMatch( /wp:liber\/page-link[\s\S]*<p>Below the link\./ );
+	} );
+
+	test( 'adds blocks from the Blocks panel', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const pageId = await createPage( requestUtils, 'Panel' );
+		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ pageId }` );
+
+		await startTyping( editor );
+		const paragraph = editor.canvas.locator(
+			'[data-type="core/paragraph"]'
+		);
+		await paragraph.hover( { position: { x: 4, y: 4 } } );
+		await paragraph.hover( { position: { x: 40, y: 8 } } );
+		await page.getByRole( 'button', { name: 'Add block' } ).click();
+		await page.getByRole( 'button', { name: /^Browse all/ } ).click();
+
+		const panel = page.getByRole( 'complementary', { name: 'Blocks' } );
+		await expect( panel ).toBeVisible();
+		await panel
+			.getByRole( 'searchbox', { name: 'Search blocks' } )
+			.fill( 'callout' );
+		await page.keyboard.press( 'Enter' );
+
+		await expect( panel ).toBeHidden();
+		await expect
+			.poll(
+				async () =>
+					( await getPage( requestUtils, pageId ) ).content.raw
+			)
+			.toMatch( /^<!-- wp:liber\/callout/ );
 	} );
 
 	test( 'links to a page and opens it', async ( {
@@ -544,7 +616,7 @@ test.describe( 'Blocks', () => {
 		await page.keyboard.type( '/page link' );
 		await expect(
 			page.getByRole( 'option', { name: 'Page link' } )
-		).toBeVisible();
+		).toHaveAttribute( 'aria-selected', 'true' );
 		await page.keyboard.press( 'Enter' );
 		await editor.canvas
 			.getByRole( 'combobox', { name: 'Page' } )

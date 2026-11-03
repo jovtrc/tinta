@@ -10,10 +10,11 @@ import {
 	EditorKeyboardShortcuts,
 	EditorKeyboardShortcutsRegister,
 	EditorProvider,
+	store as editorStore,
 	UnsavedChangesWarning,
 } from '@wordpress/editor';
 import { useDispatch, useSelect } from '@wordpress/data';
-import { useMemo, useState } from '@wordpress/element';
+import { useEffect, useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { InlineNotices } from '@wordpress/notices';
 import type { ComponentType } from 'react';
@@ -21,6 +22,8 @@ import type { ComponentType } from 'react';
 import { config } from '../app/config';
 import { NotesPanel } from '../notes/notes-panel';
 import { store as notesStore } from '../notes/store';
+import { BlocksPanel } from './blocks-panel';
+import { ClickBelowToWrite } from './click-below-to-write';
 import { ContinuousSave } from './continuous-save';
 import { EditorHeader } from './editor-header';
 import { LockModal } from './lock-modal';
@@ -68,12 +71,6 @@ interface PageEditorProps {
  * @param props.lock The page's lock.
  */
 export function PageEditor( { page, lock }: PageEditorProps ) {
-	const [ isInspectorOpen, setInspectorOpen ] = useState( false );
-	const isNotesOpen = useSelect(
-		( select ) => select( notesStore ).isOpen(),
-		[]
-	);
-	const { setOpen: setNotesOpen } = useDispatch( notesStore );
 	const settings = useMemo(
 		() => ( {
 			...config.settings,
@@ -95,33 +92,72 @@ export function PageEditor( { page, lock }: PageEditorProps ) {
 			<UnsavedChangesWarning />
 			<PageSync pageId={ page.id } />
 			<LockModal />
-			<div className="liber-editor">
-				<EditorHeader
-					isInspectorOpen={ isInspectorOpen && ! isNotesOpen }
-					onToggleInspector={ () => {
-						setNotesOpen( false );
-						setInspectorOpen( isNotesOpen || ! isInspectorOpen );
-					} }
-				/>
-				<InlineNotices />
-				<div className="liber-editor__body">
-					<div className="liber-editor__canvas">
-						<BlockCanvas height="100%" styles={ CANVAS_STYLES }>
-							<PageHeader />
-							<BlockList />
-						</BlockCanvas>
-					</div>
-					{ isNotesOpen && <NotesPanel /> }
-					{ isInspectorOpen && ! isNotesOpen && (
-						<aside
-							className="liber-editor__inspector"
-							aria-label={ __( 'Block settings', 'liber' ) }
-						>
-							<BlockInspector />
-						</aside>
-					) }
-				</div>
-			</div>
+			<EditorLayout />
 		</EditorProvider>
+	);
+}
+
+/**
+ * Header, canvas and one side panel at a time: Blocks, Notes or block
+ * settings. It sits inside the provider, which gives each page its own
+ * editor stores, so it reads the same ones the canvas writes to.
+ */
+function EditorLayout() {
+	const [ isInspectorOpen, setInspectorOpen ] = useState( false );
+	const isNotesOpen = useSelect(
+		( select ) => select( notesStore ).isOpen(),
+		[]
+	);
+	const isBlocksOpen = useSelect(
+		( select ) => select( editorStore ).isInserterOpened(),
+		[]
+	);
+	const { setOpen: setNotesOpen } = useDispatch( notesStore );
+	const { setIsInserterOpened } = useDispatch( editorStore );
+
+	useEffect( () => {
+		if ( isBlocksOpen ) {
+			setNotesOpen( false );
+			setInspectorOpen( false );
+		}
+	}, [ isBlocksOpen, setNotesOpen ] );
+
+	useEffect( () => {
+		if ( isNotesOpen ) {
+			setIsInserterOpened( false );
+		}
+	}, [ isNotesOpen, setIsInserterOpened ] );
+
+	return (
+		<div className="liber-editor">
+			<EditorHeader
+				isInspectorOpen={ isInspectorOpen && ! isNotesOpen }
+				onToggleInspector={ () => {
+					setNotesOpen( false );
+					setIsInserterOpened( false );
+					setInspectorOpen( isNotesOpen || ! isInspectorOpen );
+				} }
+			/>
+			<InlineNotices />
+			<div className="liber-editor__body">
+				<div className="liber-editor__canvas">
+					<BlockCanvas height="100%" styles={ CANVAS_STYLES }>
+						<PageHeader />
+						<BlockList />
+						<ClickBelowToWrite />
+					</BlockCanvas>
+				</div>
+				{ isBlocksOpen && <BlocksPanel /> }
+				{ isNotesOpen && <NotesPanel /> }
+				{ isInspectorOpen && ! isNotesOpen && ! isBlocksOpen && (
+					<aside
+						className="liber-editor__inspector"
+						aria-label={ __( 'Block settings', 'liber' ) }
+					>
+						<BlockInspector />
+					</aside>
+				) }
+			</div>
+		</div>
 	);
 }
