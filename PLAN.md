@@ -97,7 +97,7 @@ Core's command palette, extended with Liber commands: search pages by title (wit
 
 ### 4.7 Trash
 - Moving a page to trash moves its whole subtree; the confirmation says how many pages.
-- Trash lists pages flat. Restore puts the page back at the top level, as private.
+- Trash lists the pages people trashed (their subpages come along). Restore puts the page back where it was, as private, with the subpages trashed along with it; a page whose parent is gone goes to the top level. A subpage trashed on its own earlier stays in the trash.
 - Trash empties itself after 30 days (core `EMPTY_TRASH_DAYS`, same as Notion). Admins can empty it sooner.
 
 ### 4.8 Pinned & recent

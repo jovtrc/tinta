@@ -47,7 +47,8 @@ The workspace is one admin screen, `admin.php?page=liber&doc=ID`. Liber's React 
 | `Liber\Setup\Wizard` | `includes/setup/class-wizard.php` | Wizard state, sample content |
 | `Liber\Docs\Post_Type` | `includes/docs/class-post-type.php` | CPT, `_liber_icon` meta, depth check, revisions cap |
 | `Liber\Docs\Private_Status` | `includes/docs/class-private-status.php` | Every page `private`; no "Private:" title prefix; trash restores to `private` |
-| `Liber\Docs\Subtree_Trash` | `includes/docs/class-subtree-trash.php` | Cascade trash; restore to top level |
+| `Liber\Docs\Subtree_Trash` | `includes/docs/class-subtree-trash.php` | Cascade trash (`_liber_trashed_with`), restore and delete; only admins delete for good |
+| `Liber\Rest\Restore_Controller` | `includes/rest/class-restore-controller.php` | `POST liber/v1/docs/{id}/restore` |
 | `Liber\Docs\Revisions` | `includes/docs/class-revisions.php` | Revision snapshots (one per author per 10 min), 10 kept |
 | `Liber\Docs\Tree` | `includes/docs/class-tree.php` | Tree skeleton query, cache and invalidation |
 | `Liber\Roles\Roles` | `includes/roles/class-roles.php` | Member and Viewer roles, caps |
@@ -148,11 +149,12 @@ Core only lets users with `read_private_liber_docs` read a private post — in R
 | POST | `/docs/(?P<id>\d+)/move` | New parent + position; depth ≤ 5, no cycles; renumbers siblings in one go | `edit_post` on the page and the new parent |
 | POST, DELETE | `/docs/(?P<id>\d+)/lock` | Take the page's lock (or report who holds it) with the nonces `PostLockedModal` needs; release it on leaving | `edit_post` on the page |
 | POST | `/docs/(?P<id>\d+)/share` (v1.1) | Share or unshare a page and its subtree | `publish_post` on the page, "Allow public pages" on |
+| POST | `/docs/(?P<id>\d+)/restore` | `wp_untrash_post()`, which a `wp/v2` status update skips, so subpages come back too | `delete_post` on the page |
 
-Maybe one more (`/docs/{id}/restore`) if core's update can't restore to the top level cleanly.
+Nesting: `rest_pre_insert_liber_doc` refuses a parent that isn't a page or sits at level 5.
 
 - Plain `WP_REST_Controller` subclasses with full schemas, `args` validation and a `permission_callback`. No route-builder framework — three or four routes don't need one.
-- Subtree trash is a hook (`wp_trash_post`), so core's DELETE does it.
+- Subtree trash is a hook (`trashed_post`), so core's DELETE does it.
 
 ## 6. Frontend (TypeScript)
 

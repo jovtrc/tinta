@@ -17,7 +17,8 @@
   - [x] Workspace screen: page tree from a cached `liber/v1/tree`, editor that switches pages in place, New page.
   - [x] Continuous saving with revision snapshots; locks per page; read-only view for Viewers.
   - [x] Heartbeat tree refresh.
-  - [ ] Drag to move, page icons, page actions (add child, rename, trash), mobile drawer.
+  - [x] Page actions: add a subpage, move to trash (with subpages); Trash dialog with restore and, for admins, delete; 5-level limit.
+  - [ ] Drag to move, page icons, pinned and recent, mobile drawer.
   - [ ] CI, once the GitHub repo exists.
 
 ## v1.0 — MVP (wordpress.org)
