@@ -17,6 +17,7 @@ interface PageRecord {
 	parent: number;
 	status: string;
 	meta: { _liber_icon: string };
+	content: { raw: string };
 	title: { raw: string };
 }
 
@@ -349,6 +350,109 @@ async function dragOnto(
 		{ steps: 10 }
 	);
 	await page.mouse.up();
+}
+
+test.describe( 'Blocks', () => {
+	test.beforeEach( async ( { requestUtils } ) => {
+		await deleteAllPages( requestUtils );
+	} );
+
+	test( 'writes in a callout right after inserting it', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const pageId = await createPage( requestUtils, 'Notes' );
+		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ pageId }` );
+
+		await startTyping( editor );
+		await page.keyboard.type( '/callout' );
+		await expect(
+			page.getByRole( 'option', { name: 'Callout' } )
+		).toBeVisible();
+		await page.keyboard.press( 'Enter' );
+		await page.keyboard.type( 'Remember the handbook.' );
+
+		await expect
+			.poll(
+				async () =>
+					( await getPage( requestUtils, pageId ) ).content.raw
+			)
+			.toMatch( /wp:liber\/callout[\s\S]*Remember the handbook\./ );
+	} );
+
+	test( 'links to a page and opens it', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		const roadmap = await createPage( requestUtils, 'Roadmap' );
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=liber&doc=${ roadmap }`
+		);
+
+		await startTyping( editor );
+		await page.keyboard.type( '/page link' );
+		await expect(
+			page.getByRole( 'option', { name: 'Page link' } )
+		).toBeVisible();
+		await page.keyboard.press( 'Enter' );
+		await editor.canvas
+			.getByRole( 'combobox', { name: 'Page' } )
+			.fill( 'Hand' );
+		await editor.canvas.getByRole( 'option', { name: 'Handbook' } ).click();
+
+		await expect
+			.poll(
+				async () =>
+					( await getPage( requestUtils, roadmap ) ).content.raw
+			)
+			.toContain( `"pageId":${ handbook }` );
+
+		await editor.showBlockToolbar();
+		await page.getByRole( 'button', { name: 'Open', exact: true } ).click();
+		await expect( page ).toHaveURL( new RegExp( `doc=${ handbook }` ) );
+	} );
+
+	test( 'offers only the allowed blocks', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const pageId = await createPage( requestUtils, 'Notes' );
+		await admin.visitAdminPage( 'admin.php', `page=liber&doc=${ pageId }` );
+
+		await startTyping( editor );
+		await page.keyboard.type( '/table' );
+		await expect(
+			page.getByRole( 'option', { name: 'Table' } )
+		).toBeVisible();
+
+		await page.keyboard.press( 'Escape' );
+		await page.keyboard.press( 'ControlOrMeta+a' );
+		await page.keyboard.type( '/columns' );
+		await expect(
+			page.getByRole( 'option', { name: 'Columns' } )
+		).toHaveCount( 0 );
+	} );
+} );
+
+/**
+ * Puts the cursor in a new page's first block.
+ *
+ * @param editor Editor helpers.
+ */
+async function startTyping(
+	editor: import( '@wordpress/e2e-test-utils-playwright' ).Editor
+) {
+	await editor.canvas
+		.getByRole( 'button', { name: 'Add default block' } )
+		.click();
 }
 
 test.describe( 'Locks and roles', () => {

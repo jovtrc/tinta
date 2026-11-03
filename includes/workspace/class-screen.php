@@ -110,7 +110,7 @@ final class Screen {
 		$asset = require plugin_dir_path( LIBER_FILE ) . 'build/workspace.asset.php';
 
 		wp_enqueue_script( self::HANDLE, plugins_url( 'build/workspace.js', LIBER_FILE ), $asset['dependencies'], $asset['version'], true );
-		wp_enqueue_style( self::HANDLE, plugins_url( 'build/workspace.css', LIBER_FILE ), array( 'wp-components', 'wp-block-editor', 'wp-editor', 'wp-format-library', 'wp-commands', 'wp-block-library' ), $asset['version'] );
+		wp_enqueue_style( self::HANDLE, plugins_url( 'build/workspace.css', LIBER_FILE ), array( 'wp-components', 'wp-block-editor', 'wp-editor', 'wp-format-library', 'wp-commands', 'wp-block-library', 'liber-page-link-style', 'liber-callout-style' ), $asset['version'] );
 		wp_set_script_translations( self::HANDLE, 'liber' );
 		wp_add_inline_script(
 			self::HANDLE,

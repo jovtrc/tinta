@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "liber/callout",
+	"title": "Callout",
+	"category": "text",
+	"description": "A tinted box with an emoji, to make a note stand out.",
+	"keywords": [ "note", "tip", "info", "warning" ],
+	"textdomain": "liber",
+	"attributes": {
+		"emoji": {
+			"type": "string",
+			"default": "💡"
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"background": true,
+			"text": false
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css"
+}

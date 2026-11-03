@@ -9,7 +9,11 @@
 		"isolatedModules": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
-		"types": []
+		"types": [],
+		"resolveJsonModule": true
 	},
-	"include": [ "src", "tests/e2e" ]
+	"include": [
+		"src",
+		"tests/e2e"
+	]
 }

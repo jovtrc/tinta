@@ -8,8 +8,8 @@
 		"node": ">=24"
 	},
 	"scripts": {
-		"build": "wp-scripts build",
-		"start": "wp-scripts start",
+		"build": "wp-scripts build --blocks-manifest",
+		"start": "wp-scripts start --blocks-manifest",
 		"typecheck": "tsc",
 		"lint:js": "wp-scripts lint-js src tests/e2e",
 		"lint:css": "wp-scripts lint-style \"src/**/*.scss\"",

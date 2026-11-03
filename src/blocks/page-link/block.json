@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "liber/page-link",
+	"title": "Page link",
+	"category": "text",
+	"description": "Links to another page, showing its current icon and title.",
+	"keywords": [ "link", "page", "mention" ],
+	"textdomain": "liber",
+	"attributes": {
+		"pageId": {
+			"type": "integer",
+			"default": 0
+		}
+	},
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

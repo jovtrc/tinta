@@ -1,11 +1,13 @@
 /**
- * The @wordpress/scripts webpack config, with the workspace app as its entry.
+ * The @wordpress/scripts webpack config: blocks found through their block.json,
+ * plus the workspace app.
  */
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 
 module.exports = {
 	...defaultConfig,
-	entry: {
+	entry: () => ( {
+		...defaultConfig.entry(),
 		workspace: './src/app/index.tsx',
-	},
+	} ),
 };
