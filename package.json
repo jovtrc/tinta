@@ -1,0 +1,19 @@
+{
+	"name": "liber",
+	"private": true,
+	"description": "A private team wiki for WordPress: pages in a tree, written in the block editor.",
+	"license": "GPL-2.0-or-later",
+	"packageManager": "pnpm@11.0.0",
+	"engines": {
+		"node": ">=24"
+	},
+	"scripts": {
+		"env": "wp-env",
+		"env:test": "wp-env --config=.wp-env.test.json",
+		"test:integration": "wp-env run cli --config=.wp-env.test.json --env-cwd=wp-content/plugins/liber/tests/integration vendor/bin/phpunit",
+		"test:integration:multisite": "wp-env run cli --config=.wp-env.test.json --env-cwd=wp-content/plugins/liber/tests/integration vendor/bin/phpunit -c phpunit-multisite.xml.dist"
+	},
+	"devDependencies": {
+		"@wordpress/env": "^12.0.0"
+	}
+}
