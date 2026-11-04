@@ -1,3 +1,8 @@
+<picture>
+	<source media="(prefers-color-scheme: dark)" srcset=".github/tinta-logo-dark.svg">
+	<img src=".github/tinta-logo.svg" alt="Tinta" width="180">
+</picture>
+
 # Tinta – Team Wiki
 
 A private team wiki inside WordPress: pages inside pages, written in the block editor.
@@ -10,7 +15,7 @@ A private team wiki inside WordPress: pages inside pages, written in the block e
 - The block editor, with a focused set of blocks plus two of Tinta's own: Callout and Page link.
 - Saves as you type. One person edits a page at a time; others see who is editing.
 - Notes on blocks, with replies, @mentions and resolve.
-- Pinned and recent pages, emoji page icons, and ⌘K to find any page.
+- Pinned and recent pages, emoji page icons, and ⌘K to find any page. Pages and pins move up and down from their menu too, without dragging.
 - Two roles: Members read and write every page, Viewers only read.
 - Workspace mode (on by default): everyone lands in the workspace after logging in, and the site becomes private.
 - Follows each person's admin color scheme. Works on mobile, in right-to-left languages, and on multisite (each site has its own workspace).
@@ -48,6 +53,8 @@ pnpm typecheck && pnpm lint:js && pnpm lint:css
 pnpm wp-env:test start && pnpm test:php && pnpm test:php:multisite
 pnpm test:e2e           # Playwright on WordPress Playground; --project=firefox or webkit for one browser
 ```
+
+`pnpm screenshots` fills a sample workspace on Playground and retakes the wordpress.org screenshots in `.wordpress-org/`, which also holds the icon, banners and the Live Preview blueprint.
 
 [PLAN.md](PLAN.md) describes what Tinta does and why, [ARCHITECTURE.md](ARCHITECTURE.md) how it's built (including how releases are made), and [ROADMAP.md](ROADMAP.md) what comes next.
 

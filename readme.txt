@@ -55,6 +55,15 @@ No. Workspace mode, which makes the site private, is on when you install Tinta. 
 
 They stay in your database. Deleting the plugin removes its roles, settings and preferences, but never your team's pages.
 
+== Screenshots ==
+
+1. Pages inside pages in the sidebar, with pinned and recent pages, and the block editor.
+2. Notes on a block, with replies and mentions.
+3. Find any page with ⌘K (Ctrl+K on Windows and Linux).
+4. The setup wizard opens when you activate Tinta.
+5. The sidebar follows each person's admin color scheme.
+6. On a phone, the sidebar opens as a drawer.
+
 == Changelog ==
 
 = 0.1.0 =

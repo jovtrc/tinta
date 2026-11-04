@@ -1,0 +1,28 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"meta": {
+		"title": "Tinta – Team Wiki",
+		"author": "jcarvalho",
+		"description": "A private team wiki inside WordPress, ready to set up."
+	},
+	"landingPage": "/wp-admin/admin.php?page=tinta",
+	"preferredVersions": {
+		"php": "8.2",
+		"wp": "latest"
+	},
+	"steps": [
+		{
+			"step": "login"
+		},
+		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "wordpress.org/plugins",
+				"slug": "tinta"
+			},
+			"options": {
+				"activate": true
+			}
+		}
+	]
+}
