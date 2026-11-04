@@ -73,8 +73,8 @@ The workspace is one admin screen, `admin.php?page=tinta&doc=ID`. Tinta's React 
 | `Tinta\Blocks\Registry` | `includes/blocks/class-registry.php` | Registers blocks from the build manifest |
 | `Tinta\Cache\Cache` | `includes/cache/class-cache.php` | Object cache, or transients as fallback |
 | `Tinta\Cache\Tree_Pulse` | `includes/cache/class-tree-pulse.php` | Tree generation over Heartbeat |
-| `Tinta\Sharing\Share` (0.2) | `includes/sharing/class-share.php` | Share/unshare a subtree; inherit on create and move |
-| `Tinta\Sharing\Public_View` (0.2) | `includes/sharing/class-public-view.php` | Public URL, minimal template, `noindex` |
+| `Tinta\Sharing\Share` (0.4) | `includes/sharing/class-share.php` | Share/unshare a subtree; inherit on create and move |
+| `Tinta\Sharing\Public_View` (0.4) | `includes/sharing/class-public-view.php` | Public URL, minimal template, `noindex` |
 
 No custom tables.
 
@@ -82,10 +82,10 @@ No custom tables.
 
 | Storage | Key | Purpose |
 |---|---|---|
-| `posts` | `post_type = tinta_doc` | Pages: `private` (always), `publish` (shared, 0.2), `trash` |
+| `posts` | `post_type = tinta_doc` | Pages: `private` (always), `publish` (shared, 0.4), `trash` |
 | `posts` | `post_parent`, `menu_order` | Tree and sibling order |
 | `postmeta` | `_tinta_icon` | Page emoji |
-| `postmeta` | `_tinta_share_root`, `_tinta_indexable` (0.2) | The page sharing was turned on from; search-engine opt-in |
+| `postmeta` | `_tinta_share_root`, `_tinta_indexable` (0.4) | The page sharing was turned on from; search-engine opt-in |
 | `postmeta` | `_edit_lock`, `_edit_last`, `_wp_trash_meta_*` | Core: locks, last editor (Tinta records it on REST saves), trash |
 | `postmeta` | `_tinta_trashed_with` | Set on subpages trashed along with a page, so they come back with it |
 | `comments` | `comment_type = note` | Notes (core's data, Tinta's UI) |
@@ -99,7 +99,7 @@ No custom tables.
 
 ### Privacy: every page is `private` (decided 2026-11-02)
 Core only lets users with `read_private_tinta_docs` read a private post — in REST, queries, the front end, feeds and search — so WordPress does the gatekeeping. Tinta handles the edges:
-1. Create every page as `private`, never `draft` or `publish` (only Share sets `publish`, 0.2).
+1. Create every page as `private`, never `draft` or `publish` (only Share sets `publish`, 0.4).
 2. Drop the "Private:" title prefix for `tinta_doc` (`private_title_format`).
 3. Restore from trash as `private` (core restores to `draft` since 5.6; filter `wp_untrash_post_status`).
 4. Setting any status needs `publish_tinta_docs`, so Members get it.
@@ -162,7 +162,7 @@ Core only lets users with `read_private_tinta_docs` read a private post — in R
 | GET | `/people` | People who can edit pages: id, name, avatar (for @mentions) | `edit_tinta_docs` |
 | POST | `/docs/(?P<id>\d+)/move` | New parent + position; depth ≤ 5, no cycles; renumbers siblings in one go | `edit_post` on the page and the new parent |
 | POST, DELETE | `/docs/(?P<id>\d+)/lock` | Take the page's lock (or report who holds it) with the nonces `PostLockedModal` needs; release it on leaving | `edit_post` on the page |
-| POST | `/docs/(?P<id>\d+)/share` (0.2) | Share or unshare a page and its subtree | `publish_post` on the page, "Allow public pages" on |
+| POST | `/docs/(?P<id>\d+)/share` (0.4) | Share or unshare a page and its subtree | `publish_post` on the page, "Allow public pages" on |
 | POST | `/docs/(?P<id>\d+)/restore` | `wp_untrash_post()`, which a `wp/v2` status update skips, so subpages come back too | `delete_post` on the page |
 
 Nesting: `rest_pre_insert_tinta_doc` refuses a parent that isn't a page or sits at level 5.
@@ -296,7 +296,7 @@ tinta/
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
 | Pages leak to logged-out users or non-members | Low | High | Every page `private` (§3) + REST login requirement; tests for every role and logged-out |
-| Sharing exposes a page someone meant to keep private (0.2) | Med | High | Warn before moving a page into a shared section; globe markers; admin switch; private page links render without titles |
+| Sharing exposes a page someone meant to keep private (0.4) | Med | High | Warn before moving a page into a shared section; globe markers; admin switch; private page links render without titles |
 | Uploaded files have public URLs | High | Med | Said plainly in the readme |
 | Editor host breaks on a WP update | Med | High | Public editor components only; CI against WP trunk |
 | Core keeps editor features private (Notes UI, visual revisions, List View) | High | Med | Tinta's UI on core's data; switch to core's UI if `Editor` becomes public (`@wordpress/lazy-editor` hints at it) |

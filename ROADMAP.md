@@ -65,35 +65,45 @@ Full scope in PLAN §4:
 - Caching with transient fallback; Heartbeat freshness.
 - English + pt_BR (translate.wordpress.org); mobile drawer; multisite-safe.
 
-## 0.2 — Quick wins
-- Share to web: a page and its subpages become public, with a read-only view and `noindex` by default (PLAN §4.15).
-- Import/export: Markdown, and Notion exports rebuilt as a tree.
-- Abilities API + MCP: search, read and create pages from AI clients.
-- History: saved versions, preview, restore.
-- Notes on selected text.
-- Read-only view when someone else is editing, instead of the lock dialog.
-- Duplicate page (with subtree), bulk actions, cover images, workspace-wide pins.
+## 0.2 — Settings & people
 - Settings with side tabs (General, People, Profile, and room for more): today's single settings dialog becomes the General tab.
 - Invite people from Settings: name, email and role (Member or Viewer), sent with core's new-user email, without a trip to Users → Add New.
 - Edit your own profile from Settings: name, email, password and admin color scheme, without leaving the workspace.
 - Rename the account menu's "Admin tools" to "WP Admin" (or "Go back to WP Admin").
+- Workspace-wide pins.
 
-## 0.3 — Collaboration
-- Notification inbox for mentions and replies (core Feature Notifications if it lands), plus email.
-- Note reactions.
+## 0.3 — Better pages
+- History: saved versions, preview, restore.
+- Duplicate a page with its subpages; bulk actions in the tree.
+- Cover images.
 - Mermaid / diagram block.
+
+## 0.4 — Sharing & import
+- Share to web: a page and its subpages become public, with a read-only view and `noindex` by default (PLAN §4.15).
+- Import/export: Markdown, and Notion exports rebuilt as a tree.
+
+## 0.5 — Collaboration
+- Notification inbox for mentions and replies (core Feature Notifications if it lands), plus email.
+- Note reactions; notes on selected text.
+- Read-only view when someone else is editing, instead of the lock dialog.
 - Presence ("who's here") through core's Presence API, if merged.
 - Real-time co-editing when core ships it (not before 2027).
 
-## 0.4 — Power users
+## 0.6 — Power users
 - Page templates.
 - Tags / labels.
 - Guest users who see only shared pages; invite by email code + approval.
 
-## 0.5 — Lightweight databases
-- Custom properties per page.
-- Filters and sorts.
+## 0.7 — Lightweight databases
+- Database pages: a page defines properties, its subpages are the rows.
+- Typed properties; filters, sorts and saved views.
 - Table view first; board and calendar later.
+
+## 0.8 — AI
+- Off by default, on the site owner's own provider through WordPress's AI building blocks, and clear about what is sent. With AI off, Tinta sends no data anywhere.
+- Abilities API + MCP: search, read and write pages from AI clients.
+- Ask the workspace (answers with links to the pages used), summaries, writing help, drafts from a prompt or template.
+- Meeting notes to action items (with databases), suggestions for icons, titles, tags and placement, smarter ⌘K search.
 
 ## Deliberately delayed
 - Real-time co-editing until core ships it.
