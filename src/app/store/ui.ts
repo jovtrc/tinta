@@ -5,6 +5,8 @@
  */
 import { createReduxStore, register } from '@wordpress/data';
 
+import type { PageList } from '../sidebar/use-order-moves';
+
 export type DialogName =
 	'move' | 'move-to-trash' | 'rename' | 'settings' | 'setup' | 'trash';
 
@@ -17,6 +19,7 @@ export interface ContextMenu {
 	pageId: number;
 	x: number;
 	y: number;
+	list: PageList;
 }
 
 interface State {
@@ -52,10 +55,16 @@ const actions = {
 	 * @param pageId Page ID.
 	 * @param x      Pointer's distance from the window's left edge.
 	 * @param y      Pointer's distance from the window's top edge.
+	 * @param list   The sidebar list the page is in.
 	 */
-	openContextMenu: ( pageId: number, x: number, y: number ): Action => ( {
+	openContextMenu: (
+		pageId: number,
+		x: number,
+		y: number,
+		list: PageList = 'tree'
+	): Action => ( {
 		type: 'OPEN_CONTEXT_MENU',
-		contextMenu: { pageId, x, y },
+		contextMenu: { pageId, x, y, list },
 	} ),
 
 	closeContextMenu: (): Action => ( {

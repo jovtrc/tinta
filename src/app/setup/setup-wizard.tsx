@@ -21,6 +21,7 @@ import { useEffect, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 import { config, pageUrl } from '../config';
+import { Logo } from '../logo';
 import { RegistrationNotice } from '../registration-notice';
 import { TINTA_ROLES, roleOptions } from '../roles';
 import { store as workspaceStore } from '../store';
@@ -239,6 +240,7 @@ interface StepProps {
 function Welcome() {
 	return (
 		<>
+			<Logo className="tinta-setup__logo" />
 			<p className="tinta-setup__lead">
 				{ __(
 					'Tinta turns this site into a private wiki for your team: pages inside pages, written in the block editor.',

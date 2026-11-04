@@ -1,6 +1,6 @@
 /**
- * Sidebar: workspace name, Search, New page, Pinned, Recent, the page tree,
- * the trash, and the account menu.
+ * Sidebar: workspace name, Search, New page, Pinned, Recent (other pages
+ * visited lately, not pinned), the page tree, the trash, and the account menu.
  */
 import { Button } from '@wordpress/components';
 import { store as commandsStore } from '@wordpress/commands';
@@ -18,6 +18,8 @@ import { PageSection } from './page-section';
 import { PageTree } from './page-tree';
 import { useSidebar } from './use-sidebar';
 import { UserMenu } from './user-menu';
+
+const RECENT_SHOWN = 5;
 
 interface SidebarProps {
 	currentId: number;
@@ -90,15 +92,20 @@ export function Sidebar( { currentId, onOpen }: SidebarProps ) {
 			) }
 			<PageSection
 				title={ __( 'Pinned', 'tinta' ) }
+				list="pinned"
 				pageIds={ prefs.pinned }
-				currentId={ currentId }
 				onOpen={ onOpen }
 				onReorder={ ( pinned ) => updatePrefs( { pinned } ) }
 			/>
 			<PageSection
 				title={ __( 'Recent', 'tinta' ) }
-				pageIds={ prefs.recent }
-				currentId={ currentId }
+				list="recent"
+				pageIds={ prefs.recent
+					.filter(
+						( id ) =>
+							id !== currentId && ! prefs.pinned.includes( id )
+					)
+					.slice( 0, RECENT_SHOWN ) }
 				onOpen={ onOpen }
 			/>
 			<div className="tinta-sidebar__heading-row">

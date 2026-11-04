@@ -348,7 +348,10 @@ test.describe( 'Page actions and trash', () => {
 
 		await sidebarLink( page, 'Handbook' ).hover();
 		await page
-			.getByRole( 'button', { name: 'Actions for “Handbook”' } )
+			.getByRole( 'button', {
+				name: 'Actions for “Handbook”',
+				exact: true,
+			} )
 			.click();
 		await page.getByRole( 'menuitem', { name: 'Move to trash' } ).click();
 		await expect(
@@ -405,18 +408,64 @@ test.describe( 'Moving pages', () => {
 
 		await dragOnto( page, 'Ideas', 'Handbook', 'before' );
 		await expect
-			.poll( async () => {
-				const tree = await requestUtils.rest< {
-					pages: { title: string; parent: number }[];
-				} >( { path: '/tinta/v1/tree' } );
-
-				return tree.pages
-					.filter( ( { parent } ) => ! parent )
-					.map( ( { title } ) => title );
-			} )
+			.poll( () => topLevelTitles( requestUtils ) )
 			.toEqual( [ 'Ideas', 'Handbook' ] );
 	} );
+
+	test( 'moves pages up and down from the menu', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		await createPage( requestUtils, 'Roadmap' );
+		await createPage( requestUtils, 'Ideas' );
+		const [ first, second, last ] = await topLevelTitles( requestUtils );
+		const actions = ( title: string ) =>
+			page.getByRole( 'button', {
+				name: `Actions for “${ title }”`,
+				exact: true,
+			} );
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=tinta&doc=${ handbook }`
+		);
+
+		await sidebarLink( page, first ).hover();
+		await actions( first ).click();
+		await expect(
+			page.getByRole( 'menuitem', { name: 'Move up' } )
+		).toHaveCount( 0 );
+		await page.keyboard.press( 'Escape' );
+
+		await sidebarLink( page, last ).focus();
+		await page.keyboard.press( 'Tab' );
+		await expect( actions( last ) ).toBeFocused();
+		await page.keyboard.press( 'Enter' );
+		await page
+			.getByRole( 'menuitem', { name: 'Move up', exact: true } )
+			.press( 'Enter' );
+
+		await expect
+			.poll( () => topLevelTitles( requestUtils ) )
+			.toEqual( [ first, last, second ] );
+	} );
 } );
+
+/**
+ * Titles of the top-level pages, in order.
+ *
+ * @param requestUtils REST helpers.
+ */
+async function topLevelTitles( requestUtils: RequestUtils ) {
+	const tree = await requestUtils.rest< {
+		pages: { title: string; parent: number }[];
+	} >( { path: '/tinta/v1/tree' } );
+
+	return tree.pages
+		.filter( ( { parent } ) => ! parent )
+		.map( ( { title } ) => title );
+}
 
 /**
  * Drags a sidebar page onto another one, inside it or above it.
@@ -459,7 +508,9 @@ test( 'moves a page with "Move to…"', async ( {
 	await admin.visitAdminPage( 'admin.php', `page=tinta&doc=${ roadmap }` );
 
 	await sidebarLink( page, 'Roadmap' ).hover();
-	await page.getByRole( 'button', { name: 'Actions for “Roadmap”' } ).click();
+	await page
+		.getByRole( 'button', { name: 'Actions for “Roadmap”', exact: true } )
+		.click();
 	await page.getByRole( 'menuitem', { name: 'Move to…' } ).click();
 	await page.getByRole( 'combobox', { name: 'Move inside' } ).fill( 'Hand' );
 	await page.getByRole( 'option', { name: 'Handbook' } ).click();
@@ -536,6 +587,52 @@ test.describe( 'Pinned, recent and expanded', () => {
 			.toEqual( [ roadmap, handbook ] );
 	} );
 
+	test( 'reorders pinned pages from the menu', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		const roadmap = await createPage( requestUtils, 'Roadmap' );
+		await requestUtils.rest( {
+			method: 'POST',
+			path: '/wp/v2/users/me',
+			data: { tinta_prefs: { pinned: [ handbook, roadmap ] } },
+		} );
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=tinta&doc=${ handbook }`
+		);
+
+		const pinned = page.getByRole( 'list', { name: 'Pinned' } );
+		await pinned.getByRole( 'link', { name: 'Roadmap' } ).hover();
+		await page
+			.getByRole( 'button', { name: 'Actions for “Roadmap” in Pinned' } )
+			.click();
+		await expect(
+			page.getByRole( 'menuitem', { name: 'Move down in Pinned' } )
+		).toHaveCount( 0 );
+		await page
+			.getByRole( 'menuitem', { name: 'Move up in Pinned' } )
+			.click();
+
+		await expect( pinned.getByRole( 'link' ) ).toHaveText( [
+			'Roadmap',
+			'Handbook',
+		] );
+		await expect
+			.poll( async () => {
+				const { tinta_prefs: prefs } = await requestUtils.rest< {
+					tinta_prefs: { pinned: number[] };
+				} >( {
+					path: '/wp/v2/users/me',
+					params: { context: 'edit' },
+				} );
+				return prefs.pinned;
+			} )
+			.toEqual( [ roadmap, handbook ] );
+	} );
+
 	test( 'keeps pins, recent pages and expanded branches per user', async ( {
 		admin,
 		page,
@@ -551,19 +648,20 @@ test.describe( 'Pinned, recent and expanded', () => {
 
 		await sidebarLink( page, 'Handbook' ).click();
 		const recent = page.getByRole( 'list', { name: 'Recent' } );
-		await expect( recent.getByRole( 'link' ) ).toHaveText( [
-			'Handbook',
-			'Roadmap',
-		] );
+		await expect( recent.getByRole( 'link' ) ).toHaveText( [ 'Roadmap' ] );
 
 		await sidebarLink( page, 'Roadmap' ).hover();
 		await page
-			.getByRole( 'button', { name: 'Actions for “Roadmap”' } )
+			.getByRole( 'button', {
+				name: 'Actions for “Roadmap”',
+				exact: true,
+			} )
 			.click();
 		await page.getByRole( 'menuitem', { name: 'Pin' } ).click();
 		await expect(
 			page.getByRole( 'list', { name: 'Pinned' } ).getByRole( 'link' )
 		).toHaveText( [ 'Roadmap' ] );
+		await expect( recent ).toHaveCount( 0 );
 		await page.getByRole( 'button', { name: 'Expand' } ).click();
 		await expect( sidebarLink( page, 'Onboarding' ) ).toBeVisible();
 		await expect
@@ -941,6 +1039,41 @@ test.describe( 'Settings', () => {
 		await page.getByRole( 'button', { name: 'Your account' } ).click();
 		await expect(
 			page.getByRole( 'menuitem', { name: 'Admin tools' } )
+		).toBeVisible();
+	} );
+
+	test( 'keeps only Tinta’s commands in workspace mode', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		await deleteAllPages( requestUtils );
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		const palette = async () => {
+			await admin.visitAdminPage(
+				'admin.php',
+				`page=tinta&doc=${ handbook }`
+			);
+			await page.keyboard.press( 'ControlOrMeta+k' );
+			await page.keyboard.type( 'code editor' );
+		};
+
+		await palette();
+		await expect(
+			page.getByRole( 'option', { name: 'Open code editor' } )
+		).toBeVisible();
+
+		await requestUtils.rest( {
+			method: 'POST',
+			path: '/wp/v2/settings',
+			data: { tinta_settings: { workspace_mode: true } },
+		} );
+		await palette();
+		await expect( page.getByRole( 'option' ) ).toHaveCount( 0 );
+		await page.keyboard.press( 'ControlOrMeta+a' );
+		await page.keyboard.type( 'hand' );
+		await expect(
+			page.getByRole( 'option', { name: 'Handbook' } )
 		).toBeVisible();
 	} );
 } );

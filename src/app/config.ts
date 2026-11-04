@@ -8,6 +8,7 @@ export interface WorkspaceConfig {
 	siteIcon: string;
 	canCreate: boolean;
 	canManage: boolean;
+	workspaceMode: boolean;
 	roles: Record< string, string >;
 	setup: {
 		done: boolean;

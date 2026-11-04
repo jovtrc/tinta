@@ -1,7 +1,8 @@
 /**
- * A page's menu: Pin (everyone), Rename, Move to… and Move to trash (editors).
- * Opens from the "⋯" button in the tree and the page header, or with a right
- * click on a page in the sidebar.
+ * A page's menu: Pin (everyone), Rename, Move to… and Move to trash (editors),
+ * and Move up or down in the list it opened from. Opens from the "⋯" button
+ * on sidebar rows and in the page header, or with a right click on a page in
+ * the sidebar.
  */
 import {
 	DropdownMenu,
@@ -25,11 +26,13 @@ import {
 import { config } from '../config';
 import { store as prefsStore } from '../store/prefs';
 import { store as uiStore, type DialogName } from '../store/ui';
+import { useOrderMoves, type PageList } from './use-order-moves';
 import type { MouseEvent } from 'react';
 
 interface PageMenuProps {
 	pageId: number;
 	label: string;
+	list?: PageList;
 	size?: 'small' | 'compact';
 }
 
@@ -39,9 +42,15 @@ interface PageMenuProps {
  * @param props        Props.
  * @param props.pageId Page ID.
  * @param props.label  The button's label.
+ * @param props.list   Where the button is: the tree (and page header), Pinned or Recent.
  * @param props.size   The button's size.
  */
-export function PageMenu( { pageId, label, size = 'small' }: PageMenuProps ) {
+export function PageMenu( {
+	pageId,
+	label,
+	list = 'tree',
+	size = 'small',
+}: PageMenuProps ) {
 	return (
 		<DropdownMenu
 			icon={ moreHorizontal }
@@ -49,7 +58,11 @@ export function PageMenu( { pageId, label, size = 'small' }: PageMenuProps ) {
 			toggleProps={ { size } }
 		>
 			{ ( { onClose } ) => (
-				<PageMenuItems pageId={ pageId } onClose={ onClose } />
+				<PageMenuItems
+					pageId={ pageId }
+					list={ list }
+					onClose={ onClose }
+				/>
 			) }
 		</DropdownMenu>
 	);
@@ -111,6 +124,7 @@ export function PageContextMenu() {
 			>
 				<PageMenuItems
 					pageId={ menu.pageId }
+					list={ menu.list }
 					onClose={ closeContextMenu }
 				/>
 			</NavigableMenu>
@@ -123,13 +137,16 @@ export function PageContextMenu() {
  *
  * @param props         Props.
  * @param props.pageId  Page ID.
+ * @param props.list    Where the menu opened.
  * @param props.onClose Closes the menu.
  */
 function PageMenuItems( {
 	pageId,
+	list,
 	onClose,
 }: {
 	pageId: number;
+	list: PageList;
 	onClose: () => void;
 } ) {
 	const isPinned = useSelect(
@@ -138,12 +155,36 @@ function PageMenuItems( {
 	);
 	const { togglePin } = useDispatch( prefsStore );
 	const { openDialog } = useDispatch( uiStore );
+	const moves = useOrderMoves( pageId, list ).map(
+		( { label, icon, move } ) => (
+			<MenuItem
+				key={ label }
+				icon={ icon }
+				onClick={ () => {
+					onClose();
+					move();
+				} }
+			>
+				{ label }
+			</MenuItem>
+		)
+	);
 
-	const editorItems: Array< [ DialogName, string, typeof pencil ] > = [
-		[ 'rename', __( 'Rename', 'tinta' ), pencil ],
-		[ 'move', __( 'Move to…', 'tinta' ), moveTo ],
-		[ 'move-to-trash', __( 'Move to trash', 'tinta' ), trash ],
-	];
+	const dialogItem = (
+		dialog: DialogName,
+		text: string,
+		icon: typeof pencil
+	) => (
+		<MenuItem
+			icon={ icon }
+			onClick={ () => {
+				onClose();
+				openDialog( dialog, pageId );
+			} }
+		>
+			{ text }
+		</MenuItem>
+	);
 
 	return (
 		<MenuGroup>
@@ -156,19 +197,19 @@ function PageMenuItems( {
 			>
 				{ isPinned ? __( 'Unpin', 'tinta' ) : __( 'Pin', 'tinta' ) }
 			</MenuItem>
-			{ config.canCreate &&
-				editorItems.map( ( [ dialog, text, icon ] ) => (
-					<MenuItem
-						key={ dialog }
-						icon={ icon }
-						onClick={ () => {
-							onClose();
-							openDialog( dialog, pageId );
-						} }
-					>
-						{ text }
-					</MenuItem>
-				) ) }
+			{ list === 'pinned' && moves }
+			{ config.canCreate && (
+				<>
+					{ dialogItem( 'rename', __( 'Rename', 'tinta' ), pencil ) }
+					{ dialogItem( 'move', __( 'Move to…', 'tinta' ), moveTo ) }
+					{ list === 'tree' && moves }
+					{ dialogItem(
+						'move-to-trash',
+						__( 'Move to trash', 'tinta' ),
+						trash
+					) }
+				</>
+			) }
 		</MenuGroup>
 	);
 }

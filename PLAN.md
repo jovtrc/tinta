@@ -59,8 +59,8 @@ Sections, top to bottom:
 1. Workspace header: core Site Icon + Site Title; menu with Settings and Admin tools.
 2. Search — opens the command palette (⌘K / Ctrl+K).
 3. New page.
-4. Pinned — per user, drag to reorder.
-5. Recent — per user, last 5 opened.
+4. Pinned — per user, drag to reorder (or Move up / Move down in a pin's menu).
+5. Recent — per user, the last 5 other pages opened; pinned pages and the open page aren't repeated there. The open page is highlighted in the tree only.
 6. Pages — the full tree.
 7. Trash.
 8. Settings (admins only).
@@ -93,7 +93,7 @@ Tree behaviour:
 - **Images:** core uploads and media library. WP 7.1 processes images in the browser (HEIC included); Tinta's screen turns this on the same way core's editor does.
 
 ### 4.5 Command palette (⌘K)
-Core's command palette, extended with Tinta commands: search pages by title (with breadcrumb), New page, New subpage here, Pin/Unpin, Open trash, Workspace settings, Toggle sidebar.
+Core's command palette, extended with Tinta commands: search pages by title (with breadcrumb), New page, New subpage here, Pin/Unpin, Open trash, Workspace settings, Toggle sidebar. In workspace mode it shows only Tinta's commands: core's lead to admin screens and editor panels that workspace mode hides.
 
 ### 4.6 Page icons
 - Emoji only, rendered by the OS. No emoji library.
@@ -105,7 +105,7 @@ Core's command palette, extended with Tinta commands: search pages by title (wit
 - Trash empties itself after 30 days (core `EMPTY_TRASH_DAYS`, same as Notion). Admins can empty it sooner.
 
 ### 4.8 Pinned & recent
-Per user and per site (multisite-safe): pinned (ordered), recent (last 5), tree expand state and recently used emojis — stored together in one user option.
+Per user and per site (multisite-safe): pinned (ordered), recent (last 10 kept, 5 shown), tree expand state and recently used emojis — stored together in one user option.
 
 ### 4.9 Workspace settings (admins)
 - Workspace mode on/off.

@@ -1,8 +1,10 @@
 /**
  * A flat sidebar section of pages, like Pinned or Recent, with the page menu
- * on right click. Hidden when empty. With `onReorder`, pages can be dragged
- * into a new order (Pinned). As in the tree, a preview follows the pointer:
- * dropping on the row itself would let the browser follow its link.
+ * on each row's "⋯" button and on right click. Hidden when empty. The open
+ * page is marked in the tree only, so it isn't highlighted twice. With
+ * `onReorder`, pages can be dragged into a new order (Pinned), or moved up and
+ * down from the menu. As in the tree, a preview follows the pointer: dropping
+ * on the row itself would let the browser follow its link.
  */
 import {
 	closestCenter,
@@ -22,26 +24,28 @@ import {
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useRef, useState } from '@wordpress/element';
 import { decodeEntities } from '@wordpress/html-entities';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Icon, page as pageIcon } from '@wordpress/icons';
 import type { MouseEvent } from 'react';
 
 import { pageUrl } from '../config';
 import { store as workspaceStore, type TreePage } from '../store';
 import { store as uiStore } from '../store/ui';
-import { menuPosition } from './page-menu';
+import { menuPosition, PageMenu } from './page-menu';
+import type { PageList } from './use-order-moves';
 
 interface PageSectionProps {
 	title: string;
+	list: PageList;
 	pageIds: number[];
-	currentId: number;
 	onOpen: ( pageId: number ) => void;
 	onReorder?: ( pageIds: number[] ) => void;
 }
 
 interface RowProps {
 	page: TreePage;
-	currentId: number;
+	list: PageList;
+	section: string;
 	onOpen: ( event: MouseEvent, pageId: number ) => void;
 }
 
@@ -50,15 +54,15 @@ interface RowProps {
  *
  * @param props           Props.
  * @param props.title     Section heading.
+ * @param props.list      Which list this is.
  * @param props.pageIds   Pages, in order.
- * @param props.currentId Open page.
  * @param props.onOpen    Opens a page.
  * @param props.onReorder Saves a new order; makes the pages draggable.
  */
 export function PageSection( {
 	title,
+	list: listName,
 	pageIds,
-	currentId,
 	onOpen,
 	onReorder,
 }: PageSectionProps ) {
@@ -113,7 +117,8 @@ export function PageSection( {
 				<Row
 					key={ page.id }
 					page={ page }
-					currentId={ currentId }
+					list={ listName }
+					section={ title }
 					onOpen={ open }
 				/>
 			) ) }
@@ -194,14 +199,16 @@ function SortableRow( props: RowProps ) {
 }
 
 /**
- * The page's icon and title, linking to it, with its menu on right click.
+ * The page's icon and title, linking to it, with its menu on the "⋯" button
+ * and on right click.
  *
- * @param props           Props.
- * @param props.page      Page.
- * @param props.currentId Open page.
- * @param props.onOpen    Handles a click on the link.
+ * @param props         Props.
+ * @param props.page    Page.
+ * @param props.list    Which list the row is in.
+ * @param props.section The section's heading, for the button's label.
+ * @param props.onOpen  Handles a click on the link.
  */
-function RowContent( { page, currentId, onOpen }: RowProps ) {
+function RowContent( { page, list, section, onOpen }: RowProps ) {
 	const isMenuOpen = useSelect(
 		( select ) => select( uiStore ).getContextMenu()?.pageId === page.id,
 		[ page.id ]
@@ -215,14 +222,13 @@ function RowContent( { page, currentId, onOpen }: RowProps ) {
 			}
 			onContextMenu={ ( event ) => {
 				event.preventDefault();
-				openContextMenu( page.id, ...menuPosition( event ) );
+				openContextMenu( page.id, ...menuPosition( event ), list );
 			} }
 		>
 			<span className="tinta-tree__toggle" />
 			<a
 				className="tinta-tree__link"
 				href={ pageUrl( page.id ) }
-				aria-current={ page.id === currentId ? 'page' : undefined }
 				onClick={ ( event ) => onOpen( event, page.id ) }
 			>
 				<span className="tinta-tree__icon" aria-hidden="true">
@@ -230,6 +236,18 @@ function RowContent( { page, currentId, onOpen }: RowProps ) {
 				</span>
 				<span className="tinta-tree__title">{ titleOf( page ) }</span>
 			</a>
+			<div className="tinta-tree__actions">
+				<PageMenu
+					pageId={ page.id }
+					list={ list }
+					label={ sprintf(
+						/* translators: 1: page title, 2: sidebar section, like Pinned. */
+						__( 'Actions for “%1$s” in %2$s', 'tinta' ),
+						titleOf( page ),
+						section
+					) }
+				/>
+			</div>
 		</div>
 	);
 }

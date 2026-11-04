@@ -43,6 +43,9 @@
   - [x] Tinta Light admin color scheme (built on core's scheme partials), given to people who join in workspace mode.
   - [x] The sidebar wears the admin color scheme (Midnight, Ocean, Modern…), so the workspace matches the rest of wp-admin.
   - [x] Security review of permissions and REST, with fixes: reading takes a Tinta role (authors too), pages' files and notes stay out of other roles' listings, open-registration warning, parent rules on every write, loop guards.
+  - [x] Logo (a nib drawn as a T) as the admin menu icon and in the setup wizard; wordpress.org icon, banners, screenshots (`pnpm screenshots`) and Live Preview blueprint in `.wordpress-org/`; README logo.
+  - [x] Accessibility: Move up / Move down for pages and pins (no dragging needed, position announced), "⋯" menus on Pinned and Recent rows, muted sidebar text at 70% for 4.5:1 contrast in every scheme.
+  - [x] The open page is highlighted once, in the tree; Recent leaves out pinned pages and the open page. In workspace mode, ⌘K shows only Tinta's commands.
   - [x] Scale check on Playground with 630 pages, all expanded: the tree endpoint costs no more than any WordPress request (~40 KB), the sidebar renders ~0.25 s after the page loads, typing in a title stays smooth (one 85 ms task over 25 keys and a save).
 
 ## v1.0 — MVP (wordpress.org)

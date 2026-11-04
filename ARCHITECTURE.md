@@ -90,7 +90,7 @@ No custom tables.
 | `postmeta` | `_tinta_trashed_with` | Set on subpages trashed along with a page, so they come back with it |
 | `comments` | `comment_type = note` | Notes (core's data, Tinta's UI) |
 | block attributes | `metadata.noteId` | Links a note thread to a block (core's format) |
-| user option | `tinta_prefs` | `pinned[]`, `recent[5]`, `expanded[]`, `emojis[]` — per user, per site |
+| user option | `tinta_prefs` | `pinned[]`, `recent[10]`, `expanded[]`, `emojis[]` — per user, per site |
 | option | `tinta_settings` (autoload) | Workspace mode, revisions kept (setup state later); new users' role is core's `default_role` |
 | option | `tinta_tree_generation` (autoload) | Bumped on every tree change |
 | option | `tinta_version` | Upgrade routines |
@@ -181,7 +181,7 @@ Nesting: `rest_pre_insert_tinta_doc` refuses a parent that isn't a page or sits 
 - UI: `@wordpress/components`, `@wordpress/icons` (not a script handle in 7.1; wp-scripts bundles it). `@wordpress/ui` isn't registered in 7.1 either; use it only if wp-scripts bundles it cleanly. DataViews (bundled) only if the Trash list needs it.
 - Theme: the user's admin color scheme. The accent is core's `--wp-admin-theme-color`; the sidebar takes its colors from CSS variables set per core scheme (`src/app/sidebar/colors.scss`), and themes its buttons through `--wp-components-color-foreground`.
 - Commands: `@wordpress/commands` (`useCommand`, `useCommandLoader`) in core's palette. The palette renders in its own React root, so page commands open pages by URL (`navigateTo()` pushes `?doc=ID` and fires `popstate`, which the workspace follows like back/forward).
-- Drag and drop: `@dnd-kit/core` (pointer sensor, 6 px to start, so clicks still open pages). Like Notion, the top or bottom quarter of a row drops above or below it, the middle drops inside; targets inside the page's own subtree or past level 5 aren't offered. The tree updates at once, then syncs with `tinta/v1/docs/{id}/move`. No keyboard dragging yet: a "Move to…" menu item is the planned keyboard path.
+- Drag and drop: `@dnd-kit/core` (pointer sensor, 6 px to start, so clicks still open pages). Like Notion, the top or bottom quarter of a row drops above or below it, the middle drops inside; targets inside the page's own subtree or past level 5 aren't offered. The tree updates at once, then syncs with `tinta/v1/docs/{id}/move`. No keyboard dragging: the page menu's Move up and Move down (among siblings, or within Pinned when opened there) and Move to… do the same with a keyboard or a single click (WCAG 2.5.7), and announce the new position (`@wordpress/a11y`).
 - Blocks: `apiVersion: 3`; canvas styles through block.json `style` (the canvas is an iframe; admin body classes don't reach it), also enqueued on the workspace screen for the read-only view. Page link is dynamic (`render.php`), so titles and icons never go stale. Elements inside the canvas use plain buttons and our own CSS: wp-components styles don't reach the iframe, but popovers render in the main document.
 - Allowlist: PHP `allowed_block_types_all` for pages; JS keeps headings at H1–H3 (`levelOptions`) and unregisters embed variations other than YouTube, Vimeo and X.
 - Routing: `?page=tinta&doc=ID` with `history.pushState`; `popstate` reopens the page for back/forward.
@@ -189,11 +189,12 @@ Nesting: `rest_pre_insert_tinta_doc` refuses a parent that isn't a page or sits 
 ### Modules
 - `src/app/` — workspace shell: layout, sidebar and page tree, URL routing, page creation.
 - `src/app/store/` — `tinta/workspace` (the tree and the actions that change it), `tinta/prefs` (per-user lists) and `tinta/ui` (open dialog, right-click menu, sidebar shown or hidden) stores.
-- `src/app/commands.tsx` — ⌘K commands.
+- `src/app/commands.tsx` — ⌘K commands. In workspace mode it unregisters every command and command loader not named `tinta/…`, including ones registered later (the editor's), since they lead to screens and panels workspace mode hides.
+- `src/app/logo.tsx` — Tinta's mark (a nib drawn as a T), in the setup wizard. The admin menu icon is the same mark as an SVG data URI (`Workspace\Screen::MENU_ICON`), which core paints in each color scheme.
 - `src/app/dialogs.tsx` — renders the open dialog (rename, move, move to trash, trash, settings, setup), whichever menu or command opened it.
 - `src/admin-colors/` — Tinta Light: `tinta-light.scss` configures core's admin color partials (`core/`, copied unchanged from WordPress 7.1 and left out of linting) and sets the `--wp-admin-theme-color` variables core's `admin-schemes.css` sets for its own schemes.
 - `src/app/setup/` — the setup wizard and its sample pages (built with `createBlock` + `serialize`, so the markup is what the editor saves).
-- `src/app/sidebar/page-menu.tsx` — the page menu, shared by the tree's "⋯", the page header's "⋯" and right click.
+- `src/app/sidebar/page-menu.tsx` — the page menu, shared by the "⋯" on tree, Pinned and Recent rows, the page header's "⋯" and right click. It knows which list it opened from, for Move up and Move down (`use-order-moves.ts`).
 - `src/app/sidebar/use-sidebar.ts`, `sidebar-toggle.tsx`, `drawer.tsx` — the sidebar shown or hidden on wide screens, a drawer on small ones (`useViewportMatch( 'medium', '<' )`), and the button pages put in their header to bring it back.
 - `src/app/sidebar/colors.scss` — the sidebar's colors for each core admin color scheme (values from core's compiled schemes); Tinta Light and plugin schemes keep the light defaults.
 - `src/editor/` — page header (icon picker with a curated emoji list, title, "Edited by"), and the open page: `OpenPage` picks `PageEditor` (`EditorProvider` per page, header, canvas, one side panel at a time — Blocks, Notes or block settings —, lock dialog, continuous save) or `PageView` (read-only). `EditorProvider` gives each page its own `core/editor` and `core/block-editor` stores, so anything that reads them (like which panel is open) renders inside it. The Blocks panel is Tinta's own, built on the public `getInserterItems` selector: core's block library component is `__experimental` and its lint rule forbids it. Callout's `__experimentalOnEnter` support flag is the one experimental key Tinta uses; without it, Enter would simply stay inside the callout. The hover drag handle is a native `draggable` button inside the canvas that sets the same `wp-blocks` drag data core's toolbar handle sets, so core's drop zones place and move the block (core's `BlockDraggable` isn't public).
@@ -236,6 +237,7 @@ Nesting: `rest_pre_insert_tinta_doc` refuses a parent that isn't a page or sits 
 - To release: set the version in `tinta.php` (header and `TINTA_VERSION`) and the readme's Stable tag, add its changelog entry, then push a `vX.Y.Z` tag. `.github/workflows/release.yml` runs the whole CI, checks that the versions match (`bin/release-notes.sh`), and publishes a GitHub release with `tinta.zip` and the changelog entry as notes. Run by hand on a branch, it builds the zip as a workflow artifact without publishing.
 - wordpress.org later: SVN deploy with `10up/action-wordpress-plugin-deploy` from the same build. wordpress.org builds the first slug from the Plugin Name (`tinta-team-wiki`); at submission, change it to `tinta` so it matches the text domain and folder (allowed once, before approval; permanent after).
 - `readme.txt` links the public repo for the TypeScript sources (guideline 4).
+- `.wordpress-org/` holds the plugin page assets for SVN's `assets/`: icon (PNG and SVG), banners (and right-to-left ones), screenshots, and `blueprints/blueprint.json` for the Live Preview button. `pnpm screenshots` (`tests/screenshots/`, `playwright.screenshots.config.js`) fills a sample workspace on the e2e Playground site, in workspace mode, and retakes the screenshots; their captions are readme.txt's Screenshots section.
 - wp.org holds each release ~6 h for an automated security review.
 
 ### Local development
@@ -249,6 +251,7 @@ composer run phpcs                # also: phpcbf, phpstan
 pnpm typecheck && pnpm lint:js && pnpm lint:css
 pnpm test:php                     # and test:php:multisite
 pnpm test:e2e                     # starts Playground on :9400 (pnpm playground); --project=webkit for one browser
+pnpm screenshots                  # retakes .wordpress-org/screenshot-*.png on the same Playground
 ```
 `pnpm env` is a built-in pnpm command, hence the `wp-env` script names.
 
@@ -261,7 +264,8 @@ pnpm test:e2e                     # starts Playground on :9400 (pnpm playground)
 
 ```
 tinta/
-├── .github/workflows/
+├── .github/                     workflows/, the setup action, README logos
+├── .wordpress-org/              Plugin page assets: icon, banners, screenshots, Live Preview blueprint
 ├── tinta.php                    Plugin header, Composer autoload, bootstrap
 ├── uninstall.php
 ├── bin/                         Release build and notes, pre-commit PHPCS
@@ -270,7 +274,7 @@ tinta/
 ├── blueprint.json               README's "Try it in Playground": installs the latest GitHub release
 ├── composer.json                classmap autoload, dev tools, platform php 8.2
 ├── package.json, pnpm-lock.yaml, pnpm-workspace.yaml
-├── tsconfig.json, webpack.config.js, playwright.config.js
+├── tsconfig.json, webpack.config.js, playwright.config.js, playwright.screenshots.config.js
 ├── phpcs.xml.dist, phpstan.neon.dist, phpunit.xml.dist
 ├── .wp-env.json, .wp-env.test.json
 ├── includes/                    PHP, class-*.php
@@ -280,7 +284,8 @@ tinta/
 │   └── admin-colors/ app/ editor/ notes/ blocks/ types/
 ├── tests/
 │   ├── php/                     WP test suite, PHPUnit 9.6
-│   └── e2e/                     Playwright on Playground (the repo mounted as plugins/tinta; blueprint.json activates it)
+│   ├── e2e/                     Playwright on Playground (the repo mounted as plugins/tinta; blueprint.json activates it)
+│   └── screenshots/             Sample workspace and the wordpress.org screenshots (pnpm screenshots)
 ├── prototype/workspace.html     Static layout prototype
 ├── build/                       Generated, gitignored
 └── PLAN.md, ARCHITECTURE.md, ROADMAP.md

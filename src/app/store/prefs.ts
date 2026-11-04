@@ -18,7 +18,7 @@ export interface Prefs {
 
 const EMPTY: Prefs = { pinned: [], recent: [], expanded: [], emojis: [] };
 
-const LIMITS = { recent: 5, expanded: 500, emojis: 16 };
+const LIMITS = { recent: 10, expanded: 500, emojis: 16 };
 
 const RECENT_DELAY = 2000;
 

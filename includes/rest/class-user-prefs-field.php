@@ -26,7 +26,7 @@ final class User_Prefs_Field {
 	 */
 	private const LIMITS = array(
 		'pinned'   => 50,
-		'recent'   => 5,
+		'recent'   => 10,
 		'expanded' => 500,
 		'emojis'   => 16,
 	);

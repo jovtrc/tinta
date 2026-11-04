@@ -46,7 +46,7 @@ body {
 }
 
 .tinta-sidebar {
-	--tinta-sidebar-muted: color-mix(in srgb, var(--tinta-sidebar-text) 60%, var(--tinta-sidebar-bg));
+	--tinta-sidebar-muted: color-mix(in srgb, var(--tinta-sidebar-text) 70%, var(--tinta-sidebar-bg));
 	--tinta-sidebar-hover: color-mix(in srgb, var(--tinta-sidebar-text) 7%, transparent);
 	--tinta-sidebar-border: color-mix(in srgb, var(--tinta-sidebar-text) 12%, var(--tinta-sidebar-bg));
 	color-scheme: var(--tinta-sidebar-color-scheme);

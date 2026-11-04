@@ -1,11 +1,16 @@
 /**
  * ⌘K commands in core's command palette: find a page by title, create a page
  * or a subpage, pin the open page, open the trash or settings, and show or
- * hide the sidebar.
+ * hide the sidebar. In workspace mode the palette keeps only these: core's
+ * commands lead to admin screens and editor panels workspace mode hides.
  */
-import { useCommand, useCommandLoader } from '@wordpress/commands';
+import {
+	store as commandsStore,
+	useCommand,
+	useCommandLoader,
+} from '@wordpress/commands';
 import { useDispatch, useSelect } from '@wordpress/data';
-import { useMemo } from '@wordpress/element';
+import { useEffect, useMemo } from '@wordpress/element';
 import { decodeEntities } from '@wordpress/html-entities';
 import { __ } from '@wordpress/i18n';
 import {
@@ -47,6 +52,7 @@ export function WorkspaceCommands( {
 }: WorkspaceCommandsProps ) {
 	const createPage = useCreatePage( onOpen );
 	const sidebar = useSidebar();
+	useOnlyTintaCommands( config.workspaceMode );
 	const { openDialog } = useDispatch( uiStore );
 	const { togglePin } = useDispatch( prefsStore );
 	const { isPinned, level } = useSelect(
@@ -192,4 +198,45 @@ function usePageCommands( { search }: { search: string } ) {
  */
 function titleOf( page: TreePage ): string {
 	return decodeEntities( page.title ) || __( 'Untitled', 'tinta' );
+}
+
+/**
+ * Removes other commands and command loaders from the palette, including ones
+ * registered later, while `enabled`.
+ *
+ * @param enabled Whether to remove them.
+ */
+function useOnlyTintaCommands( enabled: boolean ) {
+	const others = useSelect(
+		( select ) => {
+			if ( ! enabled ) {
+				return '';
+			}
+			const { getCommands, getCommandLoaders } = select( commandsStore );
+			const names = ( items: Array< { name: string } > ) =>
+				items
+					.map( ( { name } ) => name )
+					.filter( ( name ) => ! name.startsWith( 'tinta/' ) );
+
+			return JSON.stringify( [
+				names( [ ...getCommands(), ...getCommands( true ) ] ),
+				names( [
+					...getCommandLoaders(),
+					...getCommandLoaders( true ),
+				] ),
+			] );
+		},
+		[ enabled ]
+	);
+	const { unregisterCommand, unregisterCommandLoader } =
+		useDispatch( commandsStore );
+
+	useEffect( () => {
+		if ( ! others ) {
+			return;
+		}
+		const [ commands, loaders ]: string[][] = JSON.parse( others );
+		commands.forEach( ( name ) => unregisterCommand( name ) );
+		loaders.forEach( ( name ) => unregisterCommandLoader( name ) );
+	}, [ others, unregisterCommand, unregisterCommandLoader ] );
 }

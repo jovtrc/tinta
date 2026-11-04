@@ -25,6 +25,11 @@ final class Screen {
 	private const HANDLE = 'tinta-workspace';
 
 	/**
+	 * Tinta's mark, a nib drawn as a T. WordPress paints menu icons in each admin color scheme.
+	 */
+	private const MENU_ICON = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="47 47 162 162"><path fill="black" fill-rule="evenodd" d="M66 51H190A14 14 0 0 1 204 65V77A14 14 0 0 1 190 91H166Q156 91 156 101C156 141 142 177 128 205C114 177 100 141 100 101Q100 91 90 91H66A14 14 0 0 1 52 77V65A14 14 0 0 1 66 51ZM150 121A22 22 0 1 0 106 121A22 22 0 1 0 150 121Z"/></svg>';
+
+	/**
 	 * Sets the tree used to pick the first page.
 	 *
 	 * @param Tree $tree Page tree.
@@ -65,7 +70,7 @@ final class Screen {
 			'tinta_access',
 			self::SLUG,
 			array( $this, 'render' ),
-			'dashicons-book-alt',
+			'data:image/svg+xml;base64,' . base64_encode( self::MENU_ICON ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- WordPress expects SVG menu icons as base64 data URIs.
 			3
 		);
 
@@ -241,33 +246,34 @@ final class Screen {
 	 */
 	private function app_data( ?WP_Post $page, WP_Block_Editor_Context $context ): array {
 		return array(
-			'pageId'    => $page ? $page->ID : 0,
-			'url'       => self::url(),
-			'siteName'  => get_bloginfo( 'name' ),
-			'siteIcon'  => get_site_icon_url( 64 ),
-			'canCreate' => current_user_can( 'edit_tinta_docs' ),
-			'canManage' => current_user_can( 'tinta_manage' ),
-			'roles'     => current_user_can( 'tinta_manage' ) ? array_map( 'translate_user_role', wp_roles()->get_names() ) : array(),
-			'setup'     => current_user_can( 'tinta_manage' ) ? array(
+			'pageId'        => $page ? $page->ID : 0,
+			'url'           => self::url(),
+			'siteName'      => get_bloginfo( 'name' ),
+			'siteIcon'      => get_site_icon_url( 64 ),
+			'canCreate'     => current_user_can( 'edit_tinta_docs' ),
+			'canManage'     => current_user_can( 'tinta_manage' ),
+			'workspaceMode' => Settings::is_workspace_mode(),
+			'roles'         => current_user_can( 'tinta_manage' ) ? array_map( 'translate_user_role', wp_roles()->get_names() ) : array(),
+			'setup'         => current_user_can( 'tinta_manage' ) ? array(
 				'done'             => Settings::get()['setup_done'],
 				'conflicts'        => Conflicts::active(),
 				'openRegistration' => Settings::is_registration_open(),
 				'registrationUrl'  => is_multisite() ? network_admin_url( 'settings.php' ) : admin_url( 'options-general.php' ),
 			) : null,
-			'userId'    => get_current_user_id(),
-			'user'      => array(
+			'userId'        => get_current_user_id(),
+			'user'          => array(
 				'name'   => wp_get_current_user()->display_name,
 				'role'   => self::role_name(),
 				'avatar' => get_avatar_url( get_current_user_id(), array( 'size' => 48 ) ),
 			),
-			'links'     => array(
+			'links'         => array(
 				'profile' => get_edit_profile_url(),
 				'admin'   => admin_url(),
 				'invite'  => admin_url( 'user-new.php' ),
 				'plugins' => admin_url( 'plugins.php' ),
 				'logout'  => wp_logout_url(),
 			),
-			'settings'  => get_block_editor_settings(
+			'settings'      => get_block_editor_settings(
 				array(
 					'titlePlaceholder' => __( 'Untitled', 'tinta' ),
 					'bodyPlaceholder'  => __( 'Type / for commands', 'tinta' ),
