@@ -1,6 +1,8 @@
 # Tinta — Roadmap
 
-> Last reviewed 2026-11-03.
+> Last reviewed 2026-11-04. Versions: 0.1.0 is the MVP; 1.0.0 will be the first stable release.
+>
+> Day-to-day work is tracked in [GitHub issues](https://github.com/jovtrc/tinta/issues), with one [milestone](https://github.com/jovtrc/tinta/milestones) per version below. This file is the summary.
 
 ## Now — planning (Nov 2026)
 - [x] Review the May plan against WordPress 7.1 (PLAN §7).
@@ -8,7 +10,7 @@
 - [x] Editor spike: Tinta's own screen won on speed — ARCHITECTURE §2, branch `spike/editor-host`.
 - [x] GitHub repo (private until the first release).
 
-## v0.x — Internal
+## Building the MVP
 - Build the MVP on a personal site (single site and a multisite subsite). Dogfood before going public.
 - First week:
   - [x] Plugin skeleton, Composer tooling (PHPCS, PHPStan, PHPUnit), pre-commit hook.
@@ -48,7 +50,7 @@
   - [x] The open page is highlighted once, in the tree; Recent leaves out pinned pages and the open page. In workspace mode, ⌘K shows only Tinta's commands.
   - [x] Scale check on Playground with 630 pages, all expanded: the tree endpoint costs no more than any WordPress request (~40 KB), the sidebar renders ~0.25 s after the page loads, typing in a title stays smooth (one 85 ms task over 25 keys and a save).
 
-## v1.0 — MVP (wordpress.org)
+## 0.1 — MVP (released as 0.1.0; 0.1.x reaches wordpress.org)
 Full scope in PLAN §4:
 - `tinta_doc` pages; tree up to 5 levels; drag to reorder and move.
 - Block editor on Tinta's own screen (no reload between pages), allowed blocks + Page link and Callout blocks.
@@ -63,7 +65,7 @@ Full scope in PLAN §4:
 - Caching with transient fallback; Heartbeat freshness.
 - English + pt_BR (translate.wordpress.org); mobile drawer; multisite-safe.
 
-## v1.1 — Quick wins
+## 0.2 — Quick wins
 - Share to web: a page and its subpages become public, with a read-only view and `noindex` by default (PLAN §4.15).
 - Import/export: Markdown, and Notion exports rebuilt as a tree.
 - Abilities API + MCP: search, read and create pages from AI clients.
@@ -76,19 +78,19 @@ Full scope in PLAN §4:
 - Edit your own profile from Settings: name, email, password and admin color scheme, without leaving the workspace.
 - Rename the account menu's "Admin tools" to "WP Admin" (or "Go back to WP Admin").
 
-## v1.2 — Collaboration
+## 0.3 — Collaboration
 - Notification inbox for mentions and replies (core Feature Notifications if it lands), plus email.
 - Note reactions.
 - Mermaid / diagram block.
 - Presence ("who's here") through core's Presence API, if merged.
 - Real-time co-editing when core ships it (not before 2027).
 
-## v1.3 — Power users
+## 0.4 — Power users
 - Page templates.
 - Tags / labels.
 - Guest users who see only shared pages; invite by email code + approval.
 
-## v2.0 — Lightweight databases
+## 0.5 — Lightweight databases
 - Custom properties per page.
 - Filters and sorts.
 - Table view first; board and calendar later.

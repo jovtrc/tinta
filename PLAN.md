@@ -41,7 +41,7 @@
 - Own capability type (`tinta_doc` / `tinta_docs`) with `map_meta_cap`, so only Tinta roles reach the content (§4.10).
 - **Pages are always private.** "New page" creates the post straight away with WordPress's `private` status; no drafts, no Publish button. (Creating it first also avoids the auto-drafts an empty editor makes.)
 - Because pages are private, WordPress itself hides them from anyone without workspace access — REST, queries, feeds and search — even with workspace mode off. Tinta only covers the edges (ARCHITECTURE §3).
-- In v1.1, Share turns a page and everything under it public (`publish`) — §4.15.
+- In 0.2, Share turns a page and everything under it public (`publish`) — §4.15.
 - Meta: `_tinta_icon` (one emoji). Everything else is core: author, modified date, `_edit_lock`, revisions.
 
 ### 4.2 Workspace mode (on by default)
@@ -50,7 +50,7 @@
   - The WordPress admin menu and toolbar are hidden on workspace screens.
   - Members and Viewers can't open other wp-admin screens (enforced server-side), except their profile.
   - Admins reach the rest of wp-admin through "Admin tools" in the user menu.
-  - The site is private: logged-out visitors are sent to the login screen (from v1.1, shared pages are the exception); the REST API requires login; feeds, sitemaps, oEmbed and author archives are off.
+  - The site is private: logged-out visitors are sent to the login screen (from 0.2, shared pages are the exception); the REST API requires login; feeds, sitemaps, oEmbed and author archives are off.
 - **Off**: Tinta adds a "Workspace" menu item. The workspace works; the rest of WordPress is untouched.
 - Comments are **not** disabled — Notes are built on them.
 
@@ -86,10 +86,10 @@ Tree behaviour:
 - Clicking below the last block starts a new paragraph, as in core's editor — how you keep writing after a page link or a callout.
 - Hovering a block shows a drag handle at its left, like Notion's: drag it to move the block (core's drop indicator and move), click it to select the block. Hidden while typing; inside a callout it moves the whole callout.
 - Header: breadcrumbs on the left (the page's parents as links, then the page; only the page on small screens); on the right, save status ("Saving…" / "Saved"), undo/redo, Notes, block settings, "⋯" page actions (the same menu as in the tree). No Publish or Save button: pages save as you type (a moment after the last edit, and when you leave the page), like Notion. ⌘S saves at once.
-- **Notes:** Tinta's UI on core's note data. Notes on blocks, threads, replies, @mentions, resolve. Notes on selected text come in v1.1. Anyone who can edit can add notes; Viewers don't see them (core requires edit rights). A marker beside each block with open notes shows how many it has; clicking it opens them, and the panel highlights the selected block's threads.
-- **Locking (core post locks):** one editor at a time. Others get core's dialog, "Maria is editing this page", with "Take over". Tinta only feeds it the lock of each page it opens; nothing saves while someone else holds it. A read-only view instead of the dialog comes in v1.1.
+- **Notes:** Tinta's UI on core's note data. Notes on blocks, threads, replies, @mentions, resolve. Notes on selected text come in 0.2. Anyone who can edit can add notes; Viewers don't see them (core requires edit rights). A marker beside each block with open notes shows how many it has; clicking it opens them, and the panel highlights the selected block's threads.
+- **Locking (core post locks):** one editor at a time. Others get core's dialog, "Maria is editing this page", with "Take over". Tinta only feeds it the lock of each page it opens; nothing saves while someone else holds it. A read-only view instead of the dialog comes in 0.2.
 - **Viewers** get a read-only page (the server's rendered HTML) instead of the editor, and no New page button.
-- **History:** postponed to v1.1. Core keeps saving revisions as snapshots: at most one per author every 10 minutes, the last 10 kept (configurable).
+- **History:** postponed to 0.2. Core keeps saving revisions as snapshots: at most one per author every 10 minutes, the last 10 kept (configurable).
 - **Images:** core uploads and media library. WP 7.1 processes images in the browser (HEIC included); Tinta's screen turns this on the same way core's editor does.
 
 ### 4.5 Command palette (⌘K)
@@ -127,7 +127,7 @@ Per user and per site (multisite-safe): pinned (ordered), recent (last 10 kept, 
 - Viewers read pages through core's `read_private_tinta_docs`. Members also get `publish_tinta_docs` (WordPress requires it to set any status, even `private`) and core's `upload_files` (images in pages).
 - Members edit every page (small-team wiki; no per-page permissions in the MVP).
 - Existing Editors/Authors get nothing automatically; an admin switches them to Member.
-- Guests (who see only shared pages) come later (ROADMAP v1.3).
+- Guests (who see only shared pages) come later (ROADMAP 0.4).
 
 ### 4.11 Themes (admin color schemes)
 - Tinta's colors come from the user's own admin color scheme (Users → Profile). Pick "Ocean" in your profile and your workspace turns Ocean: the sidebar wears the scheme (the shade core gives an open menu's items, so it reads apart from the admin menu beside it, and the menu's current-item colors), and the accent comes from `--wp-admin-theme-color`.
@@ -152,7 +152,7 @@ Activating the plugin takes the administrator who did it to the workspace, where
 - At wp-admin's mobile breakpoint (782 px and below) the sidebar becomes a slide-out drawer, opened from a menu button in the page header. It closes on Escape, a tap outside, or when a page opens.
 - Notes and block settings cover the page instead of sitting beside it; the header buttons close them.
 
-### 4.15 Sharing — ships in v1.1, designed now
+### 4.15 Sharing — ships in 0.2, designed now
 - **Share to web** (page menu → Share) makes the page **and every page under it** public (`publish`). Turning it off makes them all private again.
 - New subpages of a shared page are public too. Moving a page into a shared section makes it public; moving it out makes it private. Tinta warns before either.
 - Public pages show a globe in the tree and a "Public" chip in the page header.
@@ -160,18 +160,18 @@ Activating the plugin takes the administrator who did it to the workspace, where
 - Search engines: `noindex` by default. "Let search engines find this page" on the shared page turns indexing on for it and its subpages.
 - A page link on a public page that points to a private page shows "Private page", with no title and no link. Notes are never shown publicly.
 - Members and Admins can share. Admins can turn sharing off for the whole workspace ("Allow public pages"; off until an admin turns it on).
-- To decide in v1.1: URL shape — `/p/{id}-{slug}` or the page path (which would expose private parents' slugs).
+- To decide in 0.2: URL shape — `/p/{id}-{slug}` or the page path (which would expose private parents' slugs).
 
 ## 5. Out of scope for MVP
 
 Push back if these creep in:
 - Databases, boards, calendars, custom properties, tags.
 - Real-time co-editing (core's isn't expected before 2027).
-- Per-page permissions, guests. Public sharing ships in v1.1 (§4.15).
+- Per-page permissions, guests. Public sharing ships in 0.2 (§4.15).
 - Cover images, page templates, duplication, bulk actions, workspace-wide pins.
-- Import/export beyond WordPress's exporter (v1.1).
-- History, notes on selected text, and a read-only view for locked pages (v1.1). Tinta Dark (later).
-- AI features (Abilities/MCP in v1.1).
+- Import/export beyond WordPress's exporter (0.2).
+- History, notes on selected text, and a read-only view for locked pages (0.2). Tinta Dark (later).
+- AI features (Abilities/MCP in 0.2).
 - Security hardening, 2FA, login branding (other plugins).
 - Browser extension, native apps, webhooks, Zapier.
 - More than one workspace per site.
@@ -203,7 +203,7 @@ Push back if these creep in:
 | REST | 17 custom endpoints | Core endpoints + ~2 custom | Core first |
 | Trash | Never auto-empties | 30 days (core) | Core default; same as Notion |
 | Page status | Published | Always `private` | WordPress then enforces privacy everywhere; sharing becomes a status change |
-| Public sharing | Out of scope | v1.1: page + subpages, `noindex` by default | Requested; MVP data already fits |
+| Public sharing | Out of scope | 0.2: page + subpages, `noindex` by default | Requested; MVP data already fits |
 | Coding standards | WPCS security rules only | Full WPCS + VIP | Must pass every WordPress standard |
 
 ### 2026-11-03 — editor spike
@@ -211,9 +211,9 @@ Push back if these creep in:
 | Topic | Before | Now | Why |
 |---|---|---|---|
 | Editor host | B or C, by spike | B: Tinta's own screen | Page switch 16–46 ms vs 650–850 ms in C; the app must feel instant |
-| Notes | Core Notes UI | Tinta's UI on core's data: block notes in the MVP, selected text in v1.1 | Core's Notes UI is private outside its post editor |
-| History | Core visual revisions | v1.1 (revisions still saved) | Private outside core's post editor; keeps the MVP small |
-| Locking | Core locks with a read-only view | Core lock dialog in the MVP; read-only view in v1.1 | The dialog is public; the read-only view needs Tinta UI |
+| Notes | Core Notes UI | Tinta's UI on core's data: block notes in the MVP, selected text in 0.2 | Core's Notes UI is private outside its post editor |
+| History | Core visual revisions | 0.2 (revisions still saved) | Private outside core's post editor; keeps the MVP small |
+| Locking | Core locks with a read-only view | Core lock dialog in the MVP; read-only view in 0.2 | The dialog is public; the read-only view needs Tinta UI |
 | Tinta Dark | MVP | Postponed | Core's editor UI doesn't follow a dark scheme |
 | Saving | Autosave + ⌘S | Continuous, like Notion; revisions throttled to one per author per 10 min | Feels like an app; saving every second would flush history |
 | PHP tests | PHPUnit 11 with WordPress stubs + PHPUnit 9.6 on core's suite | One suite: PHPUnit 9.6 on core's suite (wp-env); e2e on Playground | Standard tools contributors know (principle 8) |
