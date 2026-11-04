@@ -77,7 +77,7 @@ Full scope in PLAN §4:
 - Duplicate a page with its subpages; bulk actions in the tree.
 - Cover images.
 - Workspace banner at the top of the sidebar, like P2: an image or color band, the workspace icon, name, tagline and a private lock.
-- Workspace home: recently updated pages shown as a feed, with their content, like P2's front page.
+- Workspace home, Notion's Home and P2's front page together: a greeting, pinned and recently visited pages as cards, notes waiting on you, then recently updated pages as a feed with their content.
 
 ## 0.4 — Sharing & import
 - Share to web: a page and its subpages become public, with a read-only view and `noindex` by default (PLAN §4.15).
