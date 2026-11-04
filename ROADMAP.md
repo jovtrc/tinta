@@ -71,6 +71,10 @@ Full scope in PLAN §4:
 - Notes on selected text.
 - Read-only view when someone else is editing, instead of the lock dialog.
 - Duplicate page (with subtree), bulk actions, cover images, workspace-wide pins.
+- Settings with side tabs (General, People, Profile, and room for more): today's single settings dialog becomes the General tab.
+- Invite people from Settings: name, email and role (Member or Viewer), sent with core's new-user email, without a trip to Users → Add New.
+- Edit your own profile from Settings: name, email, password and admin color scheme, without leaving the workspace.
+- Rename the account menu's "Admin tools" to "WP Admin" (or "Go back to WP Admin").
 
 ## v1.2 — Collaboration
 - Notification inbox for mentions and replies (core Feature Notifications if it lands), plus email.
