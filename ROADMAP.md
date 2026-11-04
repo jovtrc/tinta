@@ -76,7 +76,8 @@ Full scope in PLAN §4:
 - History: saved versions, preview, restore.
 - Duplicate a page with its subpages; bulk actions in the tree.
 - Cover images.
-- Mermaid / diagram block.
+- Workspace banner at the top of the sidebar, like P2: an image or color band, the workspace icon, name, tagline and a private lock.
+- Workspace home: recently updated pages shown as a feed, with their content, like P2's front page.
 
 ## 0.4 — Sharing & import
 - Share to web: a page and its subpages become public, with a read-only view and `noindex` by default (PLAN §4.15).
@@ -92,6 +93,7 @@ Full scope in PLAN §4:
 ## 0.6 — Power users
 - Page templates.
 - Tags / labels.
+- Mermaid / diagram block.
 - Guest users who see only shared pages; invite by email code + approval.
 
 ## 0.7 — Lightweight databases
