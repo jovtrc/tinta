@@ -229,7 +229,8 @@ Nesting: `rest_pre_insert_tinta_doc` refuses a parent that isn't a page or sits 
 
 ### CI (GitHub Actions)
 - PHP 8.2 and 8.5 × WP 7.1, latest and trunk (trunk may fail) × single site and multisite.
-- Jobs: standards and types (phpcs, phpstan, tsc, eslint, stylelint), PHP tests (single site and multisite), e2e in Chromium, Firefox and WebKit (latest WP only), and Plugin Check (`wordpress/plugin-check-action`) on the release build. `release.yml` reuses the whole workflow before publishing.
+- Jobs: standards and types (phpcs, phpstan, tsc, eslint, stylelint), PHP tests (single site and multisite), e2e (latest WP only), and Plugin Check (`wordpress/plugin-check-action`) on the release build. `release.yml` reuses the whole workflow before publishing, so a failing check stops the release.
+- e2e runs in Chromium on pushes and pull requests, and in Chromium, Firefox and WebKit on releases, every Monday (schedule) and on manual runs (`all-browsers` input). Pushes that change only Markdown, `.wordpress-org/`, `prototype/` or `LICENSE` skip CI.
 
 ### Release
 - The zip holds only what WordPress runs: `bin/build-zip.sh` copies an explicit list (`tinta.php`, `uninstall.php`, `readme.txt`, `composer.json`, `includes/`, `build/`) and installs Composer's production autoloader beside it. Anything not on the list (tests, sources, docs, tool configs) stays out, so new repo files never leak into a release. `composer.json` stays because Plugin Check asks for it beside `vendor/`.

@@ -1,15 +1,39 @@
-# Standards, types, build, PHP tests (single site and multisite), e2e tests
-# (Chrome, Firefox and Safari's engine), and Plugin Check on the release contents.
+# Standards, types, build, PHP tests (single site and multisite), e2e tests, and
+# Plugin Check on the release contents. Pushes and pull requests run e2e in
+# Chrome; releases (through workflow_call), the weekly run and manual runs add
+# Firefox and Safari's engine. Changes to docs and plugin page assets alone skip CI.
 name: CI
 
 on:
   push:
     branches: [ trunk ]
+    paths-ignore:
+      - '**.md'
+      - '.wordpress-org/**'
+      - 'prototype/**'
+      - 'LICENSE'
   pull_request:
+    paths-ignore:
+      - '**.md'
+      - '.wordpress-org/**'
+      - 'prototype/**'
+      - 'LICENSE'
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      all-browsers:
+        description: Run e2e in Firefox and WebKit too
+        type: boolean
+        default: true
   workflow_call:
+    inputs:
+      all-browsers:
+        type: boolean
+        default: true
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -47,7 +71,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [ chromium, firefox, webkit ]
+        browser: ${{ fromJSON( ( inputs.all-browsers || github.event_name == 'schedule' ) && '["chromium","firefox","webkit"]' || '["chromium"]' ) }}
     env:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
     steps:

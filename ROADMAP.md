@@ -25,7 +25,7 @@
   - [x] Page header: emoji icon picker (curated list, any typed emoji), "Edited by … · 2 hours ago".
   - [x] Block allowlist; Page link and Callout blocks.
   - [x] Pinned and Recent sections, remembered tree branches, recently used emoji (per user, per site).
-  - [x] CI on GitHub Actions: standards, PHP tests (single site and multisite), e2e on Playground in Chromium, Firefox and WebKit (Safari's engine).
+  - [x] CI on GitHub Actions: standards, PHP tests (single site and multisite), e2e on Playground in Chromium on every code push, plus Firefox and WebKit (Safari's engine) on releases and weekly.
   - [x] "Move to…" (keyboard path for moving).
   - [x] Notes on blocks: threads, replies, @mentions, resolve and reopen (core's data, Tinta's panel).
   - [x] Workspace settings (name, workspace mode, new people's role, versions kept) and the account menu.
