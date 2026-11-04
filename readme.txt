@@ -23,7 +23,7 @@ Tinta turns a WordPress site into a private wiki for your team. Write docs, note
 * Pinned and recent pages, emoji page icons, and ⌘K to find any page.
 * Two roles: Members read and write every page, Viewers only read.
 * Workspace mode (on by default): everyone lands in the workspace after logging in, and the site becomes private.
-* Works on mobile, and on multisite (each site has its own workspace).
+* Follows each person's admin color scheme. Works on mobile, in right-to-left languages, and on multisite (each site has its own workspace).
 
 = Privacy =
 
@@ -58,4 +58,15 @@ They stay in your database. Deleting the plugin removes its roles, settings and 
 == Changelog ==
 
 = 0.1.0 =
-* First release.
+First release: a private team wiki inside WordPress, written in the block editor. Requires WordPress 7.1 and PHP 8.2 or later.
+
+* Pages inside pages, up to five levels deep, in a sidebar tree you can drag to reorganize.
+* The block editor with a focused set of blocks, plus Tinta's own Callout and Page link.
+* Saves as you type. One person edits a page at a time; others see who is editing.
+* Notes on blocks, with replies, mentions and resolve.
+* Pinned and recent pages, emoji page icons, and ⌘K (Ctrl+K) to find any page.
+* Two roles: Members read and write every page, Viewers only read.
+* Workspace mode, on by default: the site becomes private and everyone lands in the workspace after logging in.
+* A setup wizard that opens on activation, with optional sample pages.
+* Follows each person's admin color scheme. Works on mobile, in right-to-left languages, and on multisite.
+* Private by design: pages are never public, and Tinta sends no data anywhere.
