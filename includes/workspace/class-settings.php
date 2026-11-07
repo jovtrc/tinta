@@ -69,13 +69,25 @@ final class Settings {
 			'general',
 			'default_role',
 			array(
-				'type'         => 'string',
-				'default'      => 'subscriber',
-				'show_in_rest' => array(
+				'type'              => 'string',
+				'default'           => 'subscriber',
+				'sanitize_callback' => array( $this, 'sanitize_default_role' ),
+				'show_in_rest'      => array(
 					'schema' => array( 'enum' => self::default_roles() ),
 				),
 			)
 		);
+	}
+
+	/**
+	 * Keeps the default role a role that exists, falling back to Subscriber as core does.
+	 *
+	 * @param mixed $value Role sent.
+	 */
+	public function sanitize_default_role( $value ): string {
+		$role = sanitize_key( is_string( $value ) ? $value : '' );
+
+		return wp_roles()->is_role( $role ) ? $role : 'subscriber';
 	}
 
 	/**

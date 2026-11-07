@@ -70,8 +70,7 @@ final class Screen {
 			'tinta_access',
 			self::SLUG,
 			array( $this, 'render' ),
-			'data:image/svg+xml;base64,' . base64_encode( self::MENU_ICON ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- WordPress expects SVG menu icons as base64 data URIs.
-			3
+			'data:image/svg+xml;base64,' . base64_encode( self::MENU_ICON ) // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- WordPress expects SVG menu icons as base64 data URIs.
 		);
 
 		add_action( "load-{$hook}", array( $this, 'load' ) );
@@ -174,12 +173,30 @@ final class Screen {
 	public function leave_core_screen(): void {
 		global $pagenow;
 
-		$url = self::core_screen_redirect( (string) $pagenow, wp_unslash( $_GET ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only navigation.
+		$url = self::core_screen_redirect( (string) $pagenow, self::query_args( array( 'post', 'action', 'get-post-lock', 'post_type' ) ) );
 
 		if ( $url ) {
 			wp_safe_redirect( $url );
 			exit;
 		}
+	}
+
+	/**
+	 * Query arguments a navigation redirect reads, each sanitized as a key.
+	 *
+	 * @param string[] $keys Arguments to read.
+	 * @return array<string, string>
+	 */
+	public static function query_args( array $keys ): array {
+		$args = array();
+
+		foreach ( $keys as $key ) {
+			if ( isset( $_GET[ $key ] ) && is_string( $_GET[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only navigation.
+				$args[ $key ] = sanitize_key( wp_unslash( $_GET[ $key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only navigation.
+			}
+		}
+
+		return $args;
 	}
 
 	/**

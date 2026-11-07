@@ -4,7 +4,7 @@ Tags: wiki, knowledge base, documentation, team, intranet
 Requires at least: 7.1
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 0.1.0
+Stable tag: 0.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,9 +31,17 @@ Every page is private: only people with a Tinta role (and administrators) can re
 
 Images and files you add to pages go to the media library, like any WordPress upload. Tinta keeps them out of the media library for people without a Tinta role, but, as with all WordPress uploads, anyone who has a file's link can open it.
 
-= Source code =
+= Source code and how to build it =
 
-The JavaScript in `build/` is compiled from the TypeScript sources at https://github.com/jovtrc/tinta, where you can also report issues and contribute.
+The JavaScript and CSS in `build/` are compiled from the TypeScript and SCSS sources in Tinta's public repository, in the `src/` folder: https://github.com/jovtrc/tinta/tree/trunk/src
+
+To build them yourself:
+
+1. Install Node.js 24 with pnpm, and PHP 8.2 with Composer.
+2. In a clone of the repository, run `composer install` and `pnpm install`.
+3. Run `pnpm build`. It compiles `src/` into `build/` with `@wordpress/scripts` (webpack).
+
+`bin/build-zip.sh` builds the same zip as a release. Issues and contributions are welcome on GitHub.
 
 == Installation ==
 
@@ -65,6 +73,14 @@ They stay in your database. Deleting the plugin removes its roles, settings and 
 6. On a phone, the sidebar opens as a drawer.
 
 == Changelog ==
+
+= 0.1.1 =
+* Tinta's logo in the admin menu and the setup wizard. The Workspace menu item now sits after WordPress's own items.
+* Move pages and pins up and down from their menu, without dragging. Screen readers hear the new position.
+* The open page is highlighted once, in the page tree; Recent leaves out pinned pages and the open page.
+* In workspace mode, the command palette shows only Tinta's commands.
+* Better contrast for secondary text in the sidebar.
+* The default role setting is sanitized, and the readme explains how to build the JavaScript from its sources.
 
 = 0.1.0 =
 First release: a private team wiki inside WordPress, written in the block editor. Requires WordPress 7.1 and PHP 8.2 or later.

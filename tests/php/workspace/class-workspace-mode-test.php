@@ -70,6 +70,19 @@ final class Workspace_Mode_Test extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The default role is always a role that exists, however it's saved.
+	 */
+	public function test_default_role_is_sanitized(): void {
+		$this->skipWithMultisite();
+
+		update_option( 'default_role', Roles::MEMBER );
+		$this->assertSame( Roles::MEMBER, get_option( 'default_role' ) );
+
+		update_option( 'default_role', 'no such role' );
+		$this->assertSame( 'subscriber', get_option( 'default_role' ) );
+	}
+
+	/**
 	 * Networks keep the default role out of site settings, as core does.
 	 */
 	public function test_default_role_is_not_a_site_setting_on_networks(): void {

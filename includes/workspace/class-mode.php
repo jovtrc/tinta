@@ -56,7 +56,7 @@ final class Mode {
 
 		$url = self::redirect_for(
 			(string) $pagenow,
-			wp_unslash( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only navigation.
+			Screen::query_args( array( 'page', 'get-post-lock' ) ),
 			current_user_can( 'tinta_access' ) && ! current_user_can( 'tinta_manage' )
 		);
 
