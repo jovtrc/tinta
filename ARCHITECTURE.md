@@ -237,7 +237,7 @@ Nesting: `rest_pre_insert_tinta_doc` refuses a parent that isn't a page or sits 
 - CI's Plugin Check job builds those release contents on every push and runs `wordpress/plugin-check-action` on them.
 - To release: set the version in `tinta.php` (header and `TINTA_VERSION`) and the readme's Stable tag, add its changelog entry, then push a `vX.Y.Z` tag. `.github/workflows/release.yml` runs the whole CI, checks that the versions match (`bin/release-notes.sh`), and publishes a GitHub release with `tinta.zip` and the changelog entry as notes. Run by hand on a branch, it builds the zip as a workflow artifact without publishing.
 - wordpress.org later: SVN deploy with `10up/action-wordpress-plugin-deploy` from the same build. wordpress.org builds the first slug from the Plugin Name (`tinta-team-wiki`); at submission, change it to `tinta` so it matches the text domain and folder (allowed once, before approval; permanent after).
-- `readme.txt` links the public repo for the TypeScript sources (guideline 4).
+- `readme.txt` links the TypeScript and SCSS sources in the public repo and explains how to build them (guideline 4). Every built JS and CSS file also starts with a comment linking the sources, added after minification (`webpack.config.js`).
 - `.wordpress-org/` holds the plugin page assets for SVN's `assets/`: icon (PNG and SVG), banners (and right-to-left ones), screenshots, and `blueprints/blueprint.json` for the Live Preview button. `pnpm screenshots` (`tests/screenshots/`, `playwright.screenshots.config.js`) fills a sample workspace on the e2e Playground site, in workspace mode, and retakes the screenshots; their captions are readme.txt's Screenshots section.
 - wp.org holds each release ~6 h for an automated security review.
 
