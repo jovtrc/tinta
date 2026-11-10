@@ -1,6 +1,6 @@
 # Tinta — Roadmap
 
-> Last reviewed 2026-11-04. Versions: 0.1.0 is the MVP; 1.0.0 will be the first stable release.
+> Last reviewed 2026-11-10. Versions: 0.1.0 is the MVP; 1.0.0 will be the first stable release.
 >
 > Day-to-day work is tracked in [GitHub issues](https://github.com/jovtrc/tinta/issues), with one [milestone](https://github.com/jovtrc/tinta/milestones) per version below. This file is the summary.
 
@@ -38,6 +38,7 @@
   - [x] Setup wizard: name and icon, conflicting plugins, new people's role, sample pages, workspace mode.
   - [x] `readme.txt`, a minimal release zip (only what WordPress runs), and Plugin Check in CI on it (clean, experimental checks included).
   - [x] Release pipeline: a `v*` tag runs CI and publishes a GitHub release with the zip and its changelog.
+  - [x] On [wordpress.org](https://wordpress.org/plugins/tinta/) since 0.1.1: each release deploys its GitHub zip to SVN, with the plugin page assets.
   - [x] Named Tinta – Team Wiki; README, GPL-2.0 LICENSE, and a "Try it in Playground" link that installs the latest release.
   - [x] RTL: the workspace's right-to-left stylesheet, mirrored layout offsets, drag handle and note markers.
   - [x] Translation-ready: 196 strings extract cleanly from the release files (pt_BR is translated on translate.wordpress.org after release).
@@ -50,7 +51,7 @@
   - [x] The open page is highlighted once, in the tree; Recent leaves out pinned pages and the open page. In workspace mode, ⌘K shows only Tinta's commands.
   - [x] Scale check on Playground with 630 pages, all expanded: the tree endpoint costs no more than any WordPress request (~40 KB), the sidebar renders ~0.25 s after the page loads, typing in a title stays smooth (one 85 ms task over 25 keys and a save).
 
-## 0.1 — MVP (released as 0.1.0; 0.1.x reaches wordpress.org)
+## 0.1 — MVP (released as 0.1.0; on wordpress.org since 0.1.1)
 Full scope in PLAN §4:
 - `tinta_doc` pages; tree up to 5 levels; drag to reorder and move.
 - Block editor on Tinta's own screen (no reload between pages), allowed blocks + Page link and Callout blocks.

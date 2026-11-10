@@ -26,9 +26,8 @@ WordPress 7.1 or later and PHP 8.2 or later.
 
 ## Install
 
-1. Download `tinta.zip` from the [latest release](https://github.com/jovtrc/tinta/releases/latest).
-2. In WordPress, go to **Plugins → Add New Plugin → Upload Plugin** and install it.
-3. Activate it. The setup wizard opens right away and walks you through naming the workspace, choosing who new people are, adding sample pages, and workspace mode.
+1. In WordPress, go to **Plugins → Add New Plugin**, search for "Tinta" and install it ([Tinta on wordpress.org](https://wordpress.org/plugins/tinta/)). Or download `tinta.zip` from the [latest release](https://github.com/jovtrc/tinta/releases/latest) and add it with **Upload Plugin**.
+2. Activate it. The setup wizard opens right away and walks you through naming the workspace, choosing who new people are, adding sample pages, and workspace mode.
 
 ## Privacy
 
