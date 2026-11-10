@@ -1,0 +1,54 @@
+# Deploys a GitHub release to wordpress.org: the files in its tinta.zip go to
+# SVN trunk/ and tags/<version>, and .wordpress-org/ to assets/, in one commit.
+# release.yml calls it after publishing. Run by hand with a tag to deploy an
+# existing release; manual runs are dry runs unless unticked.
+name: wordpress.org
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        required: true
+      dry-run:
+        type: boolean
+        default: false
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to deploy (v0.1.1)
+        type: string
+        required: true
+      dry-run:
+        description: List the SVN changes without committing them
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to wordpress.org
+    runs-on: ubuntu-latest
+    concurrency:
+      group: wordpress-org
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download the release zip
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          gh release download "$TAG" --pattern tinta.zip --dir "$RUNNER_TEMP"
+          unzip -q "$RUNNER_TEMP/tinta.zip" -d "$RUNNER_TEMP/release"
+          echo "VERSION=${TAG#v}" >> "$GITHUB_ENV"
+      - uses: 10up/action-wordpress-plugin-deploy@54bd289b8525fd23a5c365ec369185f2966529c2 # 2.3.0
+        with:
+          dry-run: ${{ inputs.dry-run }}
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: tinta
+          BUILD_DIR: ${{ runner.temp }}/release/tinta

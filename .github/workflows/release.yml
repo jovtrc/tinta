@@ -1,7 +1,8 @@
-# Releases. Pushing a version tag (v0.1.0) runs CI, then publishes a GitHub
-# release with the plugin zip and that version's changelog entry from
-# readme.txt. Run by hand on a branch, it builds the zip as a workflow
-# artifact instead, to try a release without publishing it.
+# Releases. Pushing a version tag (v0.1.0) runs CI, publishes a GitHub release
+# with the plugin zip and that version's changelog entry from readme.txt, then
+# deploys that zip to wordpress.org (wordpress-org.yml). Run by hand on a
+# branch, it builds the zip as a workflow artifact instead, to try a release
+# without publishing it.
 name: Release
 
 on:
@@ -49,3 +50,12 @@ jobs:
         with:
           name: tinta
           path: ${{ runner.temp }}/tinta.zip
+
+  wordpress-org:
+    name: wordpress.org
+    needs: release
+    if: github.ref_type == 'tag'
+    uses: ./.github/workflows/wordpress-org.yml
+    with:
+      tag: ${{ github.ref_name }}
+    secrets: inherit
