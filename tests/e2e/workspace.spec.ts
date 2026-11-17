@@ -300,7 +300,9 @@ test.describe( 'Page actions and trash', () => {
 			.toBe( 'Team handbook' );
 
 		await page.getByRole( 'button', { name: 'Page actions' } ).click();
-		await page.getByRole( 'menuitem', { name: 'Pin' } ).click();
+		await page
+			.getByRole( 'menuitem', { name: 'Pin', exact: true } )
+			.click();
 		await expect(
 			page
 				.getByRole( 'list', { name: 'Pinned' } )
@@ -653,7 +655,9 @@ test.describe( 'Pinned, recent and expanded', () => {
 				exact: true,
 			} )
 			.click();
-		await page.getByRole( 'menuitem', { name: 'Pin' } ).click();
+		await page
+			.getByRole( 'menuitem', { name: 'Pin', exact: true } )
+			.click();
 		await expect(
 			page.getByRole( 'list', { name: 'Pinned' } ).getByRole( 'link' )
 		).toHaveText( [ 'Roadmap' ] );
@@ -677,6 +681,88 @@ test.describe( 'Pinned, recent and expanded', () => {
 			page.getByRole( 'list', { name: 'Pinned' } ).getByRole( 'link' )
 		).toHaveText( [ 'Roadmap' ] );
 		await expect( sidebarLink( page, 'Onboarding' ) ).toBeVisible();
+	} );
+} );
+
+test.describe( 'Pinned for everyone', () => {
+	test.beforeEach( async ( { requestUtils } ) => {
+		await deleteAllPages( requestUtils );
+		await requestUtils.deleteAllUsers();
+		await setPinnedForEveryone( requestUtils, [] );
+	} );
+
+	test.afterEach( async ( { requestUtils } ) => {
+		await setPinnedForEveryone( requestUtils, [] );
+	} );
+
+	test( 'administrators pin pages for everyone', async ( {
+		admin,
+		browser,
+		page,
+		requestUtils,
+	} ) => {
+		await createPage( requestUtils, 'Handbook' );
+		await createPage( requestUtils, 'Roadmap' );
+		await requestUtils.createUser( {
+			username: 'maria',
+			email: 'maria@example.com',
+			password: TEST_PASSWORD,
+			roles: [ 'tinta_member' ],
+		} );
+		const shared = page.getByRole( 'list', {
+			name: 'Pinned for everyone',
+		} );
+
+		await admin.visitAdminPage( 'admin.php', 'page=tinta' );
+		await page
+			.getByRole( 'button', {
+				name: 'Actions for “Handbook”',
+				exact: true,
+			} )
+			.click();
+		await page
+			.getByRole( 'menuitem', { name: 'Pin for everyone' } )
+			.click();
+		await expect(
+			shared.getByRole( 'link', { name: 'Handbook' } )
+		).toBeVisible();
+
+		const context = await browser.newContext( {
+			baseURL: requestUtils.baseURL,
+		} );
+		await context.request.post( '/wp-login.php', {
+			failOnStatusCode: true,
+			form: { log: 'maria', pwd: TEST_PASSWORD },
+		} );
+		const mariaPage = await context.newPage();
+		await mariaPage.goto( '/wp-admin/admin.php?page=tinta' );
+		await expect(
+			mariaPage
+				.getByRole( 'list', { name: 'Pinned for everyone' } )
+				.getByRole( 'link', { name: 'Handbook' } )
+		).toBeVisible();
+		await mariaPage
+			.getByRole( 'button', {
+				name: 'Actions for “Handbook” in Pinned for everyone',
+			} )
+			.click();
+		await expect(
+			mariaPage.getByRole( 'menuitem', { name: 'Pin', exact: true } )
+		).toBeVisible();
+		await expect(
+			mariaPage.getByRole( 'menuitem', { name: /for everyone/ } )
+		).toHaveCount( 0 );
+		await context.close();
+
+		await page
+			.getByRole( 'button', {
+				name: 'Actions for “Handbook” in Pinned for everyone',
+			} )
+			.click();
+		await page
+			.getByRole( 'menuitem', { name: 'Unpin for everyone' } )
+			.click();
+		await expect( shared ).toHaveCount( 0 );
 	} );
 } );
 
@@ -1398,3 +1484,20 @@ test.describe( 'Locks and roles', () => {
 		await context.close();
 	} );
 } );
+
+/**
+ * Sets the pages pinned for everyone.
+ *
+ * @param requestUtils REST helpers.
+ * @param pinned       Page IDs.
+ */
+async function setPinnedForEveryone(
+	requestUtils: RequestUtils,
+	pinned: number[]
+) {
+	await requestUtils.rest( {
+		method: 'POST',
+		path: '/wp/v2/settings',
+		data: { tinta_settings: { pinned } },
+	} );
+}

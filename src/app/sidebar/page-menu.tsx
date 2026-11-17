@@ -1,6 +1,7 @@
 /**
- * A page's menu: Pin (everyone), Rename, Move to… and Move to trash (editors),
- * and Move up or down in the list it opened from. Opens from the "⋯" button
+ * A page's menu: Pin (everyone), Pin for everyone (administrators), Rename,
+ * Move to… and Move to trash (editors), and Move up or down in the list it
+ * opened from. Opens from the "⋯" button
  * on sidebar rows and in the page header, or with a right click on a page in
  * the sidebar.
  */
@@ -15,6 +16,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import {
+	people,
 	moreHorizontal,
 	moveTo,
 	pencil,
@@ -24,9 +26,11 @@ import {
 } from '@wordpress/icons';
 
 import { config } from '../config';
+import { store as workspaceStore } from '../store';
 import { store as prefsStore } from '../store/prefs';
 import { store as uiStore, type DialogName } from '../store/ui';
 import { useOrderMoves, type PageList } from './use-order-moves';
+import { store as noticesStore } from '@wordpress/notices';
 import type { MouseEvent } from 'react';
 
 interface PageMenuProps {
@@ -153,7 +157,14 @@ function PageMenuItems( {
 		( select ) => select( prefsStore ).getPrefs().pinned.includes( pageId ),
 		[ pageId ]
 	);
+	const isPinnedForEveryone = useSelect(
+		( select ) =>
+			select( workspaceStore ).getPinnedForEveryone().includes( pageId ),
+		[ pageId ]
+	);
 	const { togglePin } = useDispatch( prefsStore );
+	const { togglePinForEveryone } = useDispatch( workspaceStore );
+	const { createErrorNotice } = useDispatch( noticesStore );
 	const { openDialog } = useDispatch( uiStore );
 	const moves = useOrderMoves( pageId, list ).map(
 		( { label, icon, move } ) => (
@@ -197,7 +208,25 @@ function PageMenuItems( {
 			>
 				{ isPinned ? __( 'Unpin', 'tinta' ) : __( 'Pin', 'tinta' ) }
 			</MenuItem>
-			{ list === 'pinned' && moves }
+			{ config.canManage && (
+				<MenuItem
+					icon={ people }
+					onClick={ () => {
+						onClose();
+						togglePinForEveryone( pageId ).catch( () =>
+							createErrorNotice(
+								__( 'The pin could not be saved.', 'tinta' ),
+								{ type: 'snackbar' }
+							)
+						);
+					} }
+				>
+					{ isPinnedForEveryone
+						? __( 'Unpin for everyone', 'tinta' )
+						: __( 'Pin for everyone', 'tinta' ) }
+				</MenuItem>
+			) }
+			{ ( list === 'pinned' || list === 'everyone' ) && moves }
 			{ config.canCreate && (
 				<>
 					{ dialogItem( 'rename', __( 'Rename', 'tinta' ), pencil ) }

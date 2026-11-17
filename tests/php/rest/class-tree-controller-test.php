@@ -51,6 +51,18 @@ final class Tree_Controller_Test extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Everyone gets the pages administrators pinned for everyone, in order.
+	 */
+	public function test_lists_pages_pinned_for_everyone(): void {
+		update_option( 'tinta_settings', array( 'pinned' => array( 12, 7 ) ) );
+		wp_set_current_user( self::factory()->user->create( array( 'role' => Roles::VIEWER ) ) );
+
+		$response = rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/tinta/v1/tree' ) );
+
+		$this->assertSame( array( 12, 7 ), $response->get_data()['pinned'] );
+	}
+
+	/**
 	 * Roles that belong to the workspace.
 	 *
 	 * @return array<string, array{string}>

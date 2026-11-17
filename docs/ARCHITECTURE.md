@@ -55,7 +55,7 @@ The workspace is one admin screen, `admin.php?page=tinta&doc=ID`. Tinta's React 
 | `Tinta\Docs\Tree` | `includes/docs/class-tree.php` | Tree skeleton query, cache and invalidation |
 | `Tinta\Roles\Roles` | `includes/roles/class-roles.php` | Member and Viewer roles, caps |
 | `Tinta\Workspace\Screen` | `includes/workspace/class-screen.php` | Workspace screen: block-editor setup, preloads, assets (§2); page edit/preview links and core's page screens lead to it |
-| `Tinta\Workspace\Settings` | `includes/workspace/class-settings.php` | `tinta_settings` (workspace mode, revisions, setup done) and core's `default_role` in `wp/v2/settings` |
+| `Tinta\Workspace\Settings` | `includes/workspace/class-settings.php` | `tinta_settings` (workspace mode, revisions, setup done, pages pinned for everyone) and core's `default_role` in `wp/v2/settings` |
 | `Tinta\Workspace\Color_Scheme` | `includes/workspace/class-color-scheme.php` | Registers Tinta Light; gives it to people who join in workspace mode |
 | `Tinta\Workspace\Conflicts` | `includes/workspace/class-conflicts.php` | Active plugins known to conflict, for the setup wizard |
 | `Tinta\Workspace\Mode` | `includes/workspace/class-mode.php` | Workspace mode: login landing, `tinta-workspace-mode` body class (the screen hides admin menu and toolbar), keeps Members and Viewers in the workspace |
@@ -93,7 +93,7 @@ No custom tables.
 | block attributes | `metadata.noteId` | Links a note thread to a block (core's format) |
 | user option | `tinta_prefs` | `pinned[]`, `recent[10]`, `expanded[]`, `emojis[]` — per user, per site |
 | user meta | `admin_color`, `_new_email` | Core: admin color scheme; email waiting for confirmation (core's profile screen completes the change from the emailed link) |
-| option | `tinta_settings` (autoload) | Workspace mode, revisions kept (setup state later); new users' role is core's `default_role` |
+| option | `tinta_settings` (autoload) | Workspace mode, revisions kept, setup done, `pinned[]` (pages pinned for everyone, at most 50); new users' role is core's `default_role` |
 | option | `tinta_tree_generation` (autoload) | Bumped on every tree change |
 | option | `tinta_version` | Upgrade routines |
 | core options | `blogname`, `site_icon` | Workspace name and icon |
@@ -128,7 +128,7 @@ Core only lets users with `read_private_tinta_docs` read a private post — in R
 
 ### Invalidation
 - On any tree change: delete `tinta_tree` and bump `tinta_tree_generation`.
-- Tree changes = create, trash, restore, delete, move, and updates that change title, parent, order, status or icon (compared through `post_updated`'s before/after). Content-only saves and autosaves don't touch the tree.
+- Tree changes = create, trash, restore, delete, move, and updates that change title, parent, order, status or icon (compared through `post_updated`'s before/after), plus changes to the pages pinned for everyone (`update_option_tinta_settings`). Content-only saves and autosaves don't touch the tree.
 
 ### Freshness across users
 - Heartbeat (`heartbeat_received`) returns `tinta_tree_generation` when the workspace sends `tinta_tree`; the client listens through `wp.hooks` (`heartbeat.send` / `heartbeat.tick`) and refetches the tree only when the number changed. The workspace screen ticks every 15 s (WordPress slows background tabs down). Cost per tick: reading one autoloaded option.
@@ -161,7 +161,7 @@ Core only lets users with `read_private_tinta_docs` read a private post — in R
 
 | Method | Route | Purpose | Permission |
 |---|---|---|---|
-| GET | `/tree` | Whole skeleton + generation; cached | `tinta_access` |
+| GET | `/tree` | Whole skeleton + generation (cached), and the pages pinned for everyone (read from `tinta_settings`, which only administrators can read through `wp/v2/settings`) | `tinta_access` |
 | GET | `/people` | People who can edit pages: id, name, avatar (for @mentions) | `edit_tinta_docs` |
 | POST | `/people` | Invite: name, email, role (Member or Viewer). Core's REST route can't: it sends no new-user email, and multisite site admins can't create users through it. A login comes from the email; someone with an account is sent to core's Users screen | `tinta_manage` and `create_users` (which covers multisite's "add new users" switch) |
 | POST | `/docs/(?P<id>\d+)/move` | New parent + position; depth ≤ 5, no cycles; renumbers siblings in one go | `edit_post` on the page and the new parent |
@@ -192,7 +192,7 @@ Nesting: `rest_pre_insert_tinta_doc` refuses a parent that isn't a page or sits 
 
 ### Modules
 - `src/app/` — workspace shell: layout, sidebar and page tree, URL routing, page creation.
-- `src/app/store/` — `tinta/workspace` (the tree and the actions that change it), `tinta/prefs` (per-user lists) and `tinta/ui` (open dialog, right-click menu, sidebar shown or hidden) stores.
+- `src/app/store/` — `tinta/workspace` (the tree, the pages pinned for everyone, and the actions that change them; administrators save pins through `wp/v2/settings`), `tinta/prefs` (per-user lists) and `tinta/ui` (open dialog, right-click menu, sidebar shown or hidden) stores.
 - `src/app/commands.tsx` — ⌘K commands. In workspace mode it unregisters every command and command loader not named `tinta/…`, including ones registered later (the editor's), since they lead to screens and panels workspace mode hides.
 - `src/app/logo.tsx` — Tinta's mark (a nib drawn as a T), in the setup wizard. The admin menu icon is the same mark as an SVG data URI (`Workspace\Screen::MENU_ICON`), which core paints in each color scheme.
 - `src/app/dialogs.tsx` — renders the open dialog (rename, move, move to trash, trash, settings, setup), whichever menu or command opened it.

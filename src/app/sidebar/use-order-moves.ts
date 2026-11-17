@@ -1,7 +1,8 @@
 /**
  * "Move up" and "Move down" for a page's menu: among its sibling pages in the
- * tree (editors), or within Pinned. The way to reorder without dragging, for
- * keyboards and single clicks.
+ * tree (editors), within your Pinned, or within Pinned for everyone
+ * (administrators). The way to reorder without dragging, for keyboards and
+ * single clicks.
  */
 import { arrayMove } from '@dnd-kit/sortable';
 import { speak } from '@wordpress/a11y';
@@ -14,7 +15,7 @@ import { config } from '../config';
 import { store as workspaceStore } from '../store';
 import { store as prefsStore } from '../store/prefs';
 
-export type PageList = 'tree' | 'pinned' | 'recent';
+export type PageList = 'tree' | 'everyone' | 'pinned' | 'recent';
 
 export interface OrderMove {
 	label: string;
@@ -37,7 +38,11 @@ export function useOrderMoves( pageId: number, list: PageList ): OrderMove[] {
 		( select ) => select( prefsStore ).getPrefs().pinned,
 		[]
 	);
-	const { movePage } = useDispatch( workspaceStore );
+	const pinnedForEveryone = useSelect(
+		( select ) => select( workspaceStore ).getPinnedForEveryone(),
+		[]
+	);
+	const { movePage, setPinnedForEveryone } = useDispatch( workspaceStore );
 	const { updatePrefs } = useDispatch( prefsStore );
 	const { createErrorNotice } = useDispatch( noticesStore );
 	const page = pages?.find( ( item ) => item.id === pageId );
@@ -46,10 +51,28 @@ export function useOrderMoves( pageId: number, list: PageList ): OrderMove[] {
 		return [];
 	}
 
-	if ( list === 'pinned' ) {
-		const ids = pinned.filter( ( id ) =>
-			pages.some( ( item ) => item.id === id )
+	const exists = ( id: number ) => pages.some( ( item ) => item.id === id );
+
+	if ( list === 'everyone' && config.canManage ) {
+		const ids = pinnedForEveryone.filter( exists );
+
+		return movesWithin(
+			ids,
+			pageId,
+			[
+				__( 'Move up in Pinned for everyone', 'tinta' ),
+				__( 'Move down in Pinned for everyone', 'tinta' ),
+			],
+			( to ) =>
+				setPinnedForEveryone(
+					arrayMove( ids, ids.indexOf( pageId ), to )
+				)
 		);
+	}
+
+	if ( list === 'pinned' ) {
+		const isShared = ( id: number ) => pinnedForEveryone.includes( id );
+		const ids = pinned.filter( ( id ) => exists( id ) && ! isShared( id ) );
 
 		return movesWithin(
 			ids,
@@ -60,7 +83,10 @@ export function useOrderMoves( pageId: number, list: PageList ): OrderMove[] {
 			],
 			( to ) =>
 				updatePrefs( {
-					pinned: arrayMove( ids, ids.indexOf( pageId ), to ),
+					pinned: [
+						...arrayMove( ids, ids.indexOf( pageId ), to ),
+						...pinned.filter( isShared ),
+					],
 				} )
 		);
 	}

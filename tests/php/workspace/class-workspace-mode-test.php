@@ -47,6 +47,7 @@ final class Workspace_Mode_Test extends WP_UnitTestCase {
 				'workspace_mode' => true,
 				'revisions'      => 25,
 				'setup_done'     => true,
+				'pinned'         => array(),
 			),
 			get_option( 'tinta_settings' )
 		);
@@ -150,6 +151,15 @@ final class Workspace_Mode_Test extends WP_UnitTestCase {
 
 		$this->assertNotWPError( apply_filters( 'rest_authentication_errors', null ) );
 		$this->assertTrue( apply_filters( 'wp_sitemaps_enabled', true ) );
+	}
+
+	/**
+	 * Pins for everyone are distinct page IDs.
+	 */
+	public function test_pins_for_everyone_are_cleaned(): void {
+		$pinned = ( new Settings() )->sanitize( array( 'pinned' => array( '7', 7, 0, -2, 'x', 9 ) ) )['pinned'];
+
+		$this->assertSame( array( 7, 9 ), $pinned );
 	}
 
 	/**

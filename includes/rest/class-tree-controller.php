@@ -8,6 +8,7 @@
 namespace Tinta\Rest;
 
 use Tinta\Docs\Tree;
+use Tinta\Workspace\Settings;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Server;
@@ -83,6 +84,7 @@ final class Tree_Controller extends WP_REST_Controller {
 			array(
 				'generation' => $this->tree->generation(),
 				'pages'      => $this->tree->pages(),
+				'pinned'     => Settings::get()['pinned'],
 			)
 		);
 	}
@@ -103,6 +105,12 @@ final class Tree_Controller extends WP_REST_Controller {
 						'description' => __( 'Bumped on every tree change.', 'tinta' ),
 						'type'        => 'integer',
 						'readonly'    => true,
+					),
+					'pinned'     => array(
+						'description' => __( 'Pages administrators pinned for everyone, in order.', 'tinta' ),
+						'type'        => 'array',
+						'readonly'    => true,
+						'items'       => array( 'type' => 'integer' ),
 					),
 					'pages'      => array(
 						'description' => __( 'Private pages in tree order.', 'tinta' ),

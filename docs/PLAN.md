@@ -107,6 +107,8 @@ Core's command palette, extended with Tinta commands: search pages by title (wit
 ### 4.8 Pinned & recent
 Per user and per site (multisite-safe): pinned (ordered), recent (last 10 kept, 5 shown), tree expand state and recently used emojis — stored together in one user option.
 
+Pinned for everyone: administrators pin pages for the whole workspace ("Pin for everyone" in the page menu), shown above each person's own pins, in an order administrators set. Stored in `tinta_settings` and sent to everyone with the tree.
+
 ### 4.9 Settings
 One dialog with tabs on the side (core's Modal and TabPanel). Administrators see the workspace's tabs; everyone sees Profile.
 

@@ -8,6 +8,7 @@
 namespace Tinta\Docs;
 
 use Tinta\Cache\Cache;
+use Tinta\Workspace\Settings;
 use WP_Post;
 
 defined( 'ABSPATH' ) || exit;
@@ -44,6 +45,8 @@ final class Tree {
 		add_action( 'added_post_meta', array( $this, 'on_meta_change' ), 10, 3 );
 		add_action( 'updated_post_meta', array( $this, 'on_meta_change' ), 10, 3 );
 		add_action( 'deleted_post_meta', array( $this, 'on_meta_change' ), 10, 3 );
+		add_action( 'add_option_' . Settings::OPTION, array( $this, 'on_settings_add' ), 10, 2 );
+		add_action( 'update_option_' . Settings::OPTION, array( $this, 'on_settings_update' ), 10, 2 );
 	}
 
 	/**
@@ -117,6 +120,32 @@ final class Tree {
 	public function flush(): void {
 		$this->cache->delete( self::CACHE_KEY );
 		update_option( self::GENERATION_OPTION, $this->generation() + 1, true );
+	}
+
+	/**
+	 * Flushes when the first saved settings pin pages for everyone.
+	 *
+	 * @param string $option Option name.
+	 * @param mixed  $value  Saved settings.
+	 */
+	public function on_settings_add( string $option, $value ): void {
+		$this->on_settings_update( array(), $value );
+	}
+
+	/**
+	 * Flushes when the pages pinned for everyone change, so open workspaces
+	 * pick them up with the tree.
+	 *
+	 * @param mixed $before Settings before.
+	 * @param mixed $after  Settings after.
+	 */
+	public function on_settings_update( $before, $after ): void {
+		$was = ( (array) $before )['pinned'] ?? array();
+		$is  = ( (array) $after )['pinned'] ?? array();
+
+		if ( $was !== $is ) {
+			$this->flush();
+		}
 	}
 
 	/**

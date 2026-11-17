@@ -9,6 +9,7 @@ namespace Tinta\Tests\Docs;
 
 use Tinta\Cache\Cache;
 use Tinta\Docs\Tree;
+use Tinta\Workspace\Settings;
 use WP_UnitTestCase;
 
 /**
@@ -112,6 +113,20 @@ final class Tree_Test extends WP_UnitTestCase {
 		);
 
 		$this->assertSame( $generation, $this->tree->generation() );
+	}
+
+	/**
+	 * Pinning pages for everyone bumps the generation, so open workspaces get
+	 * the pins; other settings don't.
+	 */
+	public function test_pins_for_everyone_bump_the_generation(): void {
+		$this->assert_generation_bumps( static fn() => update_option( Settings::OPTION, array( 'pinned' => array( 5 ) ) ) );
+		$this->assert_generation_bumps( static fn() => update_option( Settings::OPTION, array( 'pinned' => array( 6, 5 ) ) ) );
+
+		$before = $this->tree->generation();
+		update_option( Settings::OPTION, array( 'revisions' => 3 ) );
+
+		$this->assertSame( $before, $this->tree->generation() );
 	}
 
 	/**

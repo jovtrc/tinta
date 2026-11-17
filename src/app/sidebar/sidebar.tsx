@@ -1,6 +1,7 @@
 /**
- * Sidebar: workspace name, Search, New page, Pinned, Recent (other pages
- * visited lately, not pinned), the page tree, the trash, and the account menu.
+ * Sidebar: workspace name, Search, New page, Pinned for everyone (set by
+ * administrators), your own Pinned, Recent (other pages visited lately, not
+ * pinned), the page tree, the trash, and the account menu.
  */
 import { Button } from '@wordpress/components';
 import { store as commandsStore } from '@wordpress/commands';
@@ -10,6 +11,7 @@ import { closeSmall, drawerLeft, plus, search, trash } from '@wordpress/icons';
 import { displayShortcut } from '@wordpress/keycodes';
 
 import { config } from '../config';
+import { store as workspaceStore } from '../store';
 import { store as prefsStore } from '../store/prefs';
 import { store as uiStore } from '../store/ui';
 import { useCreatePage } from '../use-create-page';
@@ -40,9 +42,16 @@ export function Sidebar( { currentId, onOpen }: SidebarProps ) {
 		( select ) => select( prefsStore ).getPrefs(),
 		[]
 	);
+	const pinnedForEveryone = useSelect(
+		( select ) => select( workspaceStore ).getPinnedForEveryone(),
+		[]
+	);
 	const { open: openCommandPalette } = useDispatch( commandsStore );
 	const { openDialog } = useDispatch( uiStore );
 	const { updatePrefs } = useDispatch( prefsStore );
+	const { setPinnedForEveryone } = useDispatch( workspaceStore );
+	const isShared = ( id: number ) => pinnedForEveryone.includes( id );
+	const ownPins = prefs.pinned.filter( ( id ) => ! isShared( id ) );
 
 	return (
 		<nav
@@ -91,11 +100,27 @@ export function Sidebar( { currentId, onOpen }: SidebarProps ) {
 				</Button>
 			) }
 			<PageSection
+				title={ __( 'Pinned for everyone', 'tinta' ) }
+				list="everyone"
+				pageIds={ pinnedForEveryone }
+				onOpen={ onOpen }
+				onReorder={
+					config.canManage ? setPinnedForEveryone : undefined
+				}
+			/>
+			<PageSection
 				title={ __( 'Pinned', 'tinta' ) }
 				list="pinned"
-				pageIds={ prefs.pinned }
+				pageIds={ ownPins }
 				onOpen={ onOpen }
-				onReorder={ ( pinned ) => updatePrefs( { pinned } ) }
+				onReorder={ ( pinned ) =>
+					updatePrefs( {
+						pinned: [
+							...pinned,
+							...prefs.pinned.filter( isShared ),
+						],
+					} )
+				}
 			/>
 			<PageSection
 				title={ __( 'Recent', 'tinta' ) }
@@ -103,7 +128,9 @@ export function Sidebar( { currentId, onOpen }: SidebarProps ) {
 				pageIds={ prefs.recent
 					.filter(
 						( id ) =>
-							id !== currentId && ! prefs.pinned.includes( id )
+							id !== currentId &&
+							! prefs.pinned.includes( id ) &&
+							! isShared( id )
 					)
 					.slice( 0, RECENT_SHOWN ) }
 				onOpen={ onOpen }
