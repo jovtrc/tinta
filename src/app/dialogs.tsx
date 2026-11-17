@@ -7,7 +7,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { SetupWizard } from './setup/setup-wizard';
 import { MoveDialog } from './sidebar/move-dialog';
 import { RenameDialog } from './sidebar/rename-dialog';
-import { SettingsDialog } from './sidebar/settings-dialog';
+import { SettingsDialog } from './settings/settings-dialog';
 import { TrashConfirm } from './sidebar/trash-confirm';
 import { TrashDialog } from './sidebar/trash-dialog';
 import { store as workspaceStore } from './store';

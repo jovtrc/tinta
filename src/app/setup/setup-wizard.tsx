@@ -2,7 +2,7 @@
  * The setup wizard (administrators): welcome, name and icon, plugins known to
  * conflict, who new people are, sample pages, workspace mode. It opens on an
  * administrator's first visit; closing or skipping it marks setup as done, and
- * Workspace settings can run it again. Choices save at the end, through core's
+ * Settings can run it again. Choices save at the end, through core's
  * `wp/v2/settings`, and the screen reloads to apply them.
  */
 import apiFetch from '@wordpress/api-fetch';
@@ -170,7 +170,7 @@ export function SetupWizard( { onClose }: { onClose: () => void } ) {
 							__nextHasNoMarginBottom
 							label={ __( 'Workspace mode', 'tinta' ) }
 							help={ __(
-								'Everyone lands in the workspace after logging in, the site is private, and Members and Viewers only see the workspace and their profile. You can turn it off later in Workspace settings.',
+								'Everyone lands in the workspace after logging in, the site is private, and Members and Viewers only see the workspace and their profile. You can turn it off later in Settings.',
 								'tinta'
 							) }
 							checked={ choices.workspaceMode }
@@ -249,7 +249,7 @@ function Welcome() {
 			</p>
 			<p>
 				{ __(
-					'Setup takes a minute: name the workspace, choose who new people are, and add sample pages if you like. Everything can be changed later in Workspace settings.',
+					'Setup takes a minute: name the workspace, choose who new people are, and add sample pages if you like. Everything can be changed later in Settings.',
 					'tinta'
 				) }
 			</p>

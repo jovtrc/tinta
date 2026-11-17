@@ -121,10 +121,7 @@ export async function createSamplePages(): Promise< number > {
 						'tinta'
 					),
 					__( 'Pick an emoji for it above the title.', 'tinta' ),
-					__(
-						'Invite your team from Workspace settings → Invite people.',
-						'tinta'
-					),
+					__( 'Invite your team from Settings.', 'tinta' ),
 				],
 				true
 			),

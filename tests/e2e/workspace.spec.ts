@@ -1026,7 +1026,7 @@ test.describe( 'Settings', () => {
 		await expect( page.locator( '#adminmenuwrap' ) ).toBeVisible();
 
 		await page
-			.getByRole( 'button', { name: 'Workspace settings' } )
+			.getByRole( 'button', { name: 'Settings', exact: true } )
 			.click();
 		await page.getByRole( 'checkbox', { name: 'Workspace mode' } ).check();
 		await page.getByRole( 'button', { name: 'Save', exact: true } ).click();

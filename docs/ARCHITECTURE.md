@@ -192,6 +192,7 @@ Nesting: `rest_pre_insert_tinta_doc` refuses a parent that isn't a page or sits 
 - `src/app/commands.tsx` — ⌘K commands. In workspace mode it unregisters every command and command loader not named `tinta/…`, including ones registered later (the editor's), since they lead to screens and panels workspace mode hides.
 - `src/app/logo.tsx` — Tinta's mark (a nib drawn as a T), in the setup wizard. The admin menu icon is the same mark as an SVG data URI (`Workspace\Screen::MENU_ICON`), which core paints in each color scheme.
 - `src/app/dialogs.tsx` — renders the open dialog (rename, move, move to trash, trash, settings, setup), whichever menu or command opened it.
+- `src/app/settings/` — Settings: core's `Modal` (large) with core's `TabPanel`, tabs on the side (on top on small screens), one file per tab. Administrators get General (`general-tab.tsx`: workspace name, workspace mode, new people's role, versions kept, saved through `wp/v2/settings`).
 - `src/admin-colors/` — Tinta Light: `tinta-light.scss` configures core's admin color partials (`core/`, copied unchanged from WordPress 7.1 and left out of linting) and sets the `--wp-admin-theme-color` variables core's `admin-schemes.css` sets for its own schemes.
 - `src/app/setup/` — the setup wizard and its sample pages (built with `createBlock` + `serialize`, so the markup is what the editor saves).
 - `src/app/sidebar/page-menu.tsx` — the page menu, shared by the "⋯" on tree, Pinned and Recent rows, the page header's "⋯" and right click. It knows which list it opened from, for Move up and Move down (`use-order-moves.ts`).
@@ -221,7 +222,7 @@ Nesting: `rest_pre_insert_tinta_doc` refuses a parent that isn't a page or sits 
 - **PHP:** WordPress's own test suite (`WP_UnitTestCase`) with PHPUnit 9.6 + `yoast/phpunit-polyfills` — the setup core and most plugins use (core's suite doesn't run on newer PHPUnit). Runs in a separate wp-env (`.wp-env.test.json`, port 8889), because the suite wipes its database; single site and multisite (`WP_MULTISITE=1`). Strict config: fail on warnings, risky tests and deprecations.
 - **JS unit:** none yet; Vitest (wp-scripts' default) when some logic needs it.
 - **E2E:** Playwright via `wp-scripts test-playwright` against WordPress Playground (`@wp-playground/cli`), started from a blueprint: no Docker, a fresh site per run. Three projects: Chromium, Firefox and WebKit (Safari's engine); CI runs each as its own job. Shared helpers live in `tests/e2e/utils.ts`.
-- **Accessibility:** `tests/e2e/accessibility.spec.ts` runs axe-core (`@axe-core/playwright`, WCAG 2.2 A and AA) on Tinta's own UI (the workspace, page menu, dialogs, Notes panel, setup wizard, read-only view and mobile drawer) and fails on serious and critical problems. Core's editable block text is left out: its markup is WordPress's own.
+- **Accessibility:** `tests/e2e/accessibility.spec.ts` runs axe-core (`@axe-core/playwright`, WCAG 2.2 A and AA) on Tinta's own UI (the workspace, page menu, dialogs, Notes panel, setup wizard, read-only view and mobile drawer) and fails on serious and critical problems. Core's own markup in the editor canvas (editable block text, the block appender) is left out: it's WordPress's.
 
 ### Build
 - pnpm (one package, no turbo). `pnpm-workspace.yaml` holds pnpm 11's build-script approvals.

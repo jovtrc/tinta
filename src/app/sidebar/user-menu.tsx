@@ -90,7 +90,7 @@ export function UserMenu() {
 			{ config.canManage && (
 				<Button
 					icon={ cog }
-					label={ __( 'Workspace settings', 'tinta' ) }
+					label={ __( 'Settings', 'tinta' ) }
 					onClick={ () => openDialog( 'settings' ) }
 				/>
 			) }

@@ -21,13 +21,14 @@ const POPOVER = '.components-popover';
 const DRAWER = '.tinta-drawer';
 
 /**
- * Core's editable block text (`role="document"` with `aria-multiline`) is
- * WordPress's own markup, in every block editor; it's left out.
+ * Core's own editor markup in the canvas (editable block text with
+ * `aria-multiline`, the "Type / for commands" appender) is WordPress's, in
+ * every block editor; it's left out.
  */
-const CORE_RICH_TEXT = [
-	'iframe[name="editor-canvas"]',
+const CORE_CANVAS = [
 	'.block-editor-rich-text__editable',
-];
+	'.block-editor-default-block-appender',
+].map( ( selector ) => [ 'iframe[name="editor-canvas"]', selector ] );
 
 /**
  * Checks the given parts of the screen and fails on serious or critical problems.
@@ -36,9 +37,16 @@ const CORE_RICH_TEXT = [
  * @param include Selectors of the parts to check.
  */
 async function expectAccessible( page: Page, include: string[] ) {
-	let builder = new AxeBuilder( { page } )
-		.withTags( [ 'wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa' ] )
-		.exclude( CORE_RICH_TEXT );
+	let builder = new AxeBuilder( { page } ).withTags( [
+		'wcag2a',
+		'wcag2aa',
+		'wcag21a',
+		'wcag21aa',
+		'wcag22aa',
+	] );
+	for ( const selector of CORE_CANVAS ) {
+		builder = builder.exclude( selector );
+	}
 	for ( const selector of include ) {
 		builder = builder.include( selector );
 	}
@@ -104,7 +112,9 @@ test.describe( 'Accessibility', () => {
 				.click();
 
 		await openMenu();
-		await expect( page.locator( POPOVER ).getByRole( 'menu' ) ).toBeVisible();
+		await expect(
+			page.locator( POPOVER ).getByRole( 'menu' )
+		).toBeVisible();
 		await expectAccessible( page, [ POPOVER ] );
 
 		await page.getByRole( 'menuitem', { name: 'Move to…' } ).click();
@@ -127,7 +137,7 @@ test.describe( 'Accessibility', () => {
 		await admin.visitAdminPage( 'admin.php', 'page=tinta' );
 
 		await page
-			.getByRole( 'button', { name: 'Workspace settings' } )
+			.getByRole( 'button', { name: 'Settings', exact: true } )
 			.click();
 		await expect(
 			page.getByRole( 'textbox', { name: 'Workspace name' } )
