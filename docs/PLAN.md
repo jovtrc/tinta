@@ -49,14 +49,14 @@
   - Everyone lands in the workspace after logging in.
   - The WordPress admin menu and toolbar are hidden on workspace screens.
   - Members and Viewers can't open other wp-admin screens (enforced server-side), except their profile.
-  - Admins reach the rest of wp-admin through "Admin tools" in the user menu.
+  - Admins reach the rest of wp-admin through "WP Admin" in the user menu.
   - The site is private: logged-out visitors are sent to the login screen (from 0.4, shared pages are the exception); the REST API requires login; feeds, sitemaps, oEmbed and author archives are off.
 - **Off**: Tinta adds a "Workspace" menu item. The workspace works; the rest of WordPress is untouched.
 - Comments are **not** disabled — Notes are built on them.
 
 ### 4.3 Sidebar & page tree
 Sections, top to bottom:
-1. Workspace header: core Site Icon + Site Title; menu with Settings and Admin tools.
+1. Workspace header: core Site Icon + Site Title; menu with Settings and WP Admin.
 2. Search — opens the command palette (⌘K / Ctrl+K).
 3. New page.
 4. Pinned — per user, drag to reorder (or Move up / Move down in a pin's menu).
@@ -64,7 +64,7 @@ Sections, top to bottom:
 6. Pages — the full tree.
 7. Trash.
 8. Settings (admins only).
-9. User menu: profile & color scheme, Admin tools (admins), log out.
+9. User menu: profile & color scheme, WP Admin (admins), log out.
 
 Tree behaviour:
 - The whole tree skeleton (id, parent, order, title, icon) arrives in one cached request — no lazy loading.

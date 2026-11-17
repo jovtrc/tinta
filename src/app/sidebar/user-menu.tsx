@@ -1,5 +1,5 @@
 /**
- * The sidebar's footer: the signed-in person's menu (profile, admin tools for
+ * The sidebar's footer: the signed-in person's menu (profile, WP Admin for
  * administrators, log out) and, for administrators, workspace settings.
  */
 import {
@@ -67,7 +67,7 @@ export function UserMenu() {
 								}
 								icon={ external }
 							>
-								{ __( 'Admin tools', 'tinta' ) }
+								{ __( 'WP Admin', 'tinta' ) }
 							</MenuItem>
 						) }
 						<MenuItem

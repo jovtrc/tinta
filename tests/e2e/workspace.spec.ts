@@ -1038,7 +1038,7 @@ test.describe( 'Settings', () => {
 		await expect( page.locator( '#adminmenuwrap' ) ).toBeHidden();
 		await page.getByRole( 'button', { name: 'Your account' } ).click();
 		await expect(
-			page.getByRole( 'menuitem', { name: 'Admin tools' } )
+			page.getByRole( 'menuitem', { name: 'WP Admin' } )
 		).toBeVisible();
 	} );
 
