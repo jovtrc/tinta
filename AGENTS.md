@@ -26,7 +26,8 @@ pnpm screenshots                             # retakes .wordpress-org/screenshot
 ## Rules
 
 - **Scope.** Do what the issue asks. Features follow the milestones; don't add others.
-- **WordPress APIs.** Public APIs only: no private or `__experimental` ones. Prefer core's data and UI over custom code.
+- **Native WordPress first.** Use what WordPress already has (core data and REST routes, `@wordpress/components`, core screens, emails, settings and roles) and build something new only when WordPress can't do it; say why in the change. Public APIs only: no private or `__experimental` ones.
+- **Tinta's look.** New UI uses `@wordpress/components`, the admin color scheme and Tinta's existing styles, so it looks like the rest of the workspace. Reference designs guide structure only, never colors or styling. Don't embed WordPress screens in iframes; build the UI from components and core's data.
 - **Standards.** WordPress coding standards with WordPress VIP's (`phpcs.xml.dist`) and PHPStan level 6; errors and warnings both fail. An exception is a `phpcs:ignore` on that line with the reason. The pre-commit hook runs PHPCS on staged files.
 - **Style.** Small functions and classes with clear names, simple over clever. A short header docblock on each class and method; no comments inside methods unless the logic needs one.
 - **Privacy.** Every page is `private`, and reading one takes a Tinta role. Per-user data is a user option (per site), never plain user meta. [ARCHITECTURE.md](docs/ARCHITECTURE.md) §1 and §3 list the rules.

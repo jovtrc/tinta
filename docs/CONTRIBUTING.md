@@ -42,6 +42,8 @@ The PHP tests run on their own wp-env site (port 8889), because WordPress's test
 
 ## Code
 
+- **Native WordPress first.** Tinta uses what WordPress already has (core data and REST routes, `@wordpress/components`, core screens, emails, settings and roles) and builds something new only when WordPress can't do it. Explain in the pull request why anything custom was needed.
+- **Tinta's look:** new UI uses `@wordpress/components`, the admin color scheme and Tinta's existing styles, so it matches the rest of the workspace. No WordPress screens embedded in iframes.
 - **PHP** follows the WordPress coding standards, including WordPress VIP's (`phpcs.xml.dist`), and PHPStan level 6. Errors and warnings both fail. An exception is a `phpcs:ignore` on that line, with the reason.
 - **Front end** is TypeScript, built with `@wordpress/scripts`, on public WordPress APIs only: no private or `__experimental` APIs.
 - **Style:** small functions and classes with clear names, simple over clever. Each class and method gets a short header docblock; no comments inside methods unless the logic needs one.
