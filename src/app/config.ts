@@ -8,6 +8,9 @@ export interface WorkspaceConfig {
 	siteIcon: string;
 	canCreate: boolean;
 	canManage: boolean;
+	canInvite: boolean;
+	multisite: boolean;
+	workspaceRoles: string[];
 	workspaceMode: boolean;
 	roles: Record< string, string >;
 	setup: {
@@ -21,7 +24,7 @@ export interface WorkspaceConfig {
 	colorSchemes: Array< { id: string; name: string; colors: string[] } >;
 	links: {
 		admin: string;
-		invite: string;
+		users: string;
 		plugins: string;
 		logout: string;
 	};

@@ -389,9 +389,12 @@ function PeopleStep( { choices, onChange }: StepProps ) {
 					<RegistrationNotice role={ defaultRole } />
 				</>
 			) }
-			<ExternalLink href={ config.links.invite }>
-				{ __( 'Invite people', 'tinta' ) }
-			</ExternalLink>
+			<p className="tinta-dialog__note">
+				{ __(
+					'After setup, invite people from Settings → People.',
+					'tinta'
+				) }
+			</p>
 		</>
 	);
 }

@@ -16,7 +16,6 @@ import { useDispatch } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-import { config } from '../config';
 import { RegistrationNotice } from '../registration-notice';
 import { roleOptions } from '../roles';
 import { store as uiStore } from '../store/ui';
@@ -106,17 +105,10 @@ export function GeneralTab( { onClose }: { onClose: () => void } ) {
 						onChange={ ( defaultRole ) =>
 							change( { default_role: defaultRole } )
 						}
-						help={
-							<>
-								{ __(
-									'The role people get when they join.',
-									'tinta'
-								) }{ ' ' }
-								<a href={ config.links.invite }>
-									{ __( 'Invite people', 'tinta' ) }
-								</a>
-							</>
-						}
+						help={ __(
+							'The role people get when they join.',
+							'tinta'
+						) }
 					/>
 					<RegistrationNotice role={ settings.default_role } />
 				</>

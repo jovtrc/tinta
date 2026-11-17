@@ -9,9 +9,10 @@ import { __ } from '@wordpress/i18n';
 
 import { config } from '../config';
 import { GeneralTab } from './general-tab';
+import { PeopleTab } from './people-tab';
 import { ProfileTab } from './profile-tab';
 
-export type SettingsTabName = 'general' | 'profile';
+export type SettingsTabName = 'general' | 'people' | 'profile';
 
 interface SettingsDialogProps {
 	initialTab?: SettingsTabName;
@@ -28,7 +29,11 @@ function tabs(): { name: SettingsTabName; title: string }[] {
 	};
 
 	return config.canManage
-		? [ { name: 'general', title: __( 'General', 'tinta' ) }, profile ]
+		? [
+				{ name: 'general', title: __( 'General', 'tinta' ) },
+				{ name: 'people', title: __( 'People', 'tinta' ) },
+				profile,
+			]
 		: [ profile ];
 }
 
@@ -87,6 +92,8 @@ function SettingsTab( {
 	switch ( name ) {
 		case 'general':
 			return <GeneralTab onClose={ onClose } />;
+		case 'people':
+			return <PeopleTab />;
 		case 'profile':
 			return <ProfileTab onClose={ onClose } />;
 	}

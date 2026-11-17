@@ -144,6 +144,13 @@ test.describe( 'Accessibility', () => {
 		).toBeVisible();
 		await expectAccessible( page, [ MODAL ] );
 
+		await page.getByRole( 'tab', { name: 'People' } ).click();
+		await expect(
+			page.getByRole( 'button', { name: 'Send invite' } )
+		).toBeVisible();
+		await expect( page.getByRole( 'listitem' ).first() ).toBeVisible();
+		await expectAccessible( page, [ MODAL ] );
+
 		await page.getByRole( 'tab', { name: 'Profile' } ).click();
 		await expect(
 			page.getByRole( 'textbox', { name: 'Name' } )

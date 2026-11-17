@@ -400,6 +400,50 @@ body.tinta-workspace-mode.tinta-workspace-screen {
 	}
 }
 
+.tinta-invite {
+	display: grid;
+	grid-template-columns: 1fr 1fr auto auto;
+	gap: 8px;
+	align-items: end;
+
+	@media (max-width: 781px) {
+		grid-template-columns: 1fr;
+	}
+}
+
+.tinta-people {
+	margin: 8px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.tinta-person {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	margin: 0;
+	padding: 8px 0;
+	border-top: 1px solid #f0f0f0;
+
+	img {
+		border-radius: 50%;
+	}
+}
+
+.tinta-person__name {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.tinta-person__email,
+.tinta-person__role {
+	color: #757575;
+	font-size: 12px;
+}
+
 .tinta-settings__error {
 	color: #cc1818;
 }

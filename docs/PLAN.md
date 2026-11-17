@@ -114,8 +114,10 @@ General (admins):
 - Workspace mode on/off.
 - Name and icon — core Site Title and Site Icon, edited in place.
 - Revisions to keep (default 10).
-- Default role for new users (Member or Viewer), plus a link to core Users → Add New for invites.
+- Default role for new users (Member or Viewer).
 - No accent-color setting: colors come from each user's admin color scheme (§4.11).
+
+People (admins): who's in the workspace, and invites by name, email and role (Member or Viewer) with core's new-user email, or core's signup and activation email on multisite. Changing roles and removing people stay in WP Admin → Users.
 
 Profile (everyone, from "Your profile" or the gear): name, email, password (core's strength meter) and admin color scheme, through core's `wp/v2/users/me`. A new email waits for core's confirmation email, as on the profile screen.
 

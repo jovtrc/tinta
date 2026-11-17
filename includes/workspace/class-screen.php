@@ -263,34 +263,37 @@ final class Screen {
 	 */
 	private function app_data( ?WP_Post $page, WP_Block_Editor_Context $context ): array {
 		return array(
-			'pageId'        => $page ? $page->ID : 0,
-			'url'           => self::url(),
-			'siteName'      => get_bloginfo( 'name' ),
-			'siteIcon'      => get_site_icon_url( 64 ),
-			'canCreate'     => current_user_can( 'edit_tinta_docs' ),
-			'canManage'     => current_user_can( 'tinta_manage' ),
-			'workspaceMode' => Settings::is_workspace_mode(),
-			'roles'         => current_user_can( 'tinta_manage' ) ? array_map( 'translate_user_role', wp_roles()->get_names() ) : array(),
-			'setup'         => current_user_can( 'tinta_manage' ) ? array(
+			'pageId'         => $page ? $page->ID : 0,
+			'url'            => self::url(),
+			'siteName'       => get_bloginfo( 'name' ),
+			'siteIcon'       => get_site_icon_url( 64 ),
+			'canCreate'      => current_user_can( 'edit_tinta_docs' ),
+			'canManage'      => current_user_can( 'tinta_manage' ),
+			'canInvite'      => current_user_can( 'tinta_manage' ) && current_user_can( 'create_users' ),
+			'multisite'      => is_multisite(),
+			'workspaceRoles' => self::workspace_roles(),
+			'workspaceMode'  => Settings::is_workspace_mode(),
+			'roles'          => current_user_can( 'tinta_manage' ) ? array_map( 'translate_user_role', wp_roles()->get_names() ) : array(),
+			'setup'          => current_user_can( 'tinta_manage' ) ? array(
 				'done'             => Settings::get()['setup_done'],
 				'conflicts'        => Conflicts::active(),
 				'openRegistration' => Settings::is_registration_open(),
 				'registrationUrl'  => is_multisite() ? network_admin_url( 'settings.php' ) : admin_url( 'options-general.php' ),
 			) : null,
-			'userId'        => get_current_user_id(),
-			'user'          => array(
+			'userId'         => get_current_user_id(),
+			'user'           => array(
 				'name'   => wp_get_current_user()->display_name,
 				'role'   => self::role_name(),
 				'avatar' => get_avatar_url( get_current_user_id(), array( 'size' => 48 ) ),
 			),
-			'colorSchemes'  => self::color_schemes(),
-			'links'         => array(
+			'colorSchemes'   => self::color_schemes(),
+			'links'          => array(
 				'admin'   => admin_url(),
-				'invite'  => admin_url( 'user-new.php' ),
+				'users'   => admin_url( 'users.php' ),
 				'plugins' => admin_url( 'plugins.php' ),
 				'logout'  => wp_logout_url(),
 			),
-			'settings'      => get_block_editor_settings(
+			'settings'       => get_block_editor_settings(
 				array(
 					'titlePlaceholder' => __( 'Untitled', 'tinta' ),
 					'bodyPlaceholder'  => __( 'Type / for commands', 'tinta' ),
@@ -298,6 +301,20 @@ final class Screen {
 				),
 				$context
 			),
+		);
+	}
+
+	/**
+	 * Roles on this site that can read pages: the people in the workspace.
+	 *
+	 * @return string[]
+	 */
+	private static function workspace_roles(): array {
+		return array_keys(
+			array_filter(
+				wp_roles()->roles,
+				static fn( array $role ): bool => ! empty( $role['capabilities']['read_private_tinta_docs'] )
+			)
 		);
 	}
 

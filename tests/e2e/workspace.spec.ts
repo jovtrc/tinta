@@ -1038,6 +1038,39 @@ test.describe( 'Settings', () => {
 		).toBeVisible();
 	} );
 
+	test( 'invites people from Settings', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		await requestUtils.deleteAllUsers();
+		await deleteAllPages( requestUtils );
+		await admin.visitAdminPage( 'admin.php', 'page=tinta' );
+		const dialog = page.getByRole( 'dialog', { name: 'Settings' } );
+
+		await page
+			.getByRole( 'button', { name: 'Settings', exact: true } )
+			.click();
+		await dialog.getByRole( 'tab', { name: 'People' } ).click();
+		await dialog
+			.getByRole( 'textbox', { name: 'Name' } )
+			.fill( 'Maria Souza' );
+		await dialog
+			.getByRole( 'textbox', { name: 'Email' } )
+			.fill( 'maria@example.com' );
+		await dialog
+			.getByRole( 'combobox', { name: 'Role' } )
+			.selectOption( 'tinta_viewer' );
+		await dialog.getByRole( 'button', { name: 'Send invite' } ).click();
+
+		await expect( dialog.getByRole( 'status' ) ).toContainText(
+			'Invite sent. Maria Souza gets an email'
+		);
+		await expect(
+			dialog.getByRole( 'listitem' ).filter( { hasText: 'Maria Souza' } )
+		).toContainText( 'Viewer' );
+	} );
+
 	test( 'edits your profile from Settings', async ( {
 		browser,
 		requestUtils,
