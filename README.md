@@ -35,31 +35,13 @@ Every page is private: only people with a Tinta role (and administrators) can re
 
 ## Development
 
-You need Node 24 with pnpm, PHP 8.2 with Composer, and Docker for [wp-env](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/).
+You need Node 24 with pnpm, PHP 8.2 with Composer, and Docker for the PHP tests. [CONTRIBUTING.md](docs/CONTRIBUTING.md) covers setup, checks and pull requests; AI coding agents read [AGENTS.md](AGENTS.md).
 
-```sh
-composer install
-pnpm install
-pnpm build              # or `pnpm start` to rebuild as you edit
-pnpm wp-env start       # a dev site at http://localhost:8888 with Tinta active
-```
-
-Checks (CI runs all of them):
-
-```sh
-composer run phpcs && composer run phpstan
-pnpm typecheck && pnpm lint:js && pnpm lint:css
-pnpm wp-env:test start && pnpm test:php && pnpm test:php:multisite
-pnpm test:e2e           # Playwright on WordPress Playground; --project=firefox or webkit for one browser
-```
-
-`pnpm screenshots` fills a sample workspace on Playground and retakes the wordpress.org screenshots in `.wordpress-org/`, which also holds the icon, banners and the Live Preview blueprint.
-
-[PLAN.md](PLAN.md) describes what Tinta does and why, [ARCHITECTURE.md](ARCHITECTURE.md) how it's built (including how releases are made), and [ROADMAP.md](ROADMAP.md) what comes next.
+[PLAN.md](docs/PLAN.md) describes what Tinta does and why, [ARCHITECTURE.md](docs/ARCHITECTURE.md) how it's built (including how releases are made), and the [milestones](https://github.com/jovtrc/tinta/milestones) what comes next.
 
 ## Contributing
 
-Bug reports and pull requests are welcome in [issues](https://github.com/jovtrc/tinta/issues). Please run the checks above before opening a pull request.
+Bug reports, fixes and translations are welcome: see [CONTRIBUTING.md](docs/CONTRIBUTING.md). Report security problems privately, as [SECURITY.md](docs/SECURITY.md) explains.
 
 ## License
 

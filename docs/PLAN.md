@@ -176,9 +176,16 @@ Push back if these creep in:
 - Browser extension, native apps, webhooks, Zapier.
 - More than one workspace per site.
 
+Deliberately delayed, past the MVP too:
+- Real-time co-editing until core ships it.
+- Tinta Dark, until the editor's own UI can follow a dark scheme.
+- Core's private editor UI (visual revisions, Notes, List View): switch to it only if core makes it public.
+- Building on the new admin framework (`@wordpress/boot`, `@wordpress/route`) until it's stable.
+- Native mobile apps (PWA first); full offline editing.
+
 ## 6. Open questions
 
-- **GitHub repo.** Local git for now; a GitHub repo is needed before the first public release (PRs, CI, and the source link wp.org asks for).
+None right now. Questions about a feature go on its issue.
 
 ## 7. Decision log
 

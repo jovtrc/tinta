@@ -1,6 +1,6 @@
 # Tinta — Technical Architecture
 
-> Last reviewed 2026-11-03.
+> Last reviewed 2026-11-17.
 
 ## 1. Topology
 
@@ -228,9 +228,9 @@ Nesting: `rest_pre_insert_tinta_doc` refuses a parent that isn't a page or sits 
 - `prettier` is aliased to `wp-prettier` (WordPress formatting); plain Prettier would undo it.
 
 ### CI (GitHub Actions)
-- PHP 8.2 and 8.5 × WP 7.1, latest and trunk (trunk may fail) × single site and multisite.
+- PHP tests run on PHP 8.2 and the latest WordPress (wp-env), single site and multisite. New WordPress versions are tested on their release candidates before they ship.
 - Jobs: standards and types (phpcs, phpstan, tsc, eslint, stylelint), PHP tests (single site and multisite), e2e (latest WP only), and Plugin Check (`wordpress/plugin-check-action`) on the release build. `release.yml` reuses the whole workflow before publishing, so a failing check stops the release.
-- e2e runs only on releases, every Monday (schedule) and on manual runs, in Chromium, Firefox and WebKit (a manual run can untick `all-browsers` for Chromium alone); pushes and pull requests skip it, since Playground runs are slow. Pushes that change only Markdown, `.wordpress-org/`, `prototype/` or `LICENSE` skip CI.
+- e2e runs only on releases, every Monday (schedule) and on manual runs, in Chromium, Firefox and WebKit (a manual run can untick `all-browsers` for Chromium alone); pushes and pull requests skip it, since Playground runs are slow. Pushes that change only Markdown, `docs/`, `.wordpress-org/` or `LICENSE` skip CI.
 
 ### Release
 - The zip holds only what WordPress runs: `bin/build-zip.sh` copies an explicit list (`tinta.php`, `uninstall.php`, `readme.txt`, `composer.json`, `includes/`, `build/`) and installs Composer's production autoloader beside it. Anything not on the list (tests, sources, docs, tool configs) stays out, so new repo files never leak into a release. `composer.json` stays because Plugin Check asks for it beside `vendor/`.
@@ -243,19 +243,7 @@ Nesting: `rest_pre_insert_tinta_doc` refuses a parent that isn't a page or sits 
 - wp.org holds each release ~6 h for an automated security review.
 
 ### Local development
-```sh
-composer install                  # dev tools + pre-commit hook
-pnpm install
-pnpm build                        # or: pnpm start (watch)
-pnpm wp-env start                 # dev site, http://localhost:8888
-pnpm wp-env:test start            # PHPUnit site, http://localhost:8889
-composer run phpcs                # also: phpcbf, phpstan
-pnpm typecheck && pnpm lint:js && pnpm lint:css
-pnpm test:php                     # and test:php:multisite
-pnpm test:e2e                     # starts Playground on :9400 (pnpm playground); --project=webkit for one browser
-pnpm screenshots                  # retakes .wordpress-org/screenshot-*.png on the same Playground
-```
-`pnpm env` is a built-in pnpm command, hence the `wp-env` script names.
+Setup, commands and checks are in [CONTRIBUTING.md](CONTRIBUTING.md). Two wp-env sites, each started only while needed: the dev site (`.wp-env.json`, port 8888) and the PHPUnit site (`.wp-env.test.json`, port 8889).
 
 ### Git
 - Default branch: `trunk`.
@@ -266,7 +254,9 @@ pnpm screenshots                  # retakes .wordpress-org/screenshot-*.png on t
 
 ```
 tinta/
-├── .github/                     workflows/, the setup action, README logos
+├── .github/                     workflows/, the setup action, issue and PR templates, Dependabot, README logos
+├── AGENTS.md, CLAUDE.md         Instructions for AI coding agents (CLAUDE.md loads AGENTS.md)
+├── docs/                        PLAN, ARCHITECTURE, ROADMAP, CONTRIBUTING, SECURITY; prototype/workspace.html (static layout prototype)
 ├── .wordpress-org/              Plugin page assets: icon, banners, screenshots, Live Preview blueprint
 ├── tinta.php                    Plugin header, Composer autoload, bootstrap
 ├── uninstall.php
@@ -288,9 +278,7 @@ tinta/
 │   ├── php/                     WP test suite, PHPUnit 9.6
 │   ├── e2e/                     Playwright on Playground (the repo mounted as plugins/tinta; blueprint.json activates it)
 │   └── screenshots/             Sample workspace and the wordpress.org screenshots (pnpm screenshots)
-├── prototype/workspace.html     Static layout prototype
-├── build/                       Generated, gitignored
-└── PLAN.md, ARCHITECTURE.md, ROADMAP.md
+└── build/                       Generated, gitignored
 ```
 
 ## 9. Risk register
@@ -300,7 +288,7 @@ tinta/
 | Pages leak to logged-out users or non-members | Low | High | Every page `private` (§3) + REST login requirement; tests for every role and logged-out |
 | Sharing exposes a page someone meant to keep private (0.4) | Med | High | Warn before moving a page into a shared section; globe markers; admin switch; private page links render without titles |
 | Uploaded files have public URLs | High | Med | Said plainly in the readme |
-| Editor host breaks on a WP update | Med | High | Public editor components only; CI against WP trunk |
+| Editor host breaks on a WP update | Med | High | Public editor components only; tests on each release candidate |
 | Core keeps editor features private (Notes UI, visual revisions, List View) | High | Med | Tinta's UI on core's data; switch to core's UI if `Editor` becomes public (`@wordpress/lazy-editor` hints at it) |
 | Notes stop working (another plugin disables comments or removes the route) | Med | Med | Never disable comments; such plugins go on the conflict list |
 | Tinta's notes drift from core's note format | Low | Med | Same storage as core (`note` comments, `metadata.noteId`, status and `_wp_note_status`); PHP and e2e tests on the data |

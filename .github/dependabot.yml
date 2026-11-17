@@ -1,0 +1,14 @@
+# GitHub Actions updates, once a month, in one pull request.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directories:
+      - /
+      - /.github/actions/setup
+    schedule:
+      interval: monthly
+    groups:
+      github-actions:
+        patterns: [ '*' ]
+    commit-message:
+      prefix: ci
