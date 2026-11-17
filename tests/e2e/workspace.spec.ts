@@ -1038,6 +1038,71 @@ test.describe( 'Settings', () => {
 		).toBeVisible();
 	} );
 
+	test( 'edits your profile from Settings', async ( {
+		browser,
+		requestUtils,
+	} ) => {
+		await requestUtils.deleteAllUsers();
+		await deleteAllPages( requestUtils );
+		await requestUtils.createUser( {
+			username: 'maria',
+			email: 'maria@example.com',
+			firstName: 'Maria',
+			lastName: 'Souza',
+			password: TEST_PASSWORD,
+			roles: [ 'tinta_member' ],
+		} );
+		const context = await browser.newContext( {
+			baseURL: requestUtils.baseURL,
+		} );
+		await context.request.post( '/wp-login.php', {
+			failOnStatusCode: true,
+			form: { log: 'maria', pwd: TEST_PASSWORD },
+		} );
+		const page = await context.newPage();
+		await page.goto( '/wp-admin/admin.php?page=tinta' );
+		const dialog = page.getByRole( 'dialog', { name: 'Settings' } );
+
+		await page.getByRole( 'button', { name: 'Your account' } ).click();
+		await page.getByRole( 'menuitem', { name: 'Your profile' } ).click();
+		await expect(
+			dialog.getByRole( 'tab', { name: 'General' } )
+		).toHaveCount( 0 );
+		await dialog
+			.getByRole( 'textbox', { name: 'Name' } )
+			.fill( 'Maria S.' );
+		await dialog.getByRole( 'radio', { name: 'Midnight' } ).check();
+		await dialog
+			.getByRole( 'button', { name: 'Save', exact: true } )
+			.click();
+
+		await expect(
+			page.getByRole( 'button', { name: 'Maria S.' } )
+		).toBeVisible();
+		await expect( page.locator( 'body' ) ).toHaveClass(
+			/admin-color-midnight/
+		);
+
+		await page
+			.getByRole( 'button', { name: 'Settings', exact: true } )
+			.click();
+		await dialog
+			.getByRole( 'textbox', { name: 'Email' } )
+			.fill( 'maria.souza@example.com' );
+		await dialog.getByRole( 'button', { name: 'Change email' } ).click();
+		await expect(
+			dialog.getByText(
+				'Waiting for you to confirm maria.souza@example.com'
+			)
+		).toBeVisible();
+		await dialog.getByRole( 'button', { name: 'Cancel change' } ).click();
+		await expect(
+			dialog.getByText( 'Waiting for you to confirm' )
+		).toHaveCount( 0 );
+
+		await context.close();
+	} );
+
 	test( 'keeps only Tinta’s commands in workspace mode', async ( {
 		admin,
 		page,

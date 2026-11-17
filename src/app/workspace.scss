@@ -334,6 +334,72 @@ body.tinta-workspace-mode.tinta-workspace-screen {
 	margin: 0;
 }
 
+.tinta-settings__row {
+	display: flex;
+	gap: 8px;
+	align-items: flex-start;
+
+	> .components-base-control {
+		flex: 1;
+		min-width: 0;
+	}
+
+	> .components-button {
+		margin-top: 24px;
+	}
+}
+
+.tinta-color-schemes {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+	gap: 8px;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+
+	legend {
+		margin-bottom: 8px;
+		padding: 0;
+	}
+}
+
+.tinta-color-scheme {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 8px;
+	border: 1px solid #dcdcde;
+	border-radius: 2px;
+	cursor: pointer;
+
+	&.is-selected {
+		border-color: var(--wp-admin-theme-color);
+		box-shadow: 0 0 0 1px var(--wp-admin-theme-color);
+	}
+}
+
+.tinta-color-scheme__name {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+
+	input {
+		margin: 0;
+	}
+}
+
+.tinta-color-scheme__colors {
+	display: flex;
+	height: 16px;
+	overflow: hidden;
+	border-radius: 2px;
+
+	> span {
+		flex: 1;
+	}
+}
+
 .tinta-settings__error {
 	color: #cc1818;
 }

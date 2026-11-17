@@ -117,9 +117,8 @@ export function WorkspaceCommands( {
 	useCommand( {
 		name: 'tinta/settings',
 		label: __( 'Settings', 'tinta' ),
-		keywords: [ __( 'workspace', 'tinta' ) ],
+		keywords: [ __( 'workspace', 'tinta' ), __( 'profile', 'tinta' ) ],
 		icon: cog,
-		disabled: ! config.canManage,
 		callback: ( { close } ) => {
 			close();
 			openDialog( 'settings' );

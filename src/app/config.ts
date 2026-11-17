@@ -18,8 +18,8 @@ export interface WorkspaceConfig {
 	} | null;
 	userId: number;
 	user: { name: string; role: string; avatar: string };
+	colorSchemes: Array< { id: string; name: string; colors: string[] } >;
 	links: {
-		profile: string;
 		admin: string;
 		invite: string;
 		plugins: string;

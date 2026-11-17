@@ -143,6 +143,12 @@ test.describe( 'Accessibility', () => {
 			page.getByRole( 'textbox', { name: 'Workspace name' } )
 		).toBeVisible();
 		await expectAccessible( page, [ MODAL ] );
+
+		await page.getByRole( 'tab', { name: 'Profile' } ).click();
+		await expect(
+			page.getByRole( 'textbox', { name: 'Name' } )
+		).toBeVisible();
+		await expectAccessible( page, [ MODAL ] );
 		await page.keyboard.press( 'Escape' );
 
 		await page.getByRole( 'button', { name: 'Trash' } ).click();

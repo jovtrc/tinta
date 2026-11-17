@@ -1,6 +1,6 @@
 /**
  * The sidebar's footer: the signed-in person's menu (profile, WP Admin for
- * administrators, log out) and, for administrators, workspace settings.
+ * administrators, log out) and Settings.
  */
 import {
 	Button,
@@ -60,11 +60,7 @@ export function UserMenu() {
 			>
 				{ () => (
 					<MenuGroup>
-						<MenuItem
-							onClick={ () =>
-								window.location.assign( config.links.profile )
-							}
-						>
+						<MenuItem onClick={ () => openDialog( 'profile' ) }>
 							{ __( 'Your profile', 'tinta' ) }
 						</MenuItem>
 						{ config.canManage && (
@@ -87,13 +83,11 @@ export function UserMenu() {
 					</MenuGroup>
 				) }
 			</DropdownMenu>
-			{ config.canManage && (
-				<Button
-					icon={ cog }
-					label={ __( 'Settings', 'tinta' ) }
-					onClick={ () => openDialog( 'settings' ) }
-				/>
-			) }
+			<Button
+				icon={ cog }
+				label={ __( 'Settings', 'tinta' ) }
+				onClick={ () => openDialog( 'settings' ) }
+			/>
 		</div>
 	);
 }

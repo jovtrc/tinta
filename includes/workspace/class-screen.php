@@ -113,7 +113,7 @@ final class Screen {
 
 		$asset = require plugin_dir_path( TINTA_FILE ) . 'build/workspace.asset.php';
 
-		wp_enqueue_script( self::HANDLE, plugins_url( 'build/workspace.js', TINTA_FILE ), $asset['dependencies'], $asset['version'], true );
+		wp_enqueue_script( self::HANDLE, plugins_url( 'build/workspace.js', TINTA_FILE ), array_merge( $asset['dependencies'], array( 'password-strength-meter' ) ), $asset['version'], true );
 		wp_enqueue_style( self::HANDLE, plugins_url( 'build/workspace.css', TINTA_FILE ), array( 'wp-components', 'wp-block-editor', 'wp-editor', 'wp-format-library', 'wp-commands', 'wp-block-library', 'tinta-page-link-style', 'tinta-callout-style' ), $asset['version'] );
 		wp_style_add_data( self::HANDLE, 'rtl', 'replace' );
 		wp_set_script_translations( self::HANDLE, 'tinta' );
@@ -283,8 +283,8 @@ final class Screen {
 				'role'   => self::role_name(),
 				'avatar' => get_avatar_url( get_current_user_id(), array( 'size' => 48 ) ),
 			),
+			'colorSchemes'  => self::color_schemes(),
 			'links'         => array(
-				'profile' => get_edit_profile_url(),
 				'admin'   => admin_url(),
 				'invite'  => admin_url( 'user-new.php' ),
 				'plugins' => admin_url( 'plugins.php' ),
@@ -299,6 +299,27 @@ final class Screen {
 				$context
 			),
 		);
+	}
+
+	/**
+	 * Core's registered admin color schemes, Tinta Light included: ID, name and
+	 * the colors core's profile screen shows for each.
+	 *
+	 * @return array<int, array{id: string, name: string, colors: string[]}>
+	 */
+	private static function color_schemes(): array {
+		global $_wp_admin_css_colors;
+
+		$schemes = array();
+		foreach ( (array) $_wp_admin_css_colors as $id => $scheme ) {
+			$schemes[] = array(
+				'id'     => (string) $id,
+				'name'   => (string) $scheme->name,
+				'colors' => array_values( (array) $scheme->colors ),
+			);
+		}
+
+		return $schemes;
 	}
 
 	/**

@@ -107,12 +107,17 @@ Core's command palette, extended with Tinta commands: search pages by title (wit
 ### 4.8 Pinned & recent
 Per user and per site (multisite-safe): pinned (ordered), recent (last 10 kept, 5 shown), tree expand state and recently used emojis — stored together in one user option.
 
-### 4.9 Workspace settings (admins)
+### 4.9 Settings
+One dialog with tabs on the side (core's Modal and TabPanel). Administrators see the workspace's tabs; everyone sees Profile.
+
+General (admins):
 - Workspace mode on/off.
 - Name and icon — core Site Title and Site Icon, edited in place.
 - Revisions to keep (default 10).
 - Default role for new users (Member or Viewer), plus a link to core Users → Add New for invites.
 - No accent-color setting: colors come from each user's admin color scheme (§4.11).
+
+Profile (everyone, from "Your profile" or the gear): name, email, password (core's strength meter) and admin color scheme, through core's `wp/v2/users/me`. A new email waits for core's confirmation email, as on the profile screen.
 
 ### 4.10 Roles & permissions
 

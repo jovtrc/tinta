@@ -39,6 +39,10 @@ export function Dialogs( { currentId, onOpen }: DialogsProps ) {
 	switch ( dialog?.name ) {
 		case 'settings':
 			return <SettingsDialog onClose={ closeDialog } />;
+		case 'profile':
+			return (
+				<SettingsDialog initialTab="profile" onClose={ closeDialog } />
+			);
 		case 'setup':
 			return <SetupWizard onClose={ closeDialog } />;
 		case 'trash':

@@ -37,6 +37,7 @@ final class Plugin {
 		( new Rest\Restore_Controller() )->register();
 		( new Rest\Move_Controller( new Docs\Mover( $tree ) ) )->register();
 		( new Rest\User_Prefs_Field() )->register();
+		( new Rest\Profile_Fields() )->register();
 		( new Rest\People_Controller() )->register();
 		( new Workspace\Screen( $tree ) )->register();
 		( new Workspace\Settings() )->register();

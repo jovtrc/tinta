@@ -69,6 +69,7 @@ The workspace is one admin screen, `admin.php?page=tinta&doc=ID`. Tinta's React 
 | `Tinta\Docs\Mover` | `includes/docs/class-mover.php` | Move checks (cycles, depth) and sibling renumbering; only `post_parent`/`menu_order` change |
 | `Tinta\Rest\Lock_Controller` | `includes/rest/class-lock-controller.php` | `POST`/`DELETE tinta/v1/docs/{id}/lock` |
 | `Tinta\Rest\User_Prefs_Field` | `includes/rest/class-user-prefs-field.php` | `tinta_prefs` field on `wp/v2/users/me` |
+| `Tinta\Rest\Profile_Fields` | `includes/rest/class-profile-fields.php` | Core's `admin_color` user meta in REST (edit context), and the `tinta_email_change` field: a new email waits for core's confirmation (`send_confirmation_on_profile_email()`, which reads `$_POST`) |
 | `Tinta\Blocks\Allowlist` | `includes/blocks/class-allowlist.php` | `allowed_block_types_all` for `tinta_doc` |
 | `Tinta\Blocks\Registry` | `includes/blocks/class-registry.php` | Registers blocks from the build manifest |
 | `Tinta\Cache\Cache` | `includes/cache/class-cache.php` | Object cache, or transients as fallback |
@@ -91,6 +92,7 @@ No custom tables.
 | `comments` | `comment_type = note` | Notes (core's data, Tinta's UI) |
 | block attributes | `metadata.noteId` | Links a note thread to a block (core's format) |
 | user option | `tinta_prefs` | `pinned[]`, `recent[10]`, `expanded[]`, `emojis[]` — per user, per site |
+| user meta | `admin_color`, `_new_email` | Core: admin color scheme; email waiting for confirmation (core's profile screen completes the change from the emailed link) |
 | option | `tinta_settings` (autoload) | Workspace mode, revisions kept (setup state later); new users' role is core's `default_role` |
 | option | `tinta_tree_generation` (autoload) | Bumped on every tree change |
 | option | `tinta_version` | Upgrade routines |
@@ -151,6 +153,7 @@ Core only lets users with `read_private_tinta_docs` read a private post — in R
 | `wp/v2/comments?type=note` | Notes and replies |
 | `wp/v2/users` | People list, @mentions |
 | `wp/v2/users/me` + field `tinta_prefs` | Pinned, recent, expanded, emojis |
+| `wp/v2/users/me`: `name`, `password`, `meta.admin_color`, field `tinta_email_change` | Settings → Profile |
 | `wp/v2/settings` | `tinta_settings`, Site Title, Site Icon |
 | `wp/v2/media` | Uploads |
 
@@ -192,7 +195,7 @@ Nesting: `rest_pre_insert_tinta_doc` refuses a parent that isn't a page or sits 
 - `src/app/commands.tsx` — ⌘K commands. In workspace mode it unregisters every command and command loader not named `tinta/…`, including ones registered later (the editor's), since they lead to screens and panels workspace mode hides.
 - `src/app/logo.tsx` — Tinta's mark (a nib drawn as a T), in the setup wizard. The admin menu icon is the same mark as an SVG data URI (`Workspace\Screen::MENU_ICON`), which core paints in each color scheme.
 - `src/app/dialogs.tsx` — renders the open dialog (rename, move, move to trash, trash, settings, setup), whichever menu or command opened it.
-- `src/app/settings/` — Settings: core's `Modal` (large) with core's `TabPanel`, tabs on the side (on top on small screens), one file per tab. Administrators get General (`general-tab.tsx`: workspace name, workspace mode, new people's role, versions kept, saved through `wp/v2/settings`).
+- `src/app/settings/` — Settings: core's `Modal` (large) with core's `TabPanel`, tabs on the side (on top on small screens), one file per tab. Administrators get General (`general-tab.tsx`: workspace name, workspace mode, new people's role, versions kept, saved through `wp/v2/settings`); everyone gets Profile (`profile-tab.tsx`: name, email, password and admin color scheme through `wp/v2/users/me`; core's `password-strength-meter` script and labels; saving reloads, since a new password and color scheme apply on the next load). The account menu's "Your profile" opens Profile; the gear opens Settings for everyone.
 - `src/admin-colors/` — Tinta Light: `tinta-light.scss` configures core's admin color partials (`core/`, copied unchanged from WordPress 7.1 and left out of linting) and sets the `--wp-admin-theme-color` variables core's `admin-schemes.css` sets for its own schemes.
 - `src/app/setup/` — the setup wizard and its sample pages (built with `createBlock` + `serialize`, so the markup is what the editor saves).
 - `src/app/sidebar/page-menu.tsx` — the page menu, shared by the "⋯" on tree, Pinned and Recent rows, the page header's "⋯" and right click. It knows which list it opened from, for Move up and Move down (`use-order-moves.ts`).

@@ -8,7 +8,13 @@ import { createReduxStore, register } from '@wordpress/data';
 import type { PageList } from '../sidebar/use-order-moves';
 
 export type DialogName =
-	'move' | 'move-to-trash' | 'rename' | 'settings' | 'setup' | 'trash';
+	| 'move'
+	| 'move-to-trash'
+	| 'profile'
+	| 'rename'
+	| 'settings'
+	| 'setup'
+	| 'trash';
 
 export interface Dialog {
 	name: DialogName;
