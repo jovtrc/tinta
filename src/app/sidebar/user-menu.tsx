@@ -9,7 +9,7 @@ import {
 	MenuItem,
 } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { cog, external } from '@wordpress/icons';
 
 import { config } from '../config';
@@ -20,12 +20,19 @@ import { store as uiStore } from '../store/ui';
  */
 export function UserMenu() {
 	const { openDialog } = useDispatch( uiStore );
+	const shown = [ config.user.name, config.user.role ]
+		.filter( Boolean )
+		.join( ' ' );
 
 	return (
 		<div className="tinta-sidebar__footer">
 			<DropdownMenu
 				className="tinta-user-menu"
-				label={ __( 'Your account', 'tinta' ) }
+				label={ sprintf(
+					/* translators: %s: the person's name and role, as shown on the button. */
+					__( '%s, your account', 'tinta' ),
+					shown
+				) }
 				icon={
 					<img
 						className="tinta-user-menu__avatar"
@@ -40,7 +47,7 @@ export function UserMenu() {
 						<span className="tinta-user-menu__text">
 							<span className="tinta-user-menu__name">
 								{ config.user.name }
-							</span>
+							</span>{ ' ' }
 							{ config.user.role && (
 								<span className="tinta-user-menu__role">
 									{ config.user.role }

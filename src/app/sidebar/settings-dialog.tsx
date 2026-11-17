@@ -113,9 +113,15 @@ export function SettingsDialog( { onClose }: { onClose: () => void } ) {
 									change( { default_role: defaultRole } )
 								}
 								help={
-									<a href={ config.links.invite }>
-										{ __( 'Invite people', 'tinta' ) }
-									</a>
+									<>
+										{ __(
+											'The role people get when they join.',
+											'tinta'
+										) }{ ' ' }
+										<a href={ config.links.invite }>
+											{ __( 'Invite people', 'tinta' ) }
+										</a>
+									</>
 								}
 							/>
 							<RegistrationNotice

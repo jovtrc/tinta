@@ -220,7 +220,8 @@ Nesting: `rest_pre_insert_tinta_doc` refuses a parent that isn't a page or sits 
 ### Tests
 - **PHP:** WordPress's own test suite (`WP_UnitTestCase`) with PHPUnit 9.6 + `yoast/phpunit-polyfills` — the setup core and most plugins use (core's suite doesn't run on newer PHPUnit). Runs in a separate wp-env (`.wp-env.test.json`, port 8889), because the suite wipes its database; single site and multisite (`WP_MULTISITE=1`). Strict config: fail on warnings, risky tests and deprecations.
 - **JS unit:** none yet; Vitest (wp-scripts' default) when some logic needs it.
-- **E2E:** Playwright via `wp-scripts test-playwright` against WordPress Playground (`@wp-playground/cli`), started from a blueprint: no Docker, a fresh site per run. Three projects: Chromium, Firefox and WebKit (Safari's engine); CI runs each as its own job.
+- **E2E:** Playwright via `wp-scripts test-playwright` against WordPress Playground (`@wp-playground/cli`), started from a blueprint: no Docker, a fresh site per run. Three projects: Chromium, Firefox and WebKit (Safari's engine); CI runs each as its own job. Shared helpers live in `tests/e2e/utils.ts`.
+- **Accessibility:** `tests/e2e/accessibility.spec.ts` runs axe-core (`@axe-core/playwright`, WCAG 2.2 A and AA) on Tinta's own UI (the workspace, page menu, dialogs, Notes panel, setup wizard, read-only view and mobile drawer) and fails on serious and critical problems. Core's editable block text is left out: its markup is WordPress's own.
 
 ### Build
 - pnpm (one package, no turbo). `pnpm-workspace.yaml` holds pnpm 11's build-script approvals.
