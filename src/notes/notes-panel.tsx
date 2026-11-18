@@ -6,7 +6,7 @@ import { Button, Spinner } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';
 import { useState } from '@wordpress/element';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import { closeSmall, comment } from '@wordpress/icons';
 
 import { NoteComposer } from './note-composer';
@@ -43,7 +43,7 @@ export function NotesPanel() {
 					isPressed={ ! showResolved }
 					onClick={ () => setShowResolved( false ) }
 				>
-					{ __( 'Open', 'tinta' ) }
+					{ _x( 'Open', 'notes that are not resolved', 'tinta' ) }
 				</Button>
 				<Button
 					size="compact"
