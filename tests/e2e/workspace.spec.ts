@@ -8,6 +8,7 @@ import {
 } from '@wordpress/e2e-test-utils-playwright';
 
 import {
+	ADMIN,
 	createPage,
 	deleteAllPages,
 	getPage,
@@ -236,6 +237,50 @@ test.describe( 'Workspace', () => {
 					( await getPage( requestUtils, handbook ) ).title.raw
 			)
 			.toBe( 'Team handbook' );
+	} );
+
+	test( 'keeps edits made while the login expired', async ( {
+		admin,
+		context,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		const content = async () =>
+			( await getPage( requestUtils, handbook ) ).content.raw;
+
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=tinta&doc=${ handbook }`
+		);
+		await startTyping( editor );
+		await page.keyboard.type( 'Written before.' );
+		await expect.poll( content ).toContain( 'Written before.' );
+
+		await context.clearCookies();
+		await page.keyboard.type( ' Written while logged out.' );
+		await page.evaluate( () =>
+			(
+				window as unknown as {
+					wp: { heartbeat: { connectNow: () => void } };
+				}
+			 ).wp.heartbeat.connectNow()
+		);
+
+		const login = page.frameLocator( '#wp-auth-check-form iframe' );
+		await login
+			.getByRole( 'textbox', { name: 'Username or Email Address' } )
+			.fill( ADMIN.username );
+		await login
+			.getByLabel( 'Password', { exact: true } )
+			.fill( ADMIN.password );
+		await login.getByRole( 'button', { name: 'Log In' } ).click();
+
+		await expect( page.locator( '#wp-auth-check-wrap' ) ).toBeHidden();
+		await expect
+			.poll( content, { timeout: 35_000 } )
+			.toContain( 'Written before. Written while logged out.' );
 	} );
 } );
 

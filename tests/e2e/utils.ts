@@ -8,6 +8,12 @@ import type { RequestUtils } from '@wordpress/e2e-test-utils-playwright';
  */
 export const TEST_PASSWORD = 'tinta-e2e-password';
 
+/**
+ * The disposable Playground site's administrator, whom the e2e test utils log
+ * in as.
+ */
+export const ADMIN = { username: 'admin', password: 'password' };
+
 export interface PageRecord {
 	id: number;
 	parent: number;
