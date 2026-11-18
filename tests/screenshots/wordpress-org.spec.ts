@@ -1,7 +1,9 @@
 /**
  * Fills the workspace with a small studio's pages, people and notes, then
  * takes the wordpress.org screenshots into `.wordpress-org/`, in workspace
- * mode. Captions are in readme.txt's Screenshots section, in the same order.
+ * mode: `screenshot-N.png` in English, `screenshot-N-pt_BR.png` in Brazilian
+ * Portuguese (one Playwright project per locale). Captions are in readme.txt's
+ * Screenshots section, in the same order.
  */
 import {
 	expect,
@@ -39,6 +41,28 @@ interface WpGlobals {
 	};
 }
 
+type Locale = 'en' | 'pt_BR';
+
+/**
+ * Everything the screenshots show or look for, in one locale.
+ */
+interface Copy {
+	workspace: string;
+	pages: PageSpec[];
+	deploys: BlockSpec[];
+	onboarding: ( ids: Record< string, number > ) => BlockSpec[];
+	notes: [ string, ( mention: string ) => string, string ];
+	search: string;
+	ui: {
+		untitled: string;
+		notesOnBlock: RegExp;
+		notes: string;
+		setup: string;
+		skip: string;
+		openSidebar: string;
+	};
+}
+
 interface PageSpec {
 	key: string;
 	title: string;
@@ -58,114 +82,326 @@ const list = ( items: string[] ): BlockSpec => [
 	items.map( ( content ) => [ 'core/list-item', { content } ] ),
 ];
 
-const PAGES: PageSpec[] = [
-	{
-		key: 'handbook',
-		title: 'Handbook',
-		icon: '📘',
-		blocks: [ p( 'How we work at Blue Fern, from your first day on.' ) ],
-	},
-	{ key: 'onboarding', title: 'Onboarding', icon: '👋', parent: 'handbook' },
-	{ key: 'how', title: 'How we work', icon: '🧭', parent: 'handbook' },
-	{ key: 'timeoff', title: 'Time off', icon: '🏖️', parent: 'handbook' },
-	{
-		key: 'tools',
-		title: 'Tools and accounts',
-		icon: '🔑',
-		parent: 'handbook',
-	},
-	{ key: 'engineering', title: 'Engineering', icon: '🛠️' },
-	{ key: 'deploys', title: 'Deploys', icon: '🚀', parent: 'engineering' },
-	{ key: 'oncall', title: 'On-call', icon: '📟', parent: 'engineering' },
-	{ key: 'design', title: 'Design', icon: '🎨' },
-	{ key: 'brand', title: 'Brand guidelines', icon: '🖌️', parent: 'design' },
-	{ key: 'clients', title: 'Clients', icon: '🤝' },
-	{ key: 'meetings', title: 'Meetings', icon: '🗓️' },
-	{ key: 'weekly', title: 'Weekly sync', icon: '📝', parent: 'meetings' },
-	{ key: 'retro', title: 'Q4 retro', icon: '🔁', parent: 'meetings' },
-];
-
 /**
- * The page the color scheme screenshot shows.
- */
-const DEPLOYS: BlockSpec[] = [
-	p(
-		'We deploy the website and client sites from the main branch, twice a week.'
-	),
-	[
-		'tinta/callout',
-		{ emoji: '⚠️' },
-		[
-			p(
-				'No deploys on Friday afternoons. If something breaks, it waits until Monday.'
-			),
-		],
-	],
-	h( 'Before you deploy' ),
-	list( [
-		'Checks pass on the pull request.',
-		'Someone else reviewed the change.',
-		'The staging site looks right on a phone.',
-	] ),
-	h( 'Deploy' ),
-	[ 'core/code', { content: 'git tag v2.14.0 && git push origin v2.14.0' } ],
-	p(
-		'The release workflow builds the site and posts in #deploys when it is live.'
-	),
-];
-
-/**
- * The page most screenshots show. The first paragraph carries the notes.
+ * The onboarding page most screenshots show. The first paragraph carries the
+ * notes.
  *
- * @param ids Page IDs by key.
+ * @param text           Its text.
+ * @param text.intro
+ * @param text.buddy
+ * @param text.week
+ * @param text.weekItems
+ * @param text.ask
+ * @param text.askHead
+ * @param text.askRows
+ * @param text.next
  */
-function onboarding( ids: Record< string, number > ): BlockSpec[] {
-	return [
-		p(
-			'Welcome to Blue Fern! This page walks you through your first week. Nothing here is urgent: read, meet people, ask a lot.'
-		),
-		[
-			'tinta/callout',
-			{ emoji: '💡' },
-			[
-				p(
-					'Your buddy for the first month is Ana. Book thirty minutes with her on day one.'
-				),
-			],
-		],
-		h( 'Your first week' ),
-		list( [
-			'Set up your laptop and accounts.',
-			'Read How we work and the brand guidelines.',
-			'Join the weekly sync on Monday at 10:00.',
-			'Ship a small change to the website by Friday.',
-		] ),
-		h( 'Who to ask' ),
+function onboardingPage( text: {
+	intro: string;
+	buddy: string;
+	week: string;
+	weekItems: string[];
+	ask: string;
+	askHead: [ string, string ];
+	askRows: string[][];
+	next: string;
+} ) {
+	return ( ids: Record< string, number > ): BlockSpec[] => [
+		p( text.intro ),
+		[ 'tinta/callout', { emoji: '💡' }, [ p( text.buddy ) ] ],
+		h( text.week ),
+		list( text.weekItems ),
+		h( text.ask ),
 		[
 			'core/table',
 			{
 				head: [
 					{
-						cells: [
-							{ content: 'Topic', tag: 'th' },
-							{ content: 'Person', tag: 'th' },
-						],
+						cells: text.askHead.map( ( content ) => ( {
+							content,
+							tag: 'th',
+						} ) ),
 					},
 				],
-				body: [
-					[ 'Laptops and accounts', 'Rafael' ],
-					[ 'Payroll and time off', 'Ana' ],
-					[ 'Design reviews', 'Maya' ],
-				].map( ( row ) => ( {
+				body: text.askRows.map( ( row ) => ( {
 					cells: row.map( ( content ) => ( { content, tag: 'td' } ) ),
 				} ) ),
 			},
 		],
-		h( 'Read next' ),
+		h( text.next ),
 		[ 'tinta/page-link', { pageId: ids.tools } ],
 		[ 'tinta/page-link', { pageId: ids.how } ],
 	];
 }
+
+/**
+ * The deploys page the color scheme screenshot shows.
+ *
+ * @param text         Its text.
+ * @param text.intro
+ * @param text.warning
+ * @param text.before
+ * @param text.checks
+ * @param text.deploy
+ * @param text.after
+ */
+function deploysPage( text: {
+	intro: string;
+	warning: string;
+	before: string;
+	checks: string[];
+	deploy: string;
+	after: string;
+} ): BlockSpec[] {
+	return [
+		p( text.intro ),
+		[ 'tinta/callout', { emoji: '⚠️' }, [ p( text.warning ) ] ],
+		h( text.before ),
+		list( text.checks ),
+		h( text.deploy ),
+		[
+			'core/code',
+			{ content: 'git tag v2.14.0 && git push origin v2.14.0' },
+		],
+		p( text.after ),
+	];
+}
+
+const COPY: Record< Locale, Copy > = {
+	en: {
+		workspace: 'Blue Fern Studio',
+		pages: [
+			{
+				key: 'handbook',
+				title: 'Handbook',
+				icon: '📘',
+				blocks: [
+					p( 'How we work at Blue Fern, from your first day on.' ),
+				],
+			},
+			{
+				key: 'onboarding',
+				title: 'Onboarding',
+				icon: '👋',
+				parent: 'handbook',
+			},
+			{
+				key: 'how',
+				title: 'How we work',
+				icon: '🧭',
+				parent: 'handbook',
+			},
+			{
+				key: 'timeoff',
+				title: 'Time off',
+				icon: '🏖️',
+				parent: 'handbook',
+			},
+			{
+				key: 'tools',
+				title: 'Tools and accounts',
+				icon: '🔑',
+				parent: 'handbook',
+			},
+			{ key: 'engineering', title: 'Engineering', icon: '🛠️' },
+			{
+				key: 'deploys',
+				title: 'Deploys',
+				icon: '🚀',
+				parent: 'engineering',
+			},
+			{
+				key: 'oncall',
+				title: 'On-call',
+				icon: '📟',
+				parent: 'engineering',
+			},
+			{ key: 'design', title: 'Design', icon: '🎨' },
+			{
+				key: 'brand',
+				title: 'Brand guidelines',
+				icon: '🖌️',
+				parent: 'design',
+			},
+			{ key: 'clients', title: 'Clients', icon: '🤝' },
+			{ key: 'meetings', title: 'Meetings', icon: '🗓️' },
+			{
+				key: 'weekly',
+				title: 'Weekly sync',
+				icon: '📝',
+				parent: 'meetings',
+			},
+			{ key: 'retro', title: 'Q4 retro', icon: '🔁', parent: 'meetings' },
+		],
+		deploys: deploysPage( {
+			intro: 'We deploy the website and client sites from the main branch, twice a week.',
+			warning:
+				'No deploys on Friday afternoons. If something breaks, it waits until Monday.',
+			before: 'Before you deploy',
+			checks: [
+				'Checks pass on the pull request.',
+				'Someone else reviewed the change.',
+				'The staging site looks right on a phone.',
+			],
+			deploy: 'Deploy',
+			after: 'The release workflow builds the site and posts in #deploys when it is live.',
+		} ),
+		onboarding: onboardingPage( {
+			intro: 'Welcome to Blue Fern! This page walks you through your first week. Nothing here is urgent: read, meet people, ask a lot.',
+			buddy: 'Your buddy for the first month is Ana. Book thirty minutes with her on day one.',
+			week: 'Your first week',
+			weekItems: [
+				'Set up your laptop and accounts.',
+				'Read How we work and the brand guidelines.',
+				'Join the weekly sync on Monday at 10:00.',
+				'Ship a small change to the website by Friday.',
+			],
+			ask: 'Who to ask',
+			askHead: [ 'Topic', 'Person' ],
+			askRows: [
+				[ 'Laptops and accounts', 'Rafael' ],
+				[ 'Payroll and time off', 'Ana' ],
+				[ 'Design reviews', 'Maya' ],
+			],
+			next: 'Read next',
+		} ),
+		notes: [
+			'Should we mention the laptop pickup on Monday morning?',
+			( mention ) =>
+				`Good call. ${ mention } can you add the pickup times?`,
+			'Added them to Tools and accounts, with the office address.',
+		],
+		search: 'de',
+		ui: {
+			untitled: 'Untitled',
+			notesOnBlock: /notes on this block/,
+			notes: 'Notes',
+			setup: 'Set up your workspace',
+			skip: 'Skip for now',
+			openSidebar: 'Open sidebar',
+		},
+	},
+	pt_BR: {
+		workspace: 'Estúdio Samambaia',
+		pages: [
+			{
+				key: 'handbook',
+				title: 'Manual',
+				icon: '📘',
+				blocks: [
+					p(
+						'Como trabalhamos na Samambaia, desde o seu primeiro dia.'
+					),
+				],
+			},
+			{
+				key: 'onboarding',
+				title: 'Integração',
+				icon: '👋',
+				parent: 'handbook',
+			},
+			{
+				key: 'how',
+				title: 'Como trabalhamos',
+				icon: '🧭',
+				parent: 'handbook',
+			},
+			{
+				key: 'timeoff',
+				title: 'Férias e folgas',
+				icon: '🏖️',
+				parent: 'handbook',
+			},
+			{
+				key: 'tools',
+				title: 'Ferramentas e contas',
+				icon: '🔑',
+				parent: 'handbook',
+			},
+			{ key: 'engineering', title: 'Engenharia', icon: '🛠️' },
+			{
+				key: 'deploys',
+				title: 'Deploys',
+				icon: '🚀',
+				parent: 'engineering',
+			},
+			{
+				key: 'oncall',
+				title: 'Plantão',
+				icon: '📟',
+				parent: 'engineering',
+			},
+			{ key: 'design', title: 'Design', icon: '🎨' },
+			{
+				key: 'brand',
+				title: 'Guia da marca',
+				icon: '🖌️',
+				parent: 'design',
+			},
+			{ key: 'clients', title: 'Clientes', icon: '🤝' },
+			{ key: 'meetings', title: 'Reuniões', icon: '🗓️' },
+			{
+				key: 'weekly',
+				title: 'Reunião semanal',
+				icon: '📝',
+				parent: 'meetings',
+			},
+			{
+				key: 'retro',
+				title: 'Retro do 4º trimestre',
+				icon: '🔁',
+				parent: 'meetings',
+			},
+		],
+		deploys: deploysPage( {
+			intro: 'Publicamos o site e os sites de clientes a partir da branch principal, duas vezes por semana.',
+			warning:
+				'Nada de deploy na sexta à tarde. Se algo quebrar, fica para segunda.',
+			before: 'Antes do deploy',
+			checks: [
+				'Os testes passam no pull request.',
+				'Outra pessoa revisou a mudança.',
+				'O site de homologação fica certo no celular.',
+			],
+			deploy: 'Deploy',
+			after: 'O workflow de release gera o site e avisa em #deploys quando ele estiver no ar.',
+		} ),
+		onboarding: onboardingPage( {
+			intro: 'Boas-vindas à Samambaia! Esta página guia a sua primeira semana. Nada aqui é urgente: leia, conheça as pessoas e pergunte bastante.',
+			buddy: 'A sua dupla no primeiro mês é a Ana. Marque trinta minutos com ela no primeiro dia.',
+			week: 'Sua primeira semana',
+			weekItems: [
+				'Configure o seu notebook e as suas contas.',
+				'Leia Como trabalhamos e o guia da marca.',
+				'Participe da reunião semanal na segunda, às 10h.',
+				'Publique uma pequena mudança no site até sexta.',
+			],
+			ask: 'A quem perguntar',
+			askHead: [ 'Assunto', 'Pessoa' ],
+			askRows: [
+				[ 'Notebooks e contas', 'Rafael' ],
+				[ 'Pagamentos e férias', 'Ana' ],
+				[ 'Revisões de design', 'Maya' ],
+			],
+			next: 'Leia a seguir',
+		} ),
+		notes: [
+			'Vale avisar sobre a retirada dos notebooks na segunda de manhã?',
+			( mention ) =>
+				`Boa ideia. ${ mention }, pode adicionar os horários de retirada?`,
+			'Adicionei em Ferramentas e contas, com o endereço do escritório.',
+		],
+		search: 're',
+		ui: {
+			untitled: 'Sem título',
+			notesOnBlock: /neste bloco/,
+			notes: 'Notas',
+			setup: 'Configure o seu espaço de trabalho',
+			skip: 'Pular por enquanto',
+			openSidebar: 'Abrir barra lateral',
+		},
+	},
+};
 
 test( 'takes the wordpress.org screenshots', async ( {
 	admin,
@@ -173,11 +409,20 @@ test( 'takes the wordpress.org screenshots', async ( {
 	requestUtils,
 } ) => {
 	test.setTimeout( 180_000 );
-	await resetSite( requestUtils );
+	const locale = ( test.info().project.metadata?.locale ?? 'en' ) as Locale;
+	const copy = COPY[ locale ];
+	await resetSite( requestUtils, copy, locale );
 	const people = await addPeople( requestUtils );
 	await setSettings( requestUtils, { workspace_mode: true } );
 	try {
-		await takeScreenshots( admin, page, requestUtils, people );
+		await takeScreenshots(
+			admin,
+			page,
+			requestUtils,
+			people,
+			copy,
+			locale === 'en' ? '' : `-${ locale }`
+		);
 	} finally {
 		await setSettings( requestUtils, {
 			workspace_mode: false,
@@ -193,21 +438,34 @@ test( 'takes the wordpress.org screenshots', async ( {
  * @param page         Playwright page.
  * @param requestUtils REST helpers, as Maya.
  * @param people       Ana and Rafael.
+ * @param copy         Content and labels in the screenshots' locale.
+ * @param suffix       File name suffix for the locale.
  */
 async function takeScreenshots(
 	admin: Admin,
 	page: Page,
 	requestUtils: RequestUtils,
-	people: Awaited< ReturnType< typeof addPeople > >
+	people: Awaited< ReturnType< typeof addPeople > >,
+	copy: Copy,
+	suffix: string
 ) {
-	const shot = ( name: string ) =>
-		page.screenshot( { path: `${ OUT }/${ name }` } );
+	const shot = ( number: number ) =>
+		page.screenshot( {
+			path: `${ OUT }/screenshot-${ number }${ suffix }.png`,
+		} );
+	const open = ( pageId: number ) =>
+		openPage( admin, page, pageId, copy.ui.untitled );
 
 	await admin.visitAdminPage( 'admin.php', 'page=tinta' );
-	const ids = await createPages( page, PAGES );
-	const noteId = await addNotes( requestUtils, people, ids.onboarding );
-	await setContent( page, ids.onboarding, onboarding( ids ), noteId );
-	await setContent( page, ids.deploys, DEPLOYS );
+	const ids = await createPages( page, copy.pages );
+	const noteId = await addNotes(
+		requestUtils,
+		people,
+		ids.onboarding,
+		copy.notes
+	);
+	await setContent( page, ids.onboarding, copy.onboarding( ids ), noteId );
+	await setContent( page, ids.deploys, copy.deploys );
 	await requestUtils.rest( {
 		method: 'POST',
 		path: '/wp/v2/users/me',
@@ -221,53 +479,61 @@ async function takeScreenshots(
 		},
 	} );
 
-	await openPage( admin, page, ids.onboarding );
-	await shot( 'screenshot-1.png' );
+	await open( ids.onboarding );
+	await shot( 1 );
 
 	await page
 		.frameLocator( 'iframe[name="editor-canvas"]' )
-		.getByRole( 'button', { name: /notes on this block/ } )
+		.getByRole( 'button', { name: copy.ui.notesOnBlock } )
 		.click();
 	await expect(
-		page.getByRole( 'complementary', { name: 'Notes' } )
+		page.getByRole( 'complementary', { name: copy.ui.notes } )
 	).toBeVisible();
 	await parkMouse( page );
-	await shot( 'screenshot-2.png' );
+	await shot( 2 );
 
-	await openPage( admin, page, ids.onboarding );
+	await open( ids.onboarding );
 	await page.keyboard.press( 'ControlOrMeta+k' );
-	await page.keyboard.type( 'de' );
+	await page.keyboard.type( copy.search );
 	await expect( page.getByRole( 'option' ).first() ).toBeVisible();
-	await shot( 'screenshot-3.png' );
+	await shot( 3 );
 
 	await setSettings( requestUtils, { setup_done: false } );
-	await openPage( admin, page, ids.onboarding );
+	await open( ids.onboarding );
 	await expect(
-		page.getByRole( 'dialog', { name: 'Set up your workspace' } )
+		page.getByRole( 'dialog', { name: copy.ui.setup } )
 	).toBeVisible();
-	await shot( 'screenshot-4.png' );
-	await page.getByRole( 'button', { name: 'Skip for now' } ).click();
+	await shot( 4 );
+	await page.getByRole( 'button', { name: copy.ui.skip } ).click();
 
-	const scheme = await setColorScheme( admin, page, 'midnight' );
-	await openPage( admin, page, ids.deploys );
-	await shot( 'screenshot-5.png' );
-	await setColorScheme( admin, page, scheme );
+	const scheme = await setColorScheme( requestUtils, 'midnight' );
+	await open( ids.deploys );
+	await shot( 5 );
+	await setColorScheme( requestUtils, scheme );
 
 	await page.setViewportSize( { width: 390, height: 844 } );
-	await openPage( admin, page, ids.onboarding );
-	await page.getByRole( 'button', { name: 'Open sidebar' } ).click();
+	await open( ids.onboarding );
+	await page.getByRole( 'button', { name: copy.ui.openSidebar } ).click();
+	const deploys = copy.pages.find( ( spec ) => spec.key === 'deploys' );
 	await expect(
-		page.getByRole( 'link', { name: 'Deploys' } ).first()
+		page.getByRole( 'link', { name: deploys?.title } ).first()
 	).toBeVisible();
-	await shot( 'screenshot-6.png' );
+	await shot( 6 );
 }
 
 /**
- * Starts from an empty workspace named Blue Fern Studio, with its own icon.
+ * Starts from an empty workspace with the studio's name and icon, and Maya's
+ * profile in the screenshots' locale.
  *
  * @param requestUtils REST helpers.
+ * @param copy         Content in the screenshots' locale.
+ * @param locale       The locale.
  */
-async function resetSite( requestUtils: RequestUtils ) {
+async function resetSite(
+	requestUtils: RequestUtils,
+	copy: Copy,
+	locale: Locale
+) {
 	const docs = await requestUtils.rest< { id: number }[] >( {
 		path: '/wp/v2/tinta-docs',
 		params: { status: 'private,trash', per_page: 100, context: 'edit' },
@@ -289,7 +555,7 @@ async function resetSite( requestUtils: RequestUtils ) {
 		method: 'POST',
 		path: '/wp/v2/settings',
 		data: {
-			title: 'Blue Fern Studio',
+			title: copy.workspace,
 			site_icon: icon.id,
 			tinta_settings: { setup_done: true },
 		},
@@ -297,7 +563,12 @@ async function resetSite( requestUtils: RequestUtils ) {
 	await requestUtils.rest( {
 		method: 'POST',
 		path: '/wp/v2/users/me',
-		data: { first_name: 'Maya', last_name: 'Chen', name: 'Maya Chen' },
+		data: {
+			first_name: 'Maya',
+			last_name: 'Chen',
+			name: 'Maya Chen',
+			locale: locale === 'en' ? 'en_US' : locale,
+		},
 	} );
 }
 
@@ -423,12 +694,14 @@ function setContent(
  * @param requestUtils REST helpers, as Maya.
  * @param people       Ana and Rafael.
  * @param pageId       Onboarding's ID.
+ * @param text         The three notes; the second mentions Rafael.
  * @return The thread's first note.
  */
 async function addNotes(
 	requestUtils: RequestUtils,
 	people: Awaited< ReturnType< typeof addPeople > >,
-	pageId: number
+	pageId: number,
+	text: Copy[ 'notes' ]
 ) {
 	const note = ( utils: RequestUtils, content: string, parent = 0 ) =>
 		utils.rest< { id: number } >( {
@@ -443,20 +716,19 @@ async function addNotes(
 			},
 		} );
 	const { rafael } = people;
-	const root = await note(
-		people.ana.utils,
-		'Should we mention the laptop pickup on Monday morning?'
-	);
+	const pause = () =>
+		new Promise( ( resolve ) => setTimeout( resolve, 1100 ) );
+	const root = await note( people.ana.utils, text[ 0 ] );
+	await pause();
 	await note(
 		requestUtils,
-		`Good call. <span class="wp-note-mention user-${ rafael.id }">@${ rafael.name }</span> can you add the pickup times?`,
+		text[ 1 ](
+			`<span class="wp-note-mention user-${ rafael.id }">@${ rafael.name }</span>`
+		),
 		root.id
 	);
-	await note(
-		rafael.utils,
-		'Added them to Tools and accounts, with the office address.',
-		root.id
-	);
+	await pause();
+	await note( rafael.utils, text[ 2 ], root.id );
 
 	return root.id;
 }
@@ -464,16 +736,22 @@ async function addNotes(
 /**
  * Opens a page in the workspace and waits for its title.
  *
- * @param admin  Admin helpers.
- * @param page   Playwright page.
- * @param pageId Page ID.
+ * @param admin    Admin helpers.
+ * @param page     Playwright page.
+ * @param pageId   Page ID.
+ * @param untitled The title field's label in the screenshots' locale.
  */
-async function openPage( admin: Admin, page: Page, pageId: number ) {
+async function openPage(
+	admin: Admin,
+	page: Page,
+	pageId: number,
+	untitled: string
+) {
 	await admin.visitAdminPage( 'admin.php', `page=tinta&doc=${ pageId }` );
 	await expect(
 		page
 			.frameLocator( 'iframe[name="editor-canvas"]' )
-			.getByRole( 'textbox', { name: 'Untitled' } )
+			.getByRole( 'textbox', { name: untitled } )
 	).toBeVisible();
 	await parkMouse( page );
 }
@@ -488,23 +766,27 @@ async function parkMouse( page: Page ) {
 }
 
 /**
- * Picks the admin color scheme on the profile screen.
+ * Picks Maya's admin color scheme (core's `admin_color`, as Settings → Profile
+ * saves it).
  *
- * @param admin  Admin helpers.
- * @param page   Playwright page.
- * @param scheme Scheme slug.
+ * @param requestUtils REST helpers, as Maya.
+ * @param scheme       Scheme slug.
  * @return The scheme it replaced.
  */
-async function setColorScheme( admin: Admin, page: Page, scheme: string ) {
-	await admin.visitAdminPage( 'profile.php' );
-	const previous = await page
-		.locator( 'input[name="admin_color"]:checked' )
-		.inputValue();
-	await page.locator( `#admin_color_${ scheme }` ).check();
-	await page.getByRole( 'button', { name: 'Update Profile' } ).click();
-	await expect( page.locator( '#message' ) ).toBeVisible();
+async function setColorScheme( requestUtils: RequestUtils, scheme: string ) {
+	const { meta } = await requestUtils.rest< {
+		meta: { admin_color?: string };
+	} >( {
+		path: '/wp/v2/users/me',
+		params: { context: 'edit' },
+	} );
+	await requestUtils.rest( {
+		method: 'POST',
+		path: '/wp/v2/users/me',
+		data: { meta: { admin_color: scheme } },
+	} );
 
-	return previous;
+	return meta.admin_color || 'fresh';
 }
 
 /**
