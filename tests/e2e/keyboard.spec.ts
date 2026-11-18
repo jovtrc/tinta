@@ -1,6 +1,6 @@
 /**
- * Keyboard use: where focus goes when pages, dialogs, panels and steps open
- * and close, and the emoji grid's single Tab stop and arrow keys.
+ * Keyboard use: where focus goes when pages, the sidebar, dialogs, panels and
+ * steps open and close, and the emoji grid's single Tab stop and arrow keys.
  */
 import { expect, test } from '@wordpress/e2e-test-utils-playwright';
 
@@ -88,6 +88,27 @@ test.describe( 'Keyboard', () => {
 		).toHaveAccessibleDescription( /Roadmap/ );
 		await page.keyboard.press( 'Escape' );
 		await expect( actions ).toBeFocused();
+	} );
+
+	test( 'moves focus between the sidebar and the button that shows it', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=tinta&doc=${ handbook }`
+		);
+		const close = page.getByRole( 'button', { name: 'Close sidebar' } );
+
+		await close.focus();
+		await page.keyboard.press( 'Enter' );
+		await expect(
+			page.getByRole( 'button', { name: 'Open sidebar' } )
+		).toBeFocused();
+		await page.keyboard.press( 'Enter' );
+		await expect( close ).toBeFocused();
 	} );
 
 	test( 'opens Settings on its first tab', async ( { admin, page } ) => {
@@ -211,6 +232,36 @@ test.describe( 'Keyboard', () => {
 					( await getPage( requestUtils, handbook ) ).meta._tinta_icon
 			)
 			.toBe( picked );
+	} );
+} );
+
+test.describe( 'Keyboard on small screens', () => {
+	test.use( { viewport: { width: 390, height: 844 } } );
+
+	test.beforeEach( async ( { requestUtils } ) => {
+		await deleteAllPages( requestUtils );
+	} );
+
+	test( 'opens a page from the drawer with focus in the main area', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		await createPage( requestUtils, 'Roadmap' );
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=tinta&doc=${ handbook }`
+		);
+
+		await page.getByRole( 'button', { name: 'Open sidebar' } ).click();
+		await sidebarLink( page, 'Roadmap' ).focus();
+		await page.keyboard.press( 'Enter' );
+		await expect(
+			editor.canvas.getByRole( 'textbox', { name: 'Untitled' } )
+		).toHaveText( 'Roadmap' );
+		await expect( page.locator( '.tinta-workspace__main' ) ).toBeFocused();
 	} );
 } );
 

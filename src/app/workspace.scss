@@ -75,6 +75,10 @@ body.tinta-workspace-mode.tinta-workspace-screen {
 .tinta-workspace__main {
 	min-width: 0;
 	min-height: 0;
+
+	&:focus {
+		outline: none;
+	}
 }
 
 .tinta-workspace__snackbar {

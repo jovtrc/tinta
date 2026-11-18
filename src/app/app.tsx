@@ -3,8 +3,10 @@
  * and dialogs. On small screens the sidebar is a drawer.
  */
 import { Button, Popover, SlotFillProvider } from '@wordpress/components';
+import { usePrevious } from '@wordpress/compose';
 import { useDispatch } from '@wordpress/data';
-import { useCallback, useEffect } from '@wordpress/element';
+import { focus } from '@wordpress/dom';
+import { useCallback, useEffect, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { SnackbarNotices } from '@wordpress/notices';
 
@@ -28,6 +30,7 @@ import { useTreeRefresh } from './use-tree-refresh';
 export function App() {
 	const [ pageId, navigate ] = usePageRoute();
 	const sidebar = useSidebar();
+	const focusRefs = useSidebarFocus( sidebar.isOpen, pageId );
 	useTreeRefresh();
 	const { visitPage } = useDispatch( prefsStore );
 	const { openDialog, setDrawerOpen } = useDispatch( uiStore );
@@ -68,11 +71,15 @@ export function App() {
 	return (
 		<SlotFillProvider>
 			<WorkspaceCommands currentId={ pageId } onOpen={ openPage } />
-			<div className={ layoutClass }>
+			<div ref={ focusRefs.layout } className={ layoutClass }>
 				{ sidebar.isOpen && ! sidebar.isMobile && (
 					<Sidebar currentId={ pageId } onOpen={ openPage } />
 				) }
-				<main className="tinta-workspace__main">
+				<main
+					ref={ focusRefs.main }
+					className="tinta-workspace__main"
+					tabIndex={ -1 }
+				>
 					{ pageId ? (
 						<OpenPage key={ pageId } pageId={ pageId } />
 					) : (
@@ -90,6 +97,43 @@ export function App() {
 			<Popover.Slot />
 		</SlotFillProvider>
 	);
+}
+
+/**
+ * Refs for the layout and the main area that keep focus when the sidebar shows
+ * or hides with the focused button: the first control takes it (the
+ * sidebar's, or the button that shows the sidebar again), or the main area
+ * when a page opens from the drawer, as its header is still loading.
+ *
+ * @param isOpen Whether the sidebar shows.
+ * @param pageId Open page.
+ */
+function useSidebarFocus( isOpen: boolean, pageId: number ) {
+	const layout = useRef< HTMLDivElement >( null );
+	const main = useRef< HTMLElement >( null );
+	const wasOpen = usePrevious( isOpen );
+	const previousPageId = usePrevious( pageId );
+
+	useEffect( () => {
+		const ownerDocument = layout.current?.ownerDocument;
+
+		if (
+			wasOpen === undefined ||
+			wasOpen === isOpen ||
+			! layout.current ||
+			ownerDocument?.activeElement !== ownerDocument?.body
+		) {
+			return;
+		}
+
+		if ( pageId !== previousPageId ) {
+			main.current?.focus();
+		} else {
+			focus.tabbable.find( layout.current )[ 0 ]?.focus();
+		}
+	}, [ isOpen, wasOpen, pageId, previousPageId ] );
+
+	return { layout, main };
 }
 
 /**
