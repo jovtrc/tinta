@@ -1,7 +1,14 @@
-# Deploys a GitHub release to wordpress.org: the files in its tinta.zip go to
-# SVN trunk/ and tags/<version>, and .wordpress-org/ to assets/, in one commit.
-# release.yml calls it after publishing. Run by hand with a tag to deploy an
-# existing release; manual runs are dry runs unless unticked.
+# Sends Tinta to wordpress.org's SVN.
+# - A release: the files in a GitHub release's tinta.zip go to trunk/ and
+#   tags/<version>, and .wordpress-org/ to assets/, in one commit. release.yml
+#   calls this after publishing; run it by hand with a tag for an existing
+#   release.
+# - The plugin page's assets: pushing changes to .wordpress-org/ on trunk
+#   sends them to assets/ without a release.
+# - The development version (by hand, at a string freeze): trunk's build goes
+#   to SVN trunk/, so translate.wordpress.org gets the new strings; tags/ and
+#   the stable version stay as they are.
+# Manual runs are dry runs unless unticked.
 name: wordpress.org
 
 on:
@@ -15,21 +22,30 @@ on:
         default: false
   workflow_dispatch:
     inputs:
+      deploy:
+        description: What to send
+        type: choice
+        options: [ release, assets, development ]
+        default: release
       tag:
-        description: Release tag to deploy (v0.1.1)
+        description: Release tag, for a release (v0.1.1)
         type: string
-        required: true
+        default: ''
       dry-run:
         description: List the SVN changes without committing them
         type: boolean
         default: true
+  push:
+    branches: [ trunk ]
+    paths: [ '.wordpress-org/**' ]
 
 permissions:
   contents: read
 
 jobs:
-  deploy:
-    name: Deploy to wordpress.org
+  release:
+    name: Deploy a release
+    if: inputs.tag && (inputs.deploy == null || inputs.deploy == 'release')
     runs-on: ubuntu-latest
     concurrency:
       group: wordpress-org
@@ -52,3 +68,37 @@ jobs:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SLUG: tinta
           BUILD_DIR: ${{ runner.temp }}/release/tinta
+
+  assets:
+    name: Deploy the plugin page assets
+    if: github.ref == 'refs/heads/trunk' && (github.event_name == 'push' || inputs.deploy == 'assets')
+    runs-on: ubuntu-latest
+    concurrency:
+      group: wordpress-org
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - run: command -v svn || (sudo apt-get update -qq && sudo apt-get install -y -qq subversion)
+      - run: bin/wporg-svn.sh assets
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run }}
+
+  development:
+    name: Deploy the development version
+    if: inputs.deploy == 'development'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: wordpress-org
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: bin/build-zip.sh "$RUNNER_TEMP"
+      - run: command -v svn || (sudo apt-get update -qq && sudo apt-get install -y -qq subversion)
+      - run: bin/wporg-svn.sh trunk "$RUNNER_TEMP/tinta"
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          DRY_RUN: ${{ inputs.dry-run }}
