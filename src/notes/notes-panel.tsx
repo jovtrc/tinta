@@ -1,11 +1,15 @@
 /**
  * The Notes panel beside the canvas: open or resolved threads, and a new note
- * for the block it was started from.
+ * for the block it was started from. Focus follows the work: to a thread just
+ * posted, to the panel when a thread leaves the list, and to the Notes button
+ * when the panel closes.
  */
+import { speak } from '@wordpress/a11y';
 import { Button, Spinner } from '@wordpress/components';
+import { usePrevious } from '@wordpress/compose';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';
-import { useState } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import { closeSmall, comment } from '@wordpress/icons';
 
@@ -31,12 +35,25 @@ export function NotesPanel() {
 	const { threads, isLoading } = useThreads( postId );
 	const actions = useNoteActions( postId );
 	const [ showResolved, setShowResolved ] = useState( false );
+	const [ postedId, setPostedId ] = useState( 0 );
+	const panel = useRef< HTMLElement >( null );
 	const shown = threads.filter(
 		( thread ) => thread.isResolved === showResolved
 	);
+	const focusPanel = ( message?: string ) => {
+		panel.current?.focus();
+		if ( message ) {
+			speak( message );
+		}
+	};
 
 	return (
-		<aside className="tinta-notes" aria-label={ __( 'Notes', 'tinta' ) }>
+		<aside
+			ref={ panel }
+			className="tinta-notes"
+			aria-label={ __( 'Notes', 'tinta' ) }
+			tabIndex={ -1 }
+		>
 			<div className="tinta-notes__header">
 				<Button
 					size="compact"
@@ -70,7 +87,9 @@ export function NotesPanel() {
 						submitLabel={ __( 'Add note', 'tinta' ) }
 						onCancel={ () => startNote( null ) }
 						onSubmit={ async ( html ) => {
-							await actions.startThread( composingFor, html );
+							setPostedId(
+								await actions.startThread( composingFor, html )
+							);
 							startNote( null );
 						} }
 					/>
@@ -83,6 +102,9 @@ export function NotesPanel() {
 						key={ thread.root.id }
 						thread={ thread }
 						actions={ actions }
+						isPosted={ thread.root.id === postedId }
+						onFocused={ () => setPostedId( 0 ) }
+						onLeave={ focusPanel }
 					/>
 				) ) }
 			{ ! isLoading && ! shown.length && ! composingFor && (
@@ -101,6 +123,7 @@ export function NotesPanel() {
 
 /**
  * Header button: the notes icon, with the number of open threads beside it.
+ * Focus comes back to it when the panel closes from inside.
  */
 export function NotesToggle() {
 	const postId = useSelect(
@@ -108,12 +131,27 @@ export function NotesToggle() {
 		[]
 	);
 	const isOpen = useSelect( ( select ) => select( notesStore ).isOpen(), [] );
+	const wasOpen = usePrevious( isOpen );
 	const { setOpen } = useDispatch( notesStore );
 	const { threads } = useThreads( postId );
 	const open = threads.filter( ( thread ) => ! thread.isResolved ).length;
+	const ref = useRef< HTMLButtonElement >( null );
+
+	useEffect( () => {
+		const ownerDocument = ref.current?.ownerDocument;
+
+		if (
+			wasOpen &&
+			! isOpen &&
+			ownerDocument?.activeElement === ownerDocument?.body
+		) {
+			ref.current?.focus();
+		}
+	}, [ isOpen, wasOpen ] );
 
 	return (
 		<Button
+			ref={ ref }
 			className="tinta-notes-toggle"
 			icon={ comment }
 			label={

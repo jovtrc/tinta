@@ -199,6 +199,23 @@ test.describe( 'Accessibility', () => {
 		await expectAccessible( page, [ WORKSPACE ] );
 	} );
 
+	test( 'the emoji picker', async ( {
+		admin,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const handbook = await createPage( requestUtils, 'Handbook' );
+		await admin.visitAdminPage(
+			'admin.php',
+			`page=tinta&doc=${ handbook }`
+		);
+
+		await editor.canvas.getByRole( 'button', { name: 'Add icon' } ).click();
+		await expect( page.getByRole( 'option' ).first() ).toBeVisible();
+		await expectAccessible( page, [ POPOVER ] );
+	} );
+
 	test( 'the setup wizard', async ( { admin, page, requestUtils } ) => {
 		await setSetupDone( requestUtils, false );
 		await admin.visitAdminPage( 'admin.php', 'page=tinta' );

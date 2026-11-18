@@ -10,8 +10,9 @@ import { store as noticesStore } from '@wordpress/notices';
 import { withNoteId, withoutNoteId, type Note } from './data';
 
 /**
- * Creates, replies to, resolves, reopens and deletes notes on a page. Failures
- * show a notice and are rethrown, so callers keep what was typed.
+ * Creates, replies to, resolves, reopens and deletes notes on a page. A new
+ * thread resolves to its note's ID. Failures show a notice and are rethrown,
+ * so callers keep what was typed.
  *
  * @param postId Page ID.
  */
@@ -27,12 +28,12 @@ export function useNoteActions( postId: number ) {
 		} ) as Promise< Note >;
 
 	const guard =
-		< Args extends unknown[] >(
-			action: ( ...args: Args ) => Promise< unknown >
+		< Args extends unknown[], Result >(
+			action: ( ...args: Args ) => Promise< Result >
 		) =>
-		async ( ...args: Args ) => {
+		async ( ...args: Args ): Promise< Result > => {
 			try {
-				await action( ...args );
+				return await action( ...args );
 			} catch ( error ) {
 				createErrorNotice(
 					__( 'The note could not be saved.', 'tinta' ),
@@ -57,6 +58,8 @@ export function useNoteActions( postId: number ) {
 					note.id
 				),
 			} );
+
+			return note.id;
 		} ),
 
 		reply: guard( ( threadId: number, content: string ) =>

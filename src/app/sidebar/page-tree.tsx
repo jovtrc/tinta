@@ -20,7 +20,7 @@ import {
 	useMemo,
 } from '@wordpress/element';
 import { decodeEntities } from '@wordpress/html-entities';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import {
 	chevronDown,
 	chevronRight,
@@ -230,8 +230,16 @@ function TreeItem( { page, depth }: { page: TreePage; depth: number } ) {
 						icon={ isExpanded ? chevronDown : chevronRight }
 						label={
 							isExpanded
-								? __( 'Collapse', 'tinta' )
-								: __( 'Expand', 'tinta' )
+								? sprintf(
+										/* translators: %s: page title. */
+										__( 'Collapse “%s”', 'tinta' ),
+										title
+									)
+								: sprintf(
+										/* translators: %s: page title. */
+										__( 'Expand “%s”', 'tinta' ),
+										title
+									)
 						}
 						aria-expanded={ isExpanded }
 						onClick={ () => toggle( page.id ) }

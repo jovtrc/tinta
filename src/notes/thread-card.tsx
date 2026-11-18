@@ -1,5 +1,7 @@
 /**
  * One thread: the note, its replies, and Reply, Resolve or Reopen, Delete.
+ * After a reply is posted or cancelled, focus goes back to Reply; after a
+ * reply is deleted, to the thread.
  */
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
@@ -18,18 +20,33 @@ import type { Thread } from './use-threads';
 interface ThreadCardProps {
 	thread: Thread;
 	actions: NoteActions;
+	isPosted: boolean;
+	onFocused: () => void;
+	onLeave: ( message: string ) => void;
 }
 
 /**
  * Renders the thread.
  *
- * @param props         Props.
- * @param props.thread  Thread.
- * @param props.actions Note actions.
+ * @param props           Props.
+ * @param props.thread    Thread.
+ * @param props.actions   Note actions.
+ * @param props.isPosted  Whether it was just posted, to take focus.
+ * @param props.onFocused Called once it has taken focus.
+ * @param props.onLeave   Called with a message when it leaves the list.
  */
-export function ThreadCard( { thread, actions }: ThreadCardProps ) {
+export function ThreadCard( {
+	thread,
+	actions,
+	isPosted,
+	onFocused,
+	onLeave,
+}: ThreadCardProps ) {
 	const { selectBlock } = useDispatch( blockEditorStore );
-	const [ isReplying, setReplying ] = useState( false );
+	const [ reply, setReply ] = useState< 'none' | 'writing' | 'closed' >(
+		'none'
+	);
+	const replyButton = useRef< HTMLButtonElement >( null );
 	const ref = useRef< HTMLElement >( null );
 	const isActive = useSelect(
 		( select ) =>
@@ -48,9 +65,32 @@ export function ThreadCard( { thread, actions }: ThreadCardProps ) {
 		}
 	}, [ isActive ] );
 
+	useEffect( () => {
+		if ( reply === 'closed' ) {
+			replyButton.current?.focus();
+		}
+	}, [ reply ] );
+
+	useEffect( () => {
+		if ( isPosted ) {
+			ref.current?.focus();
+			onFocused();
+		}
+	}, [ isPosted, onFocused ] );
+
+	const setResolved = async () => {
+		await actions.setResolved( thread.root, ! thread.isResolved );
+		onLeave(
+			thread.isResolved
+				? __( 'Note reopened.', 'tinta' )
+				: __( 'Note resolved.', 'tinta' )
+		);
+	};
+
 	return (
 		<article
 			ref={ ref }
+			tabIndex={ -1 }
 			className={ [
 				'tinta-thread',
 				thread.isResolved && 'is-resolved',
@@ -61,25 +101,29 @@ export function ThreadCard( { thread, actions }: ThreadCardProps ) {
 		>
 			<NoteItem
 				note={ thread.root }
-				onDelete={ () =>
-					actions.remove( thread.root, thread.clientId )
-				}
+				onDelete={ async () => {
+					await actions.remove( thread.root, thread.clientId );
+					onLeave( __( 'Note deleted.', 'tinta' ) );
+				} }
 			/>
-			{ thread.replies.map( ( reply ) => (
+			{ thread.replies.map( ( note ) => (
 				<NoteItem
-					key={ reply.id }
-					note={ reply }
-					onDelete={ () => actions.remove( reply, null ) }
+					key={ note.id }
+					note={ note }
+					onDelete={ async () => {
+						await actions.remove( note, null );
+						ref.current?.focus();
+					} }
 				/>
 			) ) }
-			{ isReplying ? (
+			{ reply === 'writing' ? (
 				<NoteComposer
 					label={ __( 'Reply', 'tinta' ) }
 					submitLabel={ __( 'Reply', 'tinta' ) }
-					onCancel={ () => setReplying( false ) }
+					onCancel={ () => setReply( 'closed' ) }
 					onSubmit={ async ( html ) => {
 						await actions.reply( thread.root.id, html );
-						setReplying( false );
+						setReply( 'closed' );
 					} }
 				/>
 			) : (
@@ -95,9 +139,10 @@ export function ThreadCard( { thread, actions }: ThreadCardProps ) {
 					) }
 					{ ! thread.isResolved && (
 						<Button
+							ref={ replyButton }
 							variant="tertiary"
 							size="compact"
-							onClick={ () => setReplying( true ) }
+							onClick={ () => setReply( 'writing' ) }
 						>
 							{ __( 'Reply', 'tinta' ) }
 						</Button>
@@ -105,12 +150,7 @@ export function ThreadCard( { thread, actions }: ThreadCardProps ) {
 					<Button
 						variant="secondary"
 						size="compact"
-						onClick={ () =>
-							actions.setResolved(
-								thread.root,
-								! thread.isResolved
-							)
-						}
+						onClick={ setResolved }
 					>
 						{ thread.isResolved
 							? __( 'Reopen', 'tinta' )
@@ -129,7 +169,13 @@ export function ThreadCard( { thread, actions }: ThreadCardProps ) {
  * @param props.note     Note.
  * @param props.onDelete Deletes the note.
  */
-function NoteItem( { note, onDelete }: { note: Note; onDelete: () => void } ) {
+function NoteItem( {
+	note,
+	onDelete,
+}: {
+	note: Note;
+	onDelete: () => Promise< void >;
+} ) {
 	const canDelete = note.author === config.userId || config.canManage;
 
 	return (

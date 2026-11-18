@@ -200,7 +200,7 @@ test.describe( 'Workspace', () => {
 		await page
 			.getByRole( 'searchbox', { name: 'Filter emoji' } )
 			.fill( 'rocket' );
-		await page.getByRole( 'button', { name: 'rocket launch' } ).click();
+		await page.getByRole( 'option', { name: 'rocket launch' } ).click();
 		await expect.poll( icon ).toBe( '🚀' );
 
 		await editor.canvas

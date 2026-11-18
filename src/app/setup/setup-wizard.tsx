@@ -3,8 +3,10 @@
  * conflict, who new people are, sample pages, workspace mode. It opens on an
  * administrator's first visit; closing or skipping it marks setup as done, and
  * Settings can run it again. Choices save at the end, through core's
- * `wp/v2/settings`, and the screen reloads to apply them.
+ * `wp/v2/settings`, and the screen reloads to apply them. Moving between steps
+ * puts focus on the step's first control and announces the step number.
  */
+import { speak } from '@wordpress/a11y';
 import apiFetch from '@wordpress/api-fetch';
 import { MediaUpload } from '@wordpress/block-editor';
 import {
@@ -17,7 +19,8 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { useEffect, useState } from '@wordpress/element';
+import { focus } from '@wordpress/dom';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 import { config, pageUrl } from '../config';
@@ -77,6 +80,8 @@ export function SetupWizard( { onClose }: { onClose: () => void } ) {
 		[]
 	);
 	const [ index, setIndex ] = useState( 0 );
+	const [ moves, setMoves ] = useState( 0 );
+	const body = useRef< HTMLDivElement >( null );
 	const [ choices, setChoices ] = useState< Choices | null >( null );
 	const [ isSaving, setSaving ] = useState( false );
 	const [ error, setError ] = useState( '' );
@@ -96,6 +101,25 @@ export function SetupWizard( { onClose }: { onClose: () => void } ) {
 			} )
 		);
 	}, [ hasPages ] );
+
+	useEffect( () => {
+		if ( moves && body.current ) {
+			focus.tabbable.find( body.current )[ 0 ]?.focus();
+		}
+	}, [ moves ] );
+
+	const goTo = ( next: number ) => {
+		setIndex( next );
+		setMoves( ( count ) => count + 1 );
+		speak(
+			sprintf(
+				/* translators: 1: current step, 2: number of steps. */
+				__( 'Step %1$d of %2$d', 'tinta' ),
+				next + 1,
+				steps.length
+			)
+		);
+	};
 
 	const change = ( changes: Partial< Choices > ) =>
 		setChoices( ( current ) => current && { ...current, ...changes } );
@@ -142,7 +166,7 @@ export function SetupWizard( { onClose }: { onClose: () => void } ) {
 			{ ! choices ? (
 				<Spinner />
 			) : (
-				<div className="tinta-settings">
+				<div ref={ body } className="tinta-settings">
 					{ step === 'welcome' && <Welcome /> }
 					{ step === 'name' && (
 						<NameStep choices={ choices } onChange={ change } />
@@ -198,7 +222,7 @@ export function SetupWizard( { onClose }: { onClose: () => void } ) {
 						) : (
 							<Button
 								variant="tertiary"
-								onClick={ () => setIndex( index - 1 ) }
+								onClick={ () => goTo( index - 1 ) }
 							>
 								{ __( 'Back', 'tinta' ) }
 							</Button>
@@ -206,7 +230,7 @@ export function SetupWizard( { onClose }: { onClose: () => void } ) {
 						{ index < steps.length - 1 ? (
 							<Button
 								variant="primary"
-								onClick={ () => setIndex( index + 1 ) }
+								onClick={ () => goTo( index + 1 ) }
 							>
 								{ index === 0
 									? __( 'Get started', 'tinta' )

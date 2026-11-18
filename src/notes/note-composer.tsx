@@ -1,9 +1,10 @@
 /**
  * Writes a note: a text box where @ suggests people to mention, ⌘/Ctrl+Enter sends.
+ * It takes focus when it opens and gives it back when it closes.
  */
 import { Button } from '@wordpress/components';
-import { useFocusOnMount, useMergeRefs } from '@wordpress/compose';
-import { useRef, useState } from '@wordpress/element';
+import { useFocusReturn } from '@wordpress/compose';
+import { useLayoutEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import type { KeyboardEvent } from 'react';
 
@@ -36,11 +37,15 @@ export function NoteComposer( {
 }: NoteComposerProps ) {
 	const people = usePeople();
 	const textarea = useRef< HTMLTextAreaElement >( null );
-	const ref = useMergeRefs( [ textarea, useFocusOnMount( true ) ] );
+	const ref = useFocusReturn();
 	const [ text, setText ] = useState( '' );
 	const [ caret, setCaret ] = useState( 0 );
 	const [ mentions, setMentions ] = useState< Person[] >( [] );
 	const [ isBusy, setBusy ] = useState( false );
+
+	useLayoutEffect( () => {
+		textarea.current?.focus();
+	}, [] );
 
 	const typed = /(^|\s)@([^\s@]*)$/.exec( text.slice( 0, caret ) );
 	const suggestions = typed
@@ -102,9 +107,9 @@ export function NoteComposer( {
 	};
 
 	return (
-		<div className="tinta-note-composer">
+		<div ref={ ref } className="tinta-note-composer">
 			<textarea
-				ref={ ref }
+				ref={ textarea }
 				className="tinta-note-composer__text"
 				aria-label={ label }
 				placeholder={ label }

@@ -1,14 +1,17 @@
 /**
  * The page header in the canvas: the icon (click to change) above the title,
- * then who edited the page last, and when.
+ * then who edited the page last, and when. A page just created opens with
+ * focus in its title.
  */
 import { Dropdown } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { humanTimeDiff } from '@wordpress/date';
 import { PostTitle, store as editorStore } from '@wordpress/editor';
+import { useEffect, useRef } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 import { store as prefsStore } from '../app/store/prefs';
+import { store as uiStore } from '../app/store/ui';
 import { EmojiPicker } from './emoji-picker';
 
 export const ICON_META = '_tinta_icon';
@@ -32,11 +35,12 @@ export function PageHeader() {
 	);
 	const { editPost } = useDispatch( editorStore );
 	const { rememberEmoji } = useDispatch( prefsStore );
+	const focusRefs = useNewPageFocus();
 	const setIcon = ( value: string ) =>
 		editPost( { meta: { [ ICON_META ]: value } } );
 
 	return (
-		<div className="tinta-page-header">
+		<div ref={ focusRefs.header } className="tinta-page-header">
 			<Dropdown
 				popoverProps={ { placement: 'bottom-start' } }
 				renderToggle={ ( { isOpen, onToggle } ) => (
@@ -57,6 +61,7 @@ export function PageHeader() {
 				renderContent={ ( { onClose } ) => (
 					<EmojiPicker
 						recent={ recent }
+						selected={ icon }
 						hasIcon={ !! icon }
 						onSelect={ ( emoji ) => {
 							setIcon( emoji );
@@ -70,10 +75,37 @@ export function PageHeader() {
 					/>
 				) }
 			/>
-			<PostTitle />
+			<PostTitle ref={ focusRefs.title } />
 			<EditedBy />
 		</div>
 	);
+}
+
+/**
+ * Refs for the header and the title that focus the title on the page just
+ * created. The canvas window takes focus first: Firefox otherwise focuses
+ * only the canvas's body.
+ */
+function useNewPageFocus() {
+	const header = useRef< HTMLDivElement >( null );
+	const title = useRef< { focus: () => void } >( null );
+	const isNew = useSelect(
+		( select ) =>
+			select( uiStore ).getNewPageId() ===
+			select( editorStore ).getCurrentPostId(),
+		[]
+	);
+	const { setNewPage } = useDispatch( uiStore );
+
+	useEffect( () => {
+		if ( isNew ) {
+			header.current?.ownerDocument.defaultView?.focus();
+			title.current?.focus();
+			setNewPage( 0 );
+		}
+	}, [ isNew, setNewPage ] );
+
+	return { header, title };
 }
 
 /**

@@ -1,7 +1,7 @@
 /**
  * `tinta/ui` store: the open workspace dialog, the page menu opened with a
- * right click, and whether the sidebar shows (hidden on wide screens, open as
- * a drawer on small ones).
+ * right click, whether the sidebar shows (hidden on wide screens, open as a
+ * drawer on small ones), and the page just created, whose title gets focus.
  */
 import { createReduxStore, register } from '@wordpress/data';
 
@@ -33,13 +33,15 @@ interface State {
 	contextMenu: ContextMenu | null;
 	isSidebarHidden: boolean;
 	isDrawerOpen: boolean;
+	newPageId: number;
 }
 
 type Action =
 	| { type: 'OPEN_DIALOG'; dialog: Dialog | null }
 	| { type: 'OPEN_CONTEXT_MENU'; contextMenu: ContextMenu | null }
 	| { type: 'SET_SIDEBAR_HIDDEN'; isHidden: boolean }
-	| { type: 'SET_DRAWER_OPEN'; isOpen: boolean };
+	| { type: 'SET_DRAWER_OPEN'; isOpen: boolean }
+	| { type: 'SET_NEW_PAGE'; pageId: number };
 
 const actions = {
 	/**
@@ -87,6 +89,16 @@ const actions = {
 		type: 'SET_DRAWER_OPEN',
 		isOpen,
 	} ),
+
+	/**
+	 * Marks the page just created, or clears the mark with 0.
+	 *
+	 * @param pageId Page ID.
+	 */
+	setNewPage: ( pageId: number ): Action => ( {
+		type: 'SET_NEW_PAGE',
+		pageId,
+	} ),
 };
 
 /**
@@ -101,6 +113,7 @@ function reducer(
 		contextMenu: null,
 		isSidebarHidden: false,
 		isDrawerOpen: false,
+		newPageId: 0,
 	},
 	action: Action
 ): State {
@@ -113,6 +126,8 @@ function reducer(
 			return { ...state, isSidebarHidden: action.isHidden };
 		case 'SET_DRAWER_OPEN':
 			return { ...state, isDrawerOpen: action.isOpen };
+		case 'SET_NEW_PAGE':
+			return { ...state, newPageId: action.pageId };
 	}
 
 	return state;
@@ -123,6 +138,7 @@ const selectors = {
 	getContextMenu: ( state: State ) => state.contextMenu,
 	isSidebarHidden: ( state: State ) => state.isSidebarHidden,
 	isDrawerOpen: ( state: State ) => state.isDrawerOpen,
+	getNewPageId: ( state: State ) => state.newPageId,
 };
 
 export const store = createReduxStore( 'tinta/ui', {

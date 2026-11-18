@@ -76,7 +76,7 @@ function SaveStatus() {
 	);
 
 	return (
-		<span className="tinta-editor__status" aria-live="polite">
+		<span className="tinta-editor__status">
 			{ isSaved ? __( 'Saved', 'tinta' ) : __( 'Saving…', 'tinta' ) }
 		</span>
 	);

@@ -53,6 +53,7 @@ export function Edit( { attributes, setAttributes }: EditProps ) {
 				) }
 				renderContent={ ( { onClose } ) => (
 					<EmojiPicker
+						selected={ emoji }
 						hasIcon={ false }
 						onSelect={ ( value ) => {
 							setAttributes( { emoji: value } );

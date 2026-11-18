@@ -3,6 +3,7 @@
  */
 import { Button, Modal } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
+import { useInstanceId } from '@wordpress/compose';
 import { useState } from '@wordpress/element';
 import { decodeEntities } from '@wordpress/html-entities';
 import { __, _n, sprintf } from '@wordpress/i18n';
@@ -43,6 +44,7 @@ export function TrashConfirm( {
 	const [ isBusy, setBusy ] = useState( false );
 	const subtree = subtreeOf( page.id, pages );
 	const subpages = subtree.length - 1;
+	const messageId = useInstanceId( TrashConfirm, 'tinta-trash-confirm' );
 	const title = decodeEntities( page.title ) || __( 'Untitled', 'tinta' );
 
 	const confirm = async () => {
@@ -69,8 +71,9 @@ export function TrashConfirm( {
 			title={ __( 'Move to trash?', 'tinta' ) }
 			onRequestClose={ onClose }
 			size="small"
+			aria={ { describedby: messageId } }
 		>
-			<p>
+			<p id={ messageId }>
 				{ subpages
 					? sprintf(
 							/* translators: 1: page title, 2: number of subpages. */

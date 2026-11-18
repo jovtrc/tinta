@@ -42,9 +42,9 @@ export function Drawer( { children, onClose }: DrawerProps ) {
 		[ onClose ]
 	);
 	const ref = useMergeRefs( [
+		useFocusReturn(),
 		useConstrainedTabbing(),
 		useFocusOnMount( 'firstElement' ),
-		useFocusReturn(),
 		closeOnEscape,
 	] );
 

@@ -54,6 +54,7 @@ export function SettingsDialog( { initialTab, onClose }: SettingsDialogProps ) {
 			aria={ { labelledby: titleId } }
 			className="tinta-settings-dialog"
 			size="large"
+			focusOnMount="firstContentElement"
 			onRequestClose={ onClose }
 		>
 			<div

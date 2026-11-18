@@ -1,10 +1,12 @@
 /**
- * The page's note threads, in block order, with their replies.
+ * The page's note threads, in block order, with their replies. While core-data
+ * reloads them after a note is added, the last ones loaded stay, so the list
+ * keeps its place and focus.
  */
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { useEntityRecords } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
-import { useMemo } from '@wordpress/element';
+import { useEffect, useMemo, useState } from '@wordpress/element';
 
 import { noteIdsOf, notesQuery, type Note, type NoteMetadata } from './data';
 
@@ -31,11 +33,22 @@ export interface Thread {
  * @param postId Page ID.
  */
 export function useThreads( postId: number ) {
-	const { records, hasResolved } = useEntityRecords< Note >(
+	const { records } = useEntityRecords< Note >(
 		'root',
 		'comment',
 		notesQuery( postId )
 	);
+	const [ loaded, setLoaded ] = useState< {
+		postId: number;
+		notes: Note[];
+	} | null >( null );
+	const notes = loaded?.postId === postId ? loaded.notes : null;
+
+	useEffect( () => {
+		if ( records ) {
+			setLoaded( { postId, notes: records } );
+		}
+	}, [ postId, records ] );
 	const blockOfNote = useSelect( ( select ) => {
 		const { getClientIdsWithDescendants, getBlockAttributes } = select(
 			blockEditorStore
@@ -54,14 +67,13 @@ export function useThreads( postId: number ) {
 	}, [] );
 
 	const threads = useMemo( () => {
-		const notes = records ?? [];
 		const order = [ ...blockOfNote.values() ];
 
-		return notes
+		return ( notes ?? [] )
 			.filter( ( note ) => ! note.parent )
 			.map( ( root ): Thread => ( {
 				root,
-				replies: notes
+				replies: ( notes ?? [] )
 					.filter(
 						( note ) =>
 							note.parent === root.id &&
@@ -76,9 +88,9 @@ export function useThreads( postId: number ) {
 					rank( order, a.clientId ) - rank( order, b.clientId ) ||
 					a.root.date_gmt.localeCompare( b.root.date_gmt )
 			);
-	}, [ records, blockOfNote ] );
+	}, [ notes, blockOfNote ] );
 
-	return { threads, isLoading: ! hasResolved };
+	return { threads, isLoading: ! notes };
 }
 
 /**

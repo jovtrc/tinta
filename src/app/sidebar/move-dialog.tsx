@@ -6,6 +6,7 @@
 import { Button, ComboboxControl, Modal } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
+import type { KeyboardEvent } from 'react';
 import { decodeEntities } from '@wordpress/html-entities';
 import { __, sprintf } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
@@ -79,15 +80,19 @@ export function MoveDialog( { page, onClose }: MoveDialogProps ) {
 			) }
 			onRequestClose={ onClose }
 			size="medium"
+			focusOnMount="firstContentElement"
 		>
-			<ComboboxControl
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
-				label={ __( 'Move inside', 'tinta' ) }
-				value={ parent }
-				options={ options }
-				onChange={ ( value ) => setParent( value ?? null ) }
-			/>
+			<div onKeyDownCapture={ closeOnEscape( onClose ) }>
+				<ComboboxControl
+					__next40pxDefaultSize
+					__nextHasNoMarginBottom
+					label={ __( 'Move inside', 'tinta' ) }
+					value={ parent }
+					options={ options }
+					expandOnFocus={ false }
+					onChange={ ( value ) => setParent( value ?? null ) }
+				/>
+			</div>
 			<div className="tinta-dialog__actions">
 				<Button variant="tertiary" onClick={ onClose }>
 					{ __( 'Cancel', 'tinta' ) }
@@ -102,6 +107,26 @@ export function MoveDialog( { page, onClose }: MoveDialogProps ) {
 			</div>
 		</Modal>
 	);
+}
+
+/**
+ * Escape closes the dialog once the field's suggestions are closed: core's
+ * ComboboxControl keeps Escape for itself, so the Modal never sees it.
+ *
+ * @param onClose Closes the dialog.
+ */
+function closeOnEscape( onClose: () => void ) {
+	return ( event: KeyboardEvent ) => {
+		const field = event.target as HTMLElement;
+
+		if (
+			event.key === 'Escape' &&
+			field.getAttribute( 'aria-expanded' ) !== 'true'
+		) {
+			event.stopPropagation();
+			onClose();
+		}
+	};
 }
 
 /**
