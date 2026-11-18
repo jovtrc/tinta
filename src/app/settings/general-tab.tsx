@@ -7,11 +7,12 @@
 import apiFetch from '@wordpress/api-fetch';
 import {
 	Button,
+	FormToggle,
 	SelectControl,
 	Spinner,
 	TextControl,
-	ToggleControl,
 } from '@wordpress/components';
+import { useInstanceId } from '@wordpress/compose';
 import { useDispatch } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -19,6 +20,7 @@ import { __ } from '@wordpress/i18n';
 import { RegistrationNotice } from '../registration-notice';
 import { roleOptions } from '../roles';
 import { store as uiStore } from '../store/ui';
+import { SettingsCard } from './settings-card';
 
 interface WorkspaceSettings {
 	title: string;
@@ -41,6 +43,7 @@ export function GeneralTab( { onClose }: { onClose: () => void } ) {
 	const [ isSaving, setSaving ] = useState( false );
 	const [ error, setError ] = useState( '' );
 	const { openDialog } = useDispatch( uiStore );
+	const modeId = useInstanceId( GeneralTab, 'tinta-workspace-mode' );
 
 	useEffect( () => {
 		apiFetch< WorkspaceSettings >( {
@@ -66,72 +69,106 @@ export function GeneralTab( { onClose }: { onClose: () => void } ) {
 		}
 	};
 
-	return ! settings ? (
-		<Spinner />
-	) : (
-		<div className="tinta-settings">
-			<TextControl
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
-				label={ __( 'Workspace name', 'tinta' ) }
-				value={ settings.title }
-				onChange={ ( title ) => change( { title } ) }
-			/>
-			<ToggleControl
-				__nextHasNoMarginBottom
-				label={ __( 'Workspace mode', 'tinta' ) }
-				help={ __(
-					'Everyone lands in the workspace after logging in, the site is private, and Members and Viewers only see the workspace and their profile. Turn it off to get the usual WordPress back.',
-					'tinta'
-				) }
-				checked={ settings.tinta_settings.workspace_mode }
-				onChange={ ( workspaceMode ) =>
-					change( {
-						tinta_settings: {
-							...settings.tinta_settings,
-							workspace_mode: workspaceMode,
-						},
-					} )
-				}
-			/>
-			{ settings.default_role !== undefined && (
-				<>
-					<SelectControl
+	if ( ! settings ) {
+		return <Spinner />;
+	}
+
+	return (
+		<>
+			<div className="tinta-settings">
+				<SettingsCard
+					title={ __( 'Workspace name', 'tinta' ) }
+					description={ __(
+						'Shown at the top of the sidebar and in the browser tab. It’s also your site’s title.',
+						'tinta'
+					) }
+				>
+					<TextControl
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
-						label={ __( 'New people join as', 'tinta' ) }
-						value={ settings.default_role }
-						options={ roleOptions( settings.default_role ) }
-						onChange={ ( defaultRole ) =>
-							change( { default_role: defaultRole } )
-						}
-						help={ __(
-							'The role people get when they join.',
+						hideLabelFromVision
+						label={ __( 'Workspace name', 'tinta' ) }
+						value={ settings.title }
+						onChange={ ( title ) => change( { title } ) }
+					/>
+				</SettingsCard>
+				<SettingsCard
+					title={ __( 'Workspace mode', 'tinta' ) }
+					titleId={ `${ modeId }-title` }
+					description={ __(
+						'Everyone lands in the workspace after logging in, the site is private, and Members and Viewers only see the workspace and their profile. Turn it off to get the usual WordPress back.',
+						'tinta'
+					) }
+					descriptionId={ `${ modeId }-description` }
+					aside={
+						<FormToggle
+							checked={ settings.tinta_settings.workspace_mode }
+							aria-labelledby={ `${ modeId }-title` }
+							aria-describedby={ `${ modeId }-description` }
+							onChange={ () =>
+								change( {
+									tinta_settings: {
+										...settings.tinta_settings,
+										workspace_mode:
+											! settings.tinta_settings
+												.workspace_mode,
+									},
+								} )
+							}
+						/>
+					}
+				/>
+				{ settings.default_role !== undefined && (
+					<SettingsCard
+						title={ __( 'New people join as', 'tinta' ) }
+						description={ __(
+							'The role people get when they sign up or are added without one. Members read and write every page; Viewers only read.',
 							'tinta'
 						) }
+					>
+						<SelectControl
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+							hideLabelFromVision
+							label={ __( 'New people join as', 'tinta' ) }
+							value={ settings.default_role }
+							options={ roleOptions( settings.default_role ) }
+							onChange={ ( defaultRole ) =>
+								change( { default_role: defaultRole } )
+							}
+						/>
+						<RegistrationNotice role={ settings.default_role } />
+					</SettingsCard>
+				) }
+				<SettingsCard
+					title={ __( 'Versions kept per page', 'tinta' ) }
+					description={ __(
+						'How many saved versions each page keeps, from 0 to 100.',
+						'tinta'
+					) }
+				>
+					<TextControl
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+						hideLabelFromVision
+						type="number"
+						min={ 0 }
+						max={ 100 }
+						label={ __( 'Versions kept per page', 'tinta' ) }
+						value={ String( settings.tinta_settings.revisions ) }
+						onChange={ ( revisions ) =>
+							change( {
+								tinta_settings: {
+									...settings.tinta_settings,
+									revisions: Number( revisions ),
+								},
+							} )
+						}
 					/>
-					<RegistrationNotice role={ settings.default_role } />
-				</>
-			) }
-			<TextControl
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
-				type="number"
-				min={ 0 }
-				max={ 100 }
-				label={ __( 'Versions kept per page', 'tinta' ) }
-				value={ String( settings.tinta_settings.revisions ) }
-				onChange={ ( revisions ) =>
-					change( {
-						tinta_settings: {
-							...settings.tinta_settings,
-							revisions: Number( revisions ),
-						},
-					} )
-				}
-			/>
-			{ error && <p className="tinta-settings__error">{ error }</p> }
-			<div className="tinta-dialog__actions">
+				</SettingsCard>
+				{ error && <p className="tinta-settings__error">{ error }</p> }
+			</div>
+			<div className="tinta-settings__footer">
 				<Button
 					variant="link"
 					className="tinta-settings__setup"
@@ -151,6 +188,6 @@ export function GeneralTab( { onClose }: { onClose: () => void } ) {
 					{ __( 'Save', 'tinta' ) }
 				</Button>
 			</div>
-		</div>
+		</>
 	);
 }

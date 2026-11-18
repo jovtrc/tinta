@@ -1,10 +1,11 @@
 /**
- * Settings: core's Modal with core's TabPanel, tabs on the side (on top on
- * small screens). Administrators get the workspace's tabs; everyone gets the
- * tabs about themselves.
+ * Settings: core's Modal with core's TabPanel. A side column holds the title
+ * and the tabs (on top on small screens); each tab has a heading, its
+ * settings in cards, and its actions. Administrators get the workspace's
+ * tabs; everyone gets the tabs about themselves.
  */
 import { Modal, TabPanel } from '@wordpress/components';
-import { useViewportMatch } from '@wordpress/compose';
+import { useInstanceId, useViewportMatch } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 
 import { config } from '../config';
@@ -46,31 +47,44 @@ function tabs(): { name: SettingsTabName; title: string }[] {
  */
 export function SettingsDialog( { initialTab, onClose }: SettingsDialogProps ) {
 	const isSmall = useViewportMatch( 'medium', '<' );
+	const titleId = useInstanceId( SettingsDialog, 'tinta-settings-title' );
 
 	return (
 		<Modal
-			title={ __( 'Settings', 'tinta' ) }
+			aria={ { labelledby: titleId } }
 			className="tinta-settings-dialog"
 			size="large"
 			onRequestClose={ onClose }
 		>
-			<TabPanel
+			<div
 				className={
 					isSmall
-						? 'tinta-settings-tabs'
-						: 'tinta-settings-tabs is-side'
+						? 'tinta-settings-layout'
+						: 'tinta-settings-layout is-side'
 				}
-				orientation={ isSmall ? 'horizontal' : 'vertical' }
-				tabs={ tabs() }
-				initialTabName={ initialTab }
 			>
-				{ ( tab ) => (
-					<SettingsTab
-						name={ tab.name as SettingsTabName }
-						onClose={ onClose }
-					/>
-				) }
-			</TabPanel>
+				<h1 id={ titleId } className="tinta-settings-layout__title">
+					{ __( 'Settings', 'tinta' ) }
+				</h1>
+				<TabPanel
+					className="tinta-settings-tabs"
+					orientation={ isSmall ? 'horizontal' : 'vertical' }
+					tabs={ tabs() }
+					initialTabName={ initialTab }
+				>
+					{ ( tab ) => (
+						<>
+							<h2 className="tinta-settings-layout__heading">
+								{ tab.title }
+							</h2>
+							<SettingsTab
+								name={ tab.name as SettingsTabName }
+								onClose={ onClose }
+							/>
+						</>
+					) }
+				</TabPanel>
+			</div>
 		</Modal>
 	);
 }

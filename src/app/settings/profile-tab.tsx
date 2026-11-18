@@ -6,7 +6,6 @@
  */
 import apiFetch from '@wordpress/api-fetch';
 import {
-	BaseControl,
 	Button,
 	CheckboxControl,
 	Spinner,
@@ -18,6 +17,7 @@ import { __, sprintf } from '@wordpress/i18n';
 
 import { config } from '../config';
 import { passwordStrength } from './password-strength';
+import { SettingsCard } from './settings-card';
 
 interface Profile {
 	name: string;
@@ -114,123 +114,164 @@ export function ProfileTab( { onClose }: { onClose: () => void } ) {
 	};
 
 	return (
-		<div className="tinta-settings">
-			<TextControl
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
-				label={ __( 'Name', 'tinta' ) }
-				value={ name }
-				autoComplete="name"
-				onChange={ setName }
-			/>
-			<div className="tinta-settings__row">
-				<TextControl
-					__next40pxDefaultSize
-					__nextHasNoMarginBottom
-					type="email"
-					label={ __( 'Email', 'tinta' ) }
-					value={ email }
-					autoComplete="email"
-					onChange={ setEmail }
-					help={
-						profile.tinta_email_change &&
-						sprintf(
-							/* translators: %s: new email address. */
-							__(
-								'Waiting for you to confirm %s: open the link sent there to make the change.',
-								'tinta'
-							),
-							profile.tinta_email_change
-						)
-					}
-				/>
-				{ email !== profile.email ? (
-					<Button
+		<>
+			<div className="tinta-settings">
+				<SettingsCard
+					title={ __( 'Name', 'tinta' ) }
+					description={ __(
+						'Shown in the sidebar, on notes and in mentions.',
+						'tinta'
+					) }
+				>
+					<TextControl
 						__next40pxDefaultSize
-						variant="secondary"
-						onClick={ () => changeEmail( email ) }
-					>
-						{ __( 'Change email', 'tinta' ) }
-					</Button>
-				) : (
-					profile.tinta_email_change && (
-						<Button
+						__nextHasNoMarginBottom
+						hideLabelFromVision
+						label={ __( 'Name', 'tinta' ) }
+						value={ name }
+						autoComplete="name"
+						onChange={ setName }
+					/>
+				</SettingsCard>
+				<SettingsCard
+					title={ __( 'Email', 'tinta' ) }
+					description={ __(
+						'Used to log in. A new address takes effect once you open the link WordPress emails to it.',
+						'tinta'
+					) }
+				>
+					<div className="tinta-settings__row">
+						<TextControl
 							__next40pxDefaultSize
-							variant="tertiary"
-							onClick={ () => changeEmail( '' ) }
-						>
-							{ __( 'Cancel change', 'tinta' ) }
-						</Button>
-					)
-				) }
-			</div>
-			<TextControl
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
-				type="password"
-				label={ __( 'New password', 'tinta' ) }
-				value={ password }
-				autoComplete="new-password"
-				onChange={ ( value ) => {
-					setPassword( value );
-					setWeakConfirmed( false );
-				} }
-				help={
-					strength?.label ??
-					__( 'Leave it empty to keep your password.', 'tinta' )
-				}
-			/>
-			{ strength?.isWeak && (
-				<CheckboxControl
-					__nextHasNoMarginBottom
-					label={ __( 'Confirm use of weak password', 'tinta' ) }
-					checked={ weakConfirmed }
-					onChange={ setWeakConfirmed }
-				/>
-			) }
-			<fieldset className="tinta-color-schemes">
-				<legend>
-					<BaseControl.VisualLabel>
-						{ __( 'Admin color scheme', 'tinta' ) }
-					</BaseControl.VisualLabel>
-				</legend>
-				{ config.colorSchemes.map( ( option ) => (
-					<label
-						key={ option.id }
-						htmlFor={ `${ schemeId }-${ option.id }` }
-						className={
-							option.id === scheme
-								? 'tinta-color-scheme is-selected'
-								: 'tinta-color-scheme'
-						}
+							__nextHasNoMarginBottom
+							hideLabelFromVision
+							type="email"
+							label={ __( 'Email', 'tinta' ) }
+							value={ email }
+							autoComplete="email"
+							onChange={ setEmail }
+							help={
+								profile.tinta_email_change &&
+								sprintf(
+									/* translators: %s: new email address. */
+									__(
+										'Waiting for you to confirm %s: open the link sent there to make the change.',
+										'tinta'
+									),
+									profile.tinta_email_change
+								)
+							}
+						/>
+						{ email !== profile.email ? (
+							<Button
+								__next40pxDefaultSize
+								variant="secondary"
+								onClick={ () => changeEmail( email ) }
+							>
+								{ __( 'Change email', 'tinta' ) }
+							</Button>
+						) : (
+							profile.tinta_email_change && (
+								<Button
+									__next40pxDefaultSize
+									variant="tertiary"
+									onClick={ () => changeEmail( '' ) }
+								>
+									{ __( 'Cancel change', 'tinta' ) }
+								</Button>
+							)
+						) }
+					</div>
+				</SettingsCard>
+				<SettingsCard
+					title={ __( 'Password', 'tinta' ) }
+					description={ __(
+						'Type a new password to change it, or leave it empty to keep yours.',
+						'tinta'
+					) }
+				>
+					<TextControl
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+						hideLabelFromVision
+						type="password"
+						label={ __( 'New password', 'tinta' ) }
+						value={ password }
+						autoComplete="new-password"
+						onChange={ ( value ) => {
+							setPassword( value );
+							setWeakConfirmed( false );
+						} }
+						help={ strength?.label }
+					/>
+					{ strength?.isWeak && (
+						<CheckboxControl
+							__nextHasNoMarginBottom
+							label={ __(
+								'Confirm use of weak password',
+								'tinta'
+							) }
+							checked={ weakConfirmed }
+							onChange={ setWeakConfirmed }
+						/>
+					) }
+				</SettingsCard>
+				<SettingsCard
+					title={ __( 'Admin color scheme', 'tinta' ) }
+					titleId={ `${ schemeId }-title` }
+					description={ __(
+						'Colors for the workspace and the rest of WP Admin.',
+						'tinta'
+					) }
+				>
+					<div
+						className="tinta-color-schemes"
+						role="radiogroup"
+						aria-labelledby={ `${ schemeId }-title` }
 					>
-						<span className="tinta-color-scheme__name">
-							<input
-								id={ `${ schemeId }-${ option.id }` }
-								type="radio"
-								name={ schemeId }
-								value={ option.id }
-								checked={ option.id === scheme }
-								onChange={ () => setScheme( option.id ) }
-							/>
-							{ option.name }
-						</span>
-						<span
-							className="tinta-color-scheme__colors"
-							aria-hidden="true"
-						>
-							{ option.colors.map( ( color, index ) => (
+						{ config.colorSchemes.map( ( option ) => (
+							<label
+								key={ option.id }
+								htmlFor={ `${ schemeId }-${ option.id }` }
+								className={
+									option.id === scheme
+										? 'tinta-color-scheme is-selected'
+										: 'tinta-color-scheme'
+								}
+							>
+								<span className="tinta-color-scheme__name">
+									<input
+										id={ `${ schemeId }-${ option.id }` }
+										type="radio"
+										name={ schemeId }
+										value={ option.id }
+										checked={ option.id === scheme }
+										onChange={ () =>
+											setScheme( option.id )
+										}
+									/>
+									{ option.name }
+								</span>
 								<span
-									key={ index }
-									style={ { backgroundColor: color } }
-								/>
-							) ) }
-						</span>
-					</label>
-				) ) }
-			</fieldset>
-			{ error && <p className="tinta-settings__error">{ error }</p> }
-			<div className="tinta-dialog__actions">
+									className="tinta-color-scheme__colors"
+									aria-hidden="true"
+								>
+									{ option.colors.map( ( color, index ) => (
+										<span
+											key={ index }
+											style={ {
+												backgroundColor: color,
+											} }
+										/>
+									) ) }
+								</span>
+							</label>
+						) ) }
+					</div>
+				</SettingsCard>
+				{ error && <p className="tinta-settings__error">{ error }</p> }
+			</div>
+			<div className="tinta-settings__footer">
 				<Button variant="tertiary" onClick={ onClose }>
 					{ __( 'Cancel', 'tinta' ) }
 				</Button>
@@ -243,6 +284,6 @@ export function ProfileTab( { onClose }: { onClose: () => void } ) {
 					{ __( 'Save', 'tinta' ) }
 				</Button>
 			</div>
-		</div>
+		</>
 	);
 }

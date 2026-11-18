@@ -5,7 +5,6 @@
  */
 import apiFetch from '@wordpress/api-fetch';
 import {
-	BaseControl,
 	Button,
 	SelectControl,
 	Spinner,
@@ -18,6 +17,7 @@ import type { FormEvent } from 'react';
 
 import { config } from '../config';
 import { roleOptions } from '../roles';
+import { SettingsCard } from './settings-card';
 
 interface Person {
 	id: number;
@@ -100,44 +100,69 @@ export function PeopleTab() {
 		setSending( false );
 	};
 
+	const inviteHelp = config.multisite
+		? __(
+				'They get an email with a link to activate their account and join the workspace.',
+				'tinta'
+			)
+		: __(
+				'They get WordPress’s new-user email, with a link to set a password.',
+				'tinta'
+			);
+
 	return (
 		<div className="tinta-settings">
 			{ config.canInvite ? (
-				<form className="tinta-invite" onSubmit={ invite }>
-					<TextControl
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
-						label={ __( 'Name', 'tinta' ) }
-						value={ name }
-						required
-						onChange={ setName }
-					/>
-					<TextControl
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
-						type="email"
-						label={ __( 'Email', 'tinta' ) }
-						value={ email }
-						required
-						onChange={ setEmail }
-					/>
-					<SelectControl
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
-						label={ __( 'Role', 'tinta' ) }
-						value={ role }
-						options={ roleOptions( 'tinta_member' ) }
-						onChange={ setRole }
-					/>
-					<Button
-						__next40pxDefaultSize
-						variant="primary"
-						type="submit"
-						isBusy={ isSending }
-						disabled={ isSending }
+				<form onSubmit={ invite }>
+					<SettingsCard
+						title={ __( 'Invite someone', 'tinta' ) }
+						description={ inviteHelp }
+						footer={
+							<Button
+								__next40pxDefaultSize
+								variant="primary"
+								type="submit"
+								isBusy={ isSending }
+								disabled={ isSending }
+							>
+								{ __( 'Send invite', 'tinta' ) }
+							</Button>
+						}
 					>
-						{ __( 'Send invite', 'tinta' ) }
-					</Button>
+						<div className="tinta-invite">
+							<TextControl
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+								label={ __( 'Name', 'tinta' ) }
+								value={ name }
+								required
+								onChange={ setName }
+							/>
+							<TextControl
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+								type="email"
+								label={ __( 'Email', 'tinta' ) }
+								value={ email }
+								required
+								onChange={ setEmail }
+							/>
+							<SelectControl
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+								label={ __( 'Role', 'tinta' ) }
+								value={ role }
+								options={ roleOptions( 'tinta_member' ) }
+								onChange={ setRole }
+							/>
+						</div>
+						{ message && <p role="status">{ message }</p> }
+						{ error && (
+							<p className="tinta-settings__error" role="alert">
+								{ error }
+							</p>
+						) }
+					</SettingsCard>
 				</form>
 			) : (
 				<p className="tinta-dialog__note">
@@ -147,16 +172,21 @@ export function PeopleTab() {
 					) }
 				</p>
 			) }
-			{ message && <p role="status">{ message }</p> }
-			{ error && (
-				<p className="tinta-settings__error" role="alert">
-					{ error }
-				</p>
-			) }
-			<div>
-				<BaseControl.VisualLabel>
-					{ __( 'In this workspace', 'tinta' ) }
-				</BaseControl.VisualLabel>
+			<SettingsCard
+				title={ __( 'In this workspace', 'tinta' ) }
+				description={ __(
+					'Everyone who can read the workspace’s pages.',
+					'tinta'
+				) }
+				footer={
+					<a href={ config.links.users }>
+						{ __(
+							'Change roles or remove people in WP Admin',
+							'tinta'
+						) }
+					</a>
+				}
+			>
 				{ ! people ? (
 					<Spinner />
 				) : (
@@ -166,8 +196,8 @@ export function PeopleTab() {
 								<img
 									src={ person.avatar_urls[ 48 ] }
 									alt=""
-									width={ 24 }
-									height={ 24 }
+									width={ 32 }
+									height={ 32 }
 								/>
 								<span className="tinta-person__name">
 									{ person.name }
@@ -183,10 +213,7 @@ export function PeopleTab() {
 						) ) }
 					</ul>
 				) }
-			</div>
-			<a href={ config.links.users }>
-				{ __( 'Change roles or remove people in WP Admin', 'tinta' ) }
-			</a>
+			</SettingsCard>
 		</div>
 	);
 }
