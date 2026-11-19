@@ -1015,7 +1015,8 @@ test.describe( 'Blocks', () => {
 } );
 
 /**
- * Puts the cursor in a new page's first block.
+ * Puts the cursor in a new page's first block. WordPress 7.1 shows a button
+ * there and 7.2 an empty paragraph, both labeled "Add default block".
  *
  * @param editor Editor helpers.
  */
@@ -1023,7 +1024,7 @@ async function startTyping(
 	editor: import( '@wordpress/e2e-test-utils-playwright' ).Editor
 ) {
 	await editor.canvas
-		.getByRole( 'button', { name: 'Add default block' } )
+		.getByLabel( 'Add default block', { exact: true } )
 		.click();
 }
 

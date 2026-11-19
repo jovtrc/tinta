@@ -25,7 +25,7 @@ module.exports = {
 	webServer: {
 		...config.webServer,
 		command: [
-			'pnpm exec wp-playground-cli server --port=9400 --wp=7.1 --php=8.2',
+			'pnpm exec wp-playground-cli server --port=9400',
 			'--mount=.:/wordpress/wp-content/plugins/tinta',
 			'--blueprint=tests/screenshots/blueprint.json',
 			l10n && `--mount=${ l10n }:/wordpress/wp-content/languages/plugins`,
